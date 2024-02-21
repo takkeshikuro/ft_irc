@@ -7,7 +7,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
-#include <cerrno>
+#include <poll.h>
 
 const int MAX_CLIENTS = 10;
 const int BUFFER_SIZE = 1024;
