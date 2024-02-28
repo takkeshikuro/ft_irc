@@ -1,5 +1,5 @@
 #include "../inc/irc.hpp"
-#include "../inc/server.hpp"
+#include "../inc/Server.hpp"
 
 void	check_entrance(char **av) 
 {

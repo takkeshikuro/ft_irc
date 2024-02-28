@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.cpp                                         :+:      :+:    :+:   */
+/*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 01:24:03 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/02/28 01:59:08 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/02/28 04:51:52 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/server.hpp"
+#include "../inc/Server.hpp"
 
 Server::Server() {}
 
@@ -70,6 +70,20 @@ void	Server::manage_new_connection()
 			// Ajout du nouveau descripteur de fichier au vecteur surveillé par poll()
 			fds.push_back({newSocket, POLLIN});
 			std::cout << "Nouvelle connexion acceptée" << std::endl;
+			// // Récupération de l'adresse IP du client
+			// struct sockaddr_in clientAddr;
+			// socklen_t clientAddrLen = sizeof(clientAddr);
+			// if (getpeername(newSocket, (struct sockaddr*)&clientAddr, &clientAddrLen) != -1)
+			// {
+			// 	uint32_t clientIP = ntohs(clientAddr.sin_addr.s_addr);
+			// 	std::cout << "Adresse IP du client : ";
+			// 	std::cout << clientIP << std::endl;
+			// }
+			// else
+			// 	std::cerr << "Erreur lors de la récupération de l'adresse IP du client\n";
+		
+		 	std::string message001 = ":irc.server.com 001 utilisateur :Bienvenue sur le serveur IRC irc.server.com\r\n";
+            send(newSocket, message001.c_str(), message001.length(), 0);
 		}
 	}
 }
@@ -94,8 +108,17 @@ void	Server::manage_client_data()
 				// Traiter les données reçues
 				buffer[valread] = '\0'; // Assurer la terminaison de la chaîne
 				std::cout << "Message du client : " << buffer << std::endl;
-				// Écho du message au client
-				send(fds[i].fd, buffer, strlen(buffer), 0);
+				
+				if (strncmp(buffer, "NICK", 4) == 0) {
+                    // Extraire le pseudo du message
+                    std::string nick = buffer + 5; // Supposer que le message est de la forme "NICK <pseudo>\r\n"
+
+                    // Envoyer une confirmation au client si nécessaire
+                    std::string confirmation = "NICK " + nick + " défini avec succès\r\n";
+                    send(fds[i].fd, confirmation.c_str(), confirmation.length(), 0);
+				}
+				else
+					send(fds[i].fd, buffer, strlen(buffer), 0);
 			}
 		}
 	}
