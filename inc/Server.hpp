@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 01:19:18 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/02/29 18:55:48 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/02/29 19:40:57 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,14 +31,13 @@ class Server {
 	//	static void SignalHandler(int sig);
 
 	private :
-		int serverSocket;
 		struct sockaddr_in serverAddr;
+		struct pollfd NewPoll;
+		int serverSocket;
 		int port;
-		int SerSocketFd; //-> server socket file descriptor
-		static bool Signal; //-> static boolean for signal
+		static bool signal;
 		std::vector<User> users; //-> vector of clients/users
-		std::vector<struct pollfd> fds; //-> vector of pollfd
-		
+		std::vector<struct pollfd> fds; //-> vector of pollfd		
 		char buffer[BUFFER_SIZE];
 };
 

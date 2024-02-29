@@ -1,10 +1,10 @@
 
 CONFIGURATION
 
-1	struct sockaddr_in serverAddress;
-2	serverAddress.sin_family = AF_INET;
-3	serverAddress.sin_port = htons(6667); // Port IRC standard
-4	serverAddress.sin_addr.s_addr = INADDR_ANY; 
+1	struct sockaddr_in serverAddr; // -> cette ligne est en private dans la class
+2	serverAddr.sin_family = AF_INET;
+3	serverAddr.sin_port = htons(6667); // Port IRC standard
+4	serverAddr.sin_addr.s_addr = INADDR_ANY; 
 
 La structure sockaddr_in est utilise pour representer une addr IPv4 et un numero de port.
 
@@ -38,8 +38,6 @@ struct sockaddr, ce qui est nécessaire pour des raisons de compatibilité.
 Il est généralement inutilisé et rempli de zéros.
 
 /////////////////////////////////////////////////////////////////////
-
-
 
 1	struct pollfd NewPoll;
 
@@ -131,7 +129,60 @@ prochaine etape c'est de bind() le socket
 	if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1)
 	{
 		throw SocketLinkingError();
-	//	close(serverSocket);
 	}
+
+La fonction bind() permet d'assigner une addr specifique et un port a un socket, lui
+donnant ducoup une identite unique sur le reseau. 
+En effectuant cette association, cela permet a d'autre process de communiquer avec
+partout sur le reseau.
+// si on bind() le prgm au port 0, l'OS va automatiquement bind a n\importe quel port 
+available dans la range des dynamic or private ports (49152 to 65535).
+ca peut etre utile.
+
+3 parametre a la fonction bind() :
+-le socket fd
+-le pointeur sur struct sockaddr qui contient les infos de l'addr
+-la taille de la structure address
+
+//////////////////////////////////////////////////////////////////////////////
+
+Pour accepter les connexions au serveur, il faut mettre le socket en passif
+
+Passiv Socket :
+Represente le socket d'ecoute cote serveur, qui accepte les connexions entrante du client
+IRC. Le serveur ecoute les co entrantes sur un port precis. Quand une requete de 
+connexion est recu, le server socket accepte la connexion, creer un nouveau socket pour 
+la communication avec le client.
+
+Active Socket : 
+Represente le socket de connexion cote client. Le client emet la communication en se
+connectant au serveur avec TCP/IP. Une fois connecte, le client peut envoyer des 
+commandes/msg au serveur et recois des reponses.
+
+
+1	if (listen(serverSocket, MAX_CLIENTS) == -1)
+2	{
+3		throw SocketListeningError();
+5	}
+
+Pour mettre le socket en passif, on utilise listen();
+On l'utilise sur un socket qui a ete link avec bind, pour le set en mode passif,
+pret a accepter les connexions entrantes.
+
+serverSocket, le fd du socket qui a ete cree et lie avec bind();
+MAX_CLIENTS, le nb de connexions requests.
+
+///////////////////////////////////////////////////////////////////////////////////
+
+Maintenant il faut remplir la structure pollfd avec les infos du serveur.
+
+1	NewPoll.fd = serverSocket; //-> add the server socket to the pollfd
+2	NewPoll.events = POLLIN; //-> set the event to POLLIN for reading data
+3	NewPoll.revents = 0; //-> set the revents to 0
+4	fds.push_back(NewPoll); //-> add the server socket to the pollfd
+
+Pour faire en sorte que le serveur soit pret a accepter les connexions entrante,
+il faut set .events = POLLIN
+et push_back la structure dans le vector fds.
 
 
