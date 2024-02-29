@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 01:24:03 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/02/29 14:27:00 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/02/29 14:41:29 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,13 +42,11 @@ void	Server::launch_server()
 {
 //	std::vector<pollfd> vector(1, {serverSocket, POLLIN});
 // modif pour +98
-	std::vector<pollfd> vector;
 	pollfd fd;
 	fd.fd = serverSocket;
 	fd.events = POLLIN;
-	vector.push_back(fd);
+	fds.push_back(fd);
 //
-	fds = vector;
 
 	while (true)
 	{
