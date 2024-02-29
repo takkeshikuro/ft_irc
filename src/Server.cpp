@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 01:24:03 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/02/28 04:51:52 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/02/29 14:27:00 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,14 @@ void    Server::configuration()
 
 void	Server::launch_server() 
 {
-	std::vector<pollfd> vector(1, {serverSocket, POLLIN});
+//	std::vector<pollfd> vector(1, {serverSocket, POLLIN});
+// modif pour +98
+	std::vector<pollfd> vector;
+	pollfd fd;
+	fd.fd = serverSocket;
+	fd.events = POLLIN;
+	vector.push_back(fd);
+//
 	fds = vector;
 
 	while (true)
@@ -63,25 +70,20 @@ void	Server::manage_new_connection()
 	if (fds[0].revents & POLLIN) 
 	{
 		// Nouvelle connexion entrante
-		int newSocket = accept(serverSocket, nullptr, nullptr);
+		int newSocket = accept(serverSocket, NULL, NULL);
 		if (newSocket == -1)
 			std::cerr << "Erreur lors de l'acceptation de la connexion entrante" << std::endl;
 		else {
 			// Ajout du nouveau descripteur de fichier au vecteur surveillé par poll()
-			fds.push_back({newSocket, POLLIN});
+	//		fds.push_back({newSocket, POLLIN});
+	// modif pour +98
+			pollfd newDescriptor;
+			newDescriptor.fd = newSocket;
+			newDescriptor.events = POLLIN;
+			fds.push_back(newDescriptor);
+	/////		
 			std::cout << "Nouvelle connexion acceptée" << std::endl;
-			// // Récupération de l'adresse IP du client
-			// struct sockaddr_in clientAddr;
-			// socklen_t clientAddrLen = sizeof(clientAddr);
-			// if (getpeername(newSocket, (struct sockaddr*)&clientAddr, &clientAddrLen) != -1)
-			// {
-			// 	uint32_t clientIP = ntohs(clientAddr.sin_addr.s_addr);
-			// 	std::cout << "Adresse IP du client : ";
-			// 	std::cout << clientIP << std::endl;
-			// }
-			// else
-			// 	std::cerr << "Erreur lors de la récupération de l'adresse IP du client\n";
-		
+
 		 	std::string message001 = ":irc.server.com 001 utilisateur :Bienvenue sur le serveur IRC irc.server.com\r\n";
             send(newSocket, message001.c_str(), message001.length(), 0);
 		}

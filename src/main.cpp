@@ -27,5 +27,5 @@ int main(int ac, char **av)
 		}
 	}
 	else
-		std::cerr <<"okok\n";
+		std::cerr <<"need ./ft_irc <port> <password>\n";
 }
