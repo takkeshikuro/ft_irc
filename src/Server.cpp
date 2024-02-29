@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 01:24:03 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/02/29 20:50:39 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/02/29 21:35:27 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ void    Server::configuration()
 	serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (serverSocket == -1)
 		throw SocketCreationError();
-
  	int en = 1;
 	if(setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) == -1)
 		throw SocketCreationError();
@@ -47,7 +46,6 @@ void    Server::configuration()
 		throw SocketLinkingError();
 	if (listen(serverSocket, MAX_CLIENTS) == -1)
 		throw SocketListeningError();
-
 	NewPoll.fd = serverSocket; //-> add the server socket to the pollfd
 	NewPoll.events = POLLIN; //-> set the event to POLLIN for reading data
 	NewPoll.revents = 0; //-> set the revents to 0
