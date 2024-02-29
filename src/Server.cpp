@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 01:24:03 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/02/29 21:35:27 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/02/29 21:49:45 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,11 +56,6 @@ void	Server::launch_server()
 {	
 	std::cout << GRE << "Server <" << serverSocket << "> Connected" << WHI << std::endl;
  	std::cout << "Waiting to accept a connection...\n";
-	
-	//pollfd fd;
-	//fd.fd = serverSocket;
-	//fd.events = POLLIN;
-	///fds.push_back(fd);
 //
 	while (true)
 	{
