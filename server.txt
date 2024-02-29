@@ -1,0 +1,137 @@
+
+CONFIGURATION
+
+1	struct sockaddr_in serverAddress;
+2	serverAddress.sin_family = AF_INET;
+3	serverAddress.sin_port = htons(6667); // Port IRC standard
+4	serverAddress.sin_addr.s_addr = INADDR_ANY; 
+
+La structure sockaddr_in est utilise pour representer une addr IPv4 et un numero de port.
+
+struct sockaddr_in {
+ sa_family_t     sin_family;
+ in_port_t       sin_port;
+ struct  in_addr sin_addr;
+ char            sin_zero[8];
+};
+
+struct in_addr {
+ in_addr_t s_addr;
+};
+
+-sin_family : 
+Un integer representant la famille d'adresse (ici AF_INET pour ipv4).
+
+-sin_port : 
+Un integer 16 bit qui represente un numero de port.
+on utilise htons() pour convert un unsigned short int de "host byte order" a "network byte order"
+
+-sin_addr : 
+Une structure in_addr qui contient l'addresse IPv4.
+la structure a qu'un seul membre, qui represente l'addr ipv4 "in network byte order".
+INADDR_ANY represente nimporte quel IP, ce qui signifie que le socket sera lié à tous
+interfaces réseau disponibles sur l’hôte.
+
+-sin_zero : 
+Ce champ est rempli pour que la structure ait la même taille que
+struct sockaddr, ce qui est nécessaire pour des raisons de compatibilité.
+Il est généralement inutilisé et rempli de zéros.
+
+/////////////////////////////////////////////////////////////////////
+
+
+
+1	struct pollfd NewPoll;
+
+La structure pollfd est utilise pour gerer les fd pour les event I/O.
+il est utilise pour l'appel systeme poll() et permet au programme d'attendre 
+les events sur plusieurs fd simultanement sans rien bloquer.
+
+struct pollfd {
+ int     fd; //-> file descriptor
+ short   events;//-> requested events
+ short   revents;//-> returned events
+};
+
+-fd :
+le fd a gerer/surveiller
+
+-events :
+Un bitmask qui specifie les event a gerer pour le fd donne.
+les events commun sont read, write, error, et "hang-up".
+ou POLLIN:(any readable data available),
+ou POLLHUP:(file descriptor was “hung up” or closed)….
+
+-revents :
+Un bitmask qui indique les events survenus pour le fd donne.
+Il est generalement renseigne par poll() et indique les events qui ont declenche le poll().
+
+///////////////////////////////////////////////////////////////////
+
+//	create a new socket and return file descriptor
+	serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+	if (serverSocket == -1)
+		throw SocketCreationError();
+
+//////////////////////////////////////////////////////////////////
+
+Mtn quon a le fd file descriptor, la prochaine etape est de le bind() avc l'address.
+mais avant qlq etape de config secondaire mais importante.
+
+
+1 	int en = 1;
+2	if(setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) == -1)
+3		throw(std::runtime_error("faild to set option (SO_REUSEADDR) on socket"));
+
+
+La fonction setsockopt() sert a set des options a une socket.
+pour pouvoir controler le comportement du socket, dans notre cas on utilise pour pour
+set l'option SO_REUSEADDR.
+
+SO_REUSEADDR option, autorise la reutilisation d'une address local et d'un port.
+cest tres utile dans une situation ou un serveur a besoin de se bind() a la meme addrss et port
+qui a ete utilise avant, sans avoir a attendre que le statut default TIME_WAIT expire.
+Avec TCP, quand un serveur arrete de marcher, le port et l'address sont reserve pour une 
+duree nomme TIME_WAIT state (maximum Segment Lifetime).
+jai eut ce pb desfois j'arrivais plus a launch, jspr ca fixe.
+
+Le parametre &en est un pointeur sur la valeur necessaire de set pour l'option
+
+Le sizeof(en) represente la taille de la valeur de l'option en byte.
+Set le en a 1 indique que l'option est active.
+
+//////////////////////////////////////////////////////////////////////////////
+
+mtn on utilise fcntl()
+
+1	if (fcntl(serverSocket, F_SETFL, O_NONBLOCK) == -1) 
+2		throw(std::runtime_error("faild to set option (O_NONBLOCK) on socket"));
+
+La fonction fcntl() effectue diverses opérations de contrôle sur les fd. 
+Dans le code fourni, il est utilisé pour définir le flag O_NONBLOCK 
+sur le fd du socket serveur.
+
+first arg = serverSocket (fd) c'est le fd sur lequel on opere.
+
+F_SETFL = cmd, c;est l'operation a effectuer
+In this case, it's F_SETFL, indique que tu veux set le "file status flags".
+
+Ici on utilise fcntl() pour set le flag O_NONBLOCK sur le fd du socket server,
+ce flag va set le socket en mode non-blocking, ce qui veut dire que les operation
+du genre read(), write() sur le socket seront renvoye direct, meme si il n'y a pas de data
+a read ou que l'operation write ne peut pas etre terminer direct.
+Ca va permettreun mechanisme flexible et efficace pour gerer les operations I/O 
+qui sont pas synchro sans bloquer l'execution du prgm.
+(c;est flou pour moi aussi mais c'est utile)
+
+/////////////////////////////////////////////////////////////////////////////////
+
+prochaine etape c'est de bind() le socket
+
+	if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1)
+	{
+		throw SocketLinkingError();
+	//	close(serverSocket);
+	}
+
+

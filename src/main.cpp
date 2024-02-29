@@ -19,6 +19,8 @@ int main(int ac, char **av)
 		{
 			check_entrance(av);
 			Server Server;
+	//		signal(SIGINT, Server::SignalHandler); //-> catch the signal (ctrl + c)
+  	//		signal(SIGQUIT, Server::SignalHandler); //-> catch the signal (ctrl + \)
 			Server.configuration();
 			Server.launch_server();
 		}

@@ -6,27 +6,53 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 01:24:03 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/02/29 14:41:29 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/02/29 18:55:34 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/Server.hpp"
 
-Server::Server() {}
+bool Server::Signal = false;
+
+Server::Server() : port(6667) {}
 
 Server::~Server() {}
 
+// void Server::SignalHandler(int sig)
+// {
+// 	(void)sig;
+// 	std::cout << std::endl << "Signal Received!" << std::endl;
+// 	Server::Signal = true; //-> set the static boolean to true to stop the server
+// }
+
 void    Server::configuration() 
 {
+	struct pollfd NewPoll;
+
+	// Configuration de l'adresse du serveur
+	serverAddr.sin_family = AF_INET;
+	serverAddr.sin_port = htons(this->port); // Port IRC standard
+	serverAddr.sin_addr.s_addr = INADDR_ANY;
+
+//	socket() create a new socket and return file descriptor
 	serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (serverSocket == -1)
 		throw SocketCreationError();
-	// Configuration de l'adresse du serveur
-	serverAddress.sin_family = AF_INET;
-	serverAddress.sin_addr.s_addr = INADDR_ANY;
-	serverAddress.sin_port = htons(6667); // Port IRC standard
-	// Lier le socket à l'adresse et au port
-	if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1) {
+
+//	set the SO_REUSEADDR option for the socket (to reuse the address).
+ 	int en = 1;
+	if(setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) == -1)
+		throw SocketCreationError();
+		//throw(std::runtime_error("faild to set option (SO_REUSEADDR) on socket"));
+		
+//	set the socket option (O_NONBLOCK) for non-blocking socket
+	if (fcntl(serverSocket, F_SETFL, O_NONBLOCK) == -1) 
+		throw SocketCreationError();
+		//throw(std::runtime_error("faild to set option (O_NONBLOCK) on socket"));
+
+// Lier le socket à l'adresse et au port
+	if (bind(serverSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == -1)
+	{	
 		throw SocketLinkingError();
 		close(serverSocket);
 	}
@@ -34,8 +60,16 @@ void    Server::configuration()
 	if (listen(serverSocket, MAX_CLIENTS) == -1)
 	{
 		throw SocketListeningError();
-		close(serverSocket);
+	//	close(serverSocket);
 	}
+
+	NewPoll.fd = serverSocket; //-> add the server socket to the pollfd
+	NewPoll.events = POLLIN; //-> set the event to POLLIN for reading data
+	NewPoll.revents = 0; //-> set the revents to 0
+	fds.push_back(NewPoll); //-> add the server socket to the pollfd
+
+	std::cout << GRE << "Server <" << SerSocketFd << "> Connected" << WHI << std::endl;
+ 	std::cout << "Waiting to accept a connection...\n";
 }
 
 void	Server::launch_server() 
@@ -47,7 +81,6 @@ void	Server::launch_server()
 	fd.events = POLLIN;
 	fds.push_back(fd);
 //
-
 	while (true)
 	{
 		// Utilisation de poll() pour attendre l'activité sur les descripteurs de fichier
@@ -67,8 +100,11 @@ void	Server::manage_new_connection()
 	// Vérification de l'activité sur le socket du serveur (nouvelle connexion entrante)
 	if (fds[0].revents & POLLIN) 
 	{
+		
+		struct sockaddr addrClient;
+		socklen_t csize = sizeof(addrClient);
 		// Nouvelle connexion entrante
-		int newSocket = accept(serverSocket, NULL, NULL);
+		int newSocket = accept(serverSocket, (struct sockaddr *)&addrClient, &csize);
 		if (newSocket == -1)
 			std::cerr << "Erreur lors de l'acceptation de la connexion entrante" << std::endl;
 		else {
