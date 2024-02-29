@@ -1,5 +1,5 @@
 NAME		= ft_irc
-CXX			= c++
+CXX		= c++
 CPPFLAGS	= -Wall -Wextra -Werror -std=c++98 -c -I includes/
 
 SRCS		= main.cpp Server.cpp User.cpp
@@ -7,8 +7,8 @@ DIR_SRCS	= src/
 DIR_OBJS	= .objs/
 
 OBJS		= ${SRCS:%.cpp=${DIR_OBJS}%.o}
-DEP			= ${OBJS:%.o=%.d}
-RM 			= rm -f
+DEP		= ${OBJS:%.o=%.d}
+RM 		= rm -f
 
 all:	${NAME}
 
