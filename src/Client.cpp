@@ -1,35 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   User.cpp                                           :+:      :+:    :+:   */
+/*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 03:17:35 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/02/29 13:59:54 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/01 06:57:09 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/User.hpp"
+#include "../inc/Client.hpp"
 
-User::User(int socket, std::string &nickname, std::string ip_addr) :
-socket_usr(socket), nickname(nickname), ip_addr(ip_addr) 
-{
-	std::cout << "new user co : " << nickname << std::endl;
+Client::Client() {}
+
+Client::~Client() {
+	std::cout << "Client " << nickname << " is gone\n";
 }
 
-User::~User() {
-	std::cout << "user " << nickname << " is gone\n";
-}
-
-int User::getSocket() const {
+int Client::getSocket() const {
 	return socket_usr;
 }
 
-std::string& User::getNickname() {
+std::string& Client::getNickname() {
 	return nickname;
 }
 
-std::string& User::getIPAddress() {
+std::string& Client::getIPAddress() {
 	return ip_addr;
 }

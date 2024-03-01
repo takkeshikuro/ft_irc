@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 01:24:03 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/02/29 21:49:45 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/01 07:04:33 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,24 +18,24 @@ Server::Server() : port(6667) {}
 
 Server::~Server() {}
 
-// void Server::SignalHandler(int sig)
-// {
-// 	(void)sig;
-// 	std::cout << std::endl << "Signal Received!" << std::endl;
-// 	Server::signal = true; //-> set the static boolean to true to stop the server
-// }
+void Server::SignalHandler(int sig)
+{
+	(void)sig;
+	std::cout << std::endl << "Signal Received!" << std::endl;
+	Server::signal = true; //-> set the static boolean to true to stop the server
+}
 
 void    Server::configuration() 
 {
-	struct pollfd NewPoll;
-
 	serverAddr.sin_family = AF_INET;
 	serverAddr.sin_port = htons(this->port); // Port IRC standard
 	serverAddr.sin_addr.s_addr = INADDR_ANY;
+	
 	serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (serverSocket == -1)
 		throw SocketCreationError();
- 	int en = 1;
+ 	
+	int en = 1;
 	if(setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) == -1)
 		throw SocketCreationError();
 		//throw(std::runtime_error("faild to set option (SO_REUSEADDR) on socket"));
@@ -46,6 +46,7 @@ void    Server::configuration()
 		throw SocketLinkingError();
 	if (listen(serverSocket, MAX_CLIENTS) == -1)
 		throw SocketListeningError();
+	
 	NewPoll.fd = serverSocket; //-> add the server socket to the pollfd
 	NewPoll.events = POLLIN; //-> set the event to POLLIN for reading data
 	NewPoll.revents = 0; //-> set the revents to 0
@@ -56,82 +57,107 @@ void	Server::launch_server()
 {	
 	std::cout << GRE << "Server <" << serverSocket << "> Connected" << WHI << std::endl;
  	std::cout << "Waiting to accept a connection...\n";
-//
-	while (true)
+
+	while (this->signal == false)
 	{
 		// Utilisation de poll() pour attendre l'activité sur les descripteurs de fichier
-		int activity = poll(fds.data(), fds.size(), -1);
-		if (activity < 0) {
-			std::cerr << "Erreur lors de la sélection" << std::endl;
-			continue;
+		if ((poll(&fds[0], fds.size(), -1) == -1) && this->signal == false)
+			std::cerr << "poll() failed";
+		
+		//Nested Loop: Iterates through all fd (fds) to check if there is data to read.
+		for (size_t i = 0; i < fds.size(); i++) //-> check all file descriptors
+		{
+			if (fds[i].revents & POLLIN)//-> check if there is data to read
+			{
+				if (fds[i].fd == serverSocket)
+					manage_new_client();
+				else
+					manage_new_data(fds[i].fd);
+			}
 		}
-		manage_new_connection();
-		manage_client_data();
 	}
 	close(serverSocket);
 }
 
-void	Server::manage_new_connection() 
+void	Server::manage_new_client() 
 {
-	// Vérification de l'activité sur le socket du serveur (nouvelle connexion entrante)
-	if (fds[0].revents & POLLIN) 
-	{
-		
-		struct sockaddr addrClient;
-		socklen_t csize = sizeof(addrClient);
-		// Nouvelle connexion entrante
-		int newSocket = accept(serverSocket, (struct sockaddr *)&addrClient, &csize);
-		if (newSocket == -1)
-			std::cerr << "Erreur lors de l'acceptation de la connexion entrante" << std::endl;
-		else {
-			// Ajout du nouveau descripteur de fichier au vecteur surveillé par poll()
-	//		fds.push_back({newSocket, POLLIN});
-	// modif pour +98
-			pollfd newDescriptor;
-			newDescriptor.fd = newSocket;
-			newDescriptor.events = POLLIN;
-			fds.push_back(newDescriptor);
-	/////		
-			std::cout << "Nouvelle connexion acceptée" << std::endl;
+	Client			new_client;
+	struct sockaddr_in	ClientAddr;
+	struct pollfd	NewPoll;
+	socklen_t		len = sizeof(ClientAddr);
+	
+	int incoming_fd = accept(serverSocket, (sockaddr *)&(ClientAddr), &len);
+	if (incoming_fd == -1)
+		std::cerr << "Erreur lors de l'acceptation de la connexion entrante" << std::endl;
+	
+	if (fcntl(incoming_fd, F_SETFL, O_NONBLOCK) == -1) //set the socket option (O_NONBLOCK) for non-blocking socket
+		throw SocketLinkingError(); // a modif "fcntl() failed"
+	
+	NewPoll.fd = incoming_fd;//-> add the client socket to the pollfd
+	NewPoll.events = POLLIN; // set the event to POLLIN for reading data
+	NewPoll.revents = 0;
+	
+	new_client.set_client_fd(incoming_fd); //-> set the client file descriptor
+	new_client.set_IpAdd(inet_ntoa((ClientAddr.sin_addr))); //-> convert the ip address to string and set it
+	
+	client_vec.push_back(new_client); //-> add the client to the vector of clients
+	fds.push_back(NewPoll); //-> add the client socket to the pollfd
+	
+	std::cout << GRE << "Client <" << incoming_fd << "> Connected" << WHI << std::endl;
+	std::cout << "Nouvelle connexion acceptée" << std::endl;
 
-		 	std::string message001 = ":irc.server.com 001 utilisateur :Bienvenue sur le serveur IRC irc.server.com\r\n";
-            send(newSocket, message001.c_str(), message001.length(), 0);
-		}
+	std::string message001 = ":irc.server.com 001 utilisateur :Bienvenue sur le serveur IRC irc.server.com\r\n";
+	send(incoming_fd, message001.c_str(), message001.length(), 0);
+}
+
+void	Server::manage_new_data(int fd) 
+{
+	memset(buffer, 0, sizeof(buffer)); //-> clear the buffer
+	ssize_t bytes = recv(fd, buffer, sizeof(buffer) - 1 , 0); //-> receive the data
+
+	if(bytes <= 0)//-> check if the client disconnected
+	{ 
+		std::cout << RED << "Client <" << fd << "> Disconnected" << WHI << std::endl;
+		clear_clients(fd);
+		close(fd); //-> close the client socket
+	}
+	else//-> print the received data
+	{ 
+		buffer[bytes] = '\0';
+		std::cout << YEL << "Client <" << fd << "> Data: " << WHI << buffer;
+		// received data: parse, check, authenticate, handle the command
 	}
 }
 
-void	Server::manage_client_data() 
+void Server::clear_clients(int fd)
 {
-// Parcours des descripteurs de fichier surveillés pour traiter les données reçues des clients connectés
-	for (size_t i = 1; i < fds.size(); ++i)
-	{
-		if (fds[i].revents & POLLIN) 
+	for(size_t i = 0; i < fds.size(); i++)// rm the client from the pollfd
+	{ 
+		if (fds[i].fd == fd) 
 		{
-			int valread = read(fds[i].fd, buffer, BUFFER_SIZE);
-			if (valread <= 0) {
-				// Déconnexion du client
-				std::cout << "Client déconnecté" << std::endl;
-				close(fds[i].fd);
-				fds.erase(fds.begin() + i);
-				--i;
-			} 
-			else 
-			{
-				// Traiter les données reçues
-				buffer[valread] = '\0'; // Assurer la terminaison de la chaîne
-				std::cout << "Message du client : " << buffer << std::endl;
-				
-				if (strncmp(buffer, "NICK", 4) == 0) {
-                    // Extraire le pseudo du message
-                    std::string nick = buffer + 5; // Supposer que le message est de la forme "NICK <pseudo>\r\n"
-
-                    // Envoyer une confirmation au client si nécessaire
-                    std::string confirmation = "NICK " + nick + " défini avec succès\r\n";
-                    send(fds[i].fd, confirmation.c_str(), confirmation.length(), 0);
-				}
-				else
-					send(fds[i].fd, buffer, strlen(buffer), 0);
-			}
+			fds.erase(fds.begin() + i); 
+			break;
 		}
 	}
+	for(size_t i = 0; i < client_vec.size(); i++)// rm the client from the vector 
+	{ 
+		if (client_vec[i].get_client_fd() == fd)
+		{
+			client_vec.erase(client_vec.begin() + i);
+			break;
+		}
+ 	}
+}
+
+void Server::close_fds()
+{
+	for(size_t i = 0; i < client_vec.size(); i++) { // close all the clients into vector
+		std::cout << RED << "Client <" << client_vec[i].get_client_fd() << "> Disconnected" << WHI << std::endl;
+		close(client_vec[i].get_client_fd());
+	}
+	if (serverSocket != -1)// close the server socket
+	{ 
+		std::cout << RED << "Server <" << serverSocket << "> Disconnected" << WHI << std::endl;
+		close(serverSocket);
+ 	}
 }

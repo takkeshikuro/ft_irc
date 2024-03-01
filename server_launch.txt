@@ -1,0 +1,176 @@
+INTO SERVER_LAUNCH()
+
+1    while (this->signal == false) : 
+
+C'est une boucle qui run jusqu'a ce que la var signal de la class server 
+est set a true grace au signal_handler();
+
+/////////////////////////////////////////////////////////////////////////
+
+POLL()
+
+1    if ((poll(&fds[0],fds.size(),-1) == -1) && Server::Signal == false)
+
+Utilisation de poll() pour attendre les events sur different fd dans fds.
+le parameter -1 timeout indique que poll() va bloquer jusqua ce qu'un event 
+survient ou jusqu'a la modif de signal a true.
+
+
+|int poll(struct pollfd *fds, nfds_t nfds, int timeout);| --> poll() function
+
+-fds : un tableau de structure pollfd, chacun represente un fd a surveiller.
+-nfds : le nombre d'element dans le tableau de fds.
+-timeout : le temp max a attendre qu'un event apparaisse en millisecond.
+timeout a -1 = attente indefinie.
+timeout a 0 = return direct.
+timeout > 0 = periode d'attente specifique.
+
+La fonction poll() est un appel système utilisé pour surveiller plusieurs 
+fd afin de déterminer si les I/O sont réalisables sur l'un d'entre eux. 
+Il permet à un programme d'attendre des événements sur 
+plusieurs fd au lieu de bloquer un seul descripteur à la fois.
+
+La fonction poll() est utilisée pour surveiller les changements dans l'état 
+des fd. Il se bloque jusqu'à ce qu'un événement se produise sur un ou 
+plusieurs fd surveillés, ou jusqu'à ce que le délai d'attente spécifié expire.
+
+Lorsqu'un événement se produit (par exemple, des données deviennent 
+disponibles en lecture, une connexion est établie ou un socket devient prêt 
+à écrire) sur un ou plusieurs fd surveillés, le système d'exploitation 
+informe la fonction poll().
+
+Si un événement se produit sur un ou plusieurs descripteurs de fichiers, 
+poll() renvoie le nombre de descripteurs de fichiers pour lesquels des 
+événements se sont produits. (ou le numero du fd jsp a voir)
+Si aucun événement ne s'est produit avant l'expiration du délai d'attente, 
+poll() renvoie 0 . Cependant, si une erreur se produit, poll()renvoie -1 
+et l'erreur spécifique est indiquée par la valeur errno.
+
+poll() est conçu pour gérer efficacement plusieurs fd en utilisant des 
+structures de données et des algorithmes efficaces. 
+Il bloque le processus appelant jusqu'à ce qu'un événement se produise, 
+évitant ainsi le besoin d'une attente ou d'une interrogation occupée et 
+minimisant l'utilisation du processeur.
+
+//////////////////////////////////////////////////////////////////////////////
+
+1   if (fds[i].revents & POLLIN)
+
+Check si l'event POLLIN est set, cela indique quil ya de la data a read
+dans le descripteur de fichiers.
+
+/////////////////////////////////////////////////////////////////////////////
+
+1   if (fds[i].fd == serverSocket)
+2		manage_new_client();
+3	else
+4		manage_new_data(fds[i].fd); 
+
+Quand la premiere condition est respectee, cela veut dire qu'un event est survenue
+sur le socket du server (serverSocket). 
+Ce type d'event indique qu'un nouveau client tente de se connecter au serveur.
+le socket serveur est responsable de la reception de connexion entrante.
+
+Sinon on appelle manage_new_data() pour recevoir de la data d'un client deja
+enregistre.
+
+////////////////////////////////////////////////////////////////////////////
+
+MANAGE_NEW_CLIENT();
+
+This function handles client registration on the server.
+
+When an event occurs on the server socket (indicating an incoming 
+connection request), the server application calls the accept() function to 
+accept the connection.
+The accept() function blocks until a connection request is received, at which 
+point it returns a new file descriptor representing the connection with the client.
+
+Before calling accept(), we need to declare the struct sockaddr_in and the struct
+pollfd to store client informations.
+
+1   Client			new_client;
+2	struct sockaddr	ClientAddr;
+3	struct pollfd	NewPoll;
+4	socklen_t		len = sizeof(ClientAddr);
+
+proto accept() :
+    |int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);|
+
+ici :
+1   int incoming_fd = accept(serverSocket, (sockaddr *)&(ClientAddr), &len);
+
+sockfd: The file descriptor of the server socket that is listening for incoming 
+connections.
+
+addr: A pointer to a struct sockaddr structure where the address of the 
+connecting client will be stored. This allows the server to identify the IP 
+address and port number of the client that initiated the connection.
+
+addrlen: A pointer to a socklen_t variable that specifies the size of the addr 
+structure. Upon return, it will be updated with the actual size of the address
+stored in addr.
+
+If accept() succeeds, it returns a new file descriptor representing the client 
+socket. This file descriptor is used for communication with the client.
+
+Although the client socket and server socket are two separate entities, they can 
+share some properties and settings based on the operating system and network 
+configuration. For example, the configuration of the server socket can influence 
+the client socket's local address, port, and protocol settings. 
+It is recommended to ensure that the new socket is also in non-blocking mode by 
+making the fcntl() call with the same argument as the previous call made during 
+the creation of the server socket.
+
+I believe that the remaining code is easy to understand. 
+Firstly, we fill the pollfd struct with the client's information, and then we 
+set the client's IP address and port. 
+After that, we add the new client(cli) and the new fds(NewPoll) to the server 
+class, and print that the client is connected.
+
+//////////////////////////////////////////////////////////////////////////////
+
+MANAGE_NEW_DATA();
+
+ If an event occurs in a different file descriptor than the server's, we will 
+immediately know that a client has sent data that needs to be processed.
+
+To receive data from a client socket, we start by declaring a character array 
+called buff to store the received data. We then initialize the buffer to all 
+zeros using the memset() function to ensure any previous data is cleared.
+
+Next, we call the function recv() to receive the data from the client socket 
+specified by the file descriptor. Data is read into the array, with a maximum 
+of a certain number of bytes to leave space for a null terminator. The number of 
+bytes received is stored in the variable bytes.
+
+We check if the function returned a non-positive value, indicating that the 
+client has disconnected or an error occurred during data reception.
+If the client disconnects, we print a message indicating the disconnection.
+We then call a function to clear any associated client data or resources.
+Finally, we close the client socket using the close() function.
+
+If data was successfully received from the client, we null-terminate the data 
+in the buffer to ensure it can be treated as a C-style string. We then print 
+the received data along with the client’s file descriptor.
+
+Let's perform a demonstration of the recv() system call.
+
+    |ssize_t recv(int sockfd, void *buf, size_t len, int flags);|
+
+The recv() function is used in socket programming to receive data from a 
+connected socket. It's commonly used in TCP (Transmission Control Protocol) 
+socket communication to read data sent by the remote peer.
+
+sockfd: The file descriptor of the socket from which to receive data.
+
+buf: A pointer to the buffer where the received data will be stored.
+
+len: The maximum number of bytes to receive and store in the buffer.
+
+flags: Optional flags to control the behavior of the recv() function 
+(e.g., specifying additional receive options): In recv(), the flags parameter 
+provides additional receive options for explicit control over the operation. 
+Available flags are MSG_WAITALL, MSG_DONTWAIT, MSG_PEEK, and MSG_TRUNC. 
+By selecting the right flags, you can tailor the receive operation to your needs,
+making it more efficient and versatile.
