@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 01:54:21 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/02/28 02:04:31 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/01 09:00:23 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,19 +17,19 @@
 
 class SocketCreationError : public std::exception {
 	virtual const char *what() const throw() {
-		return "Error during socket creation.";
+		return "(socket()) Error during socket creation.";
 	}
 };
 
 class SocketLinkingError : public std::exception {
 	virtual const char *what() const throw() {
-		return "Error during linking socket and address.";
+		return "(bind()) Error during linking socket and address.";
 	}
 };
 
 class SocketListeningError : public std::exception {
 	virtual const char *what() const throw() {
-		return "Error during socket listening.";
+		return "(listen()) Error during socket listening.";
 	}
 };
 
@@ -45,5 +45,22 @@ class WrongPasswordError : public std::exception {
 	}
 };
 
+class SetOptionSO_REUSEADDRError : public std::exception {
+	virtual const char *what() const throw() {
+		return "Failed to set option (SO_REUSEADDR) on socket.";
+	}
+};
+
+class SetOptionO_NONBLOCKError : public std::exception {
+	virtual const char *what() const throw() {
+		return "(fcntl()) Failed to set option (O_NONBLOCK) on socket.";
+	}
+};
+
+class PollUsageError : public std::exception {
+	virtual const char *what() const throw() {
+		return "poll() function failed.";
+	}
+};
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 03:17:35 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/01 06:57:09 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/01 08:33:19 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 Client::Client() {}
 
 Client::~Client() {
-	std::cout << "Client " << nickname << " is gone\n";
+	//std::cout << "Client " << nickname << " is gone\n";
 }
 
 int Client::getSocket() const {
