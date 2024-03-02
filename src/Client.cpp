@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 03:17:35 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/02 10:05:15 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/02 10:16:24 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void	Client::client_starting_point()
 	std::string message001 = "!Bienvenue sur le serveur IRC irc.server.com!\r\n";
 	send(client_fd, message001.c_str(), message001.length(), 0);
 	
-	std::string needpw = "Please write the server password : ";
+	std::string needpw = "\nPassword required for authentication : ";
 	send(client_fd, needpw.c_str(), needpw.length(), 0);
 	
 	while (1) 
@@ -47,13 +47,12 @@ void	Client::client_starting_point()
 		{
 			buffer[bytes_lus] = '\0';
 			std::string client_pw(buffer);
-			std::cout << "Mot de passe saisi par l'user : " << client_pw <<std::endl;
-			
 			if (!client_pw.empty() && client_pw[client_pw.length() - 1] == '\n')
 			{
 				client_pw[client_pw.length() - 1] = '\0';
 				client_pw.resize(client_pw.length() - 1);
 			}
+			std::cout << "[password given by user : " << client_pw << "]\n";
 			if (check_password(client_pw) == true)
 			{
 				std::string auth_ok = "Authentification ok.\n";
@@ -62,17 +61,19 @@ void	Client::client_starting_point()
 			}
 			else
 			{
+				std::cout << "[user authentification failed]\n";
 				std::string auth_ko = "Authentification failed, pls try again.\n";
 				send(client_fd, auth_ko.c_str(), auth_ko.length(), 0);
+				std::string needpw = "\nPassword required for authentication : ";
+				send(client_fd, needpw.c_str(), needpw.length(), 0);
 			}			
 		}
 		else if (bytes_lus == 0) {
 			std::cerr << "Connexion fermée par le client" << std::endl;
 			break ;
 		}
-			
-	//	else
 	}
+	// set nick name etc
 	std::cout << "starting point over\n";
 }
 
