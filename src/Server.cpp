@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 01:24:03 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/01 09:01:32 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/02 08:53:38 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,9 @@
 
 bool Server::signal = false;
 
-Server::Server() : port(6667) {}
+Server::Server() : port(6667), password("default") {}
+
+Server::Server(std::string passwd) : port(6667), password(passwd) {}
 
 Server::~Server() {}
 
@@ -78,7 +80,7 @@ void	Server::launch_server()
 
 void	Server::manage_new_client() 
 {
-	Client			new_client;
+	Client			new_client(password);
 	struct sockaddr_in	ClientAddr;
 	struct pollfd	NewPoll;
 	socklen_t		len = sizeof(ClientAddr);
@@ -99,10 +101,8 @@ void	Server::manage_new_client()
 	
 	client_vec.push_back(new_client); //-> add the client to the vector of clients
 	fds.push_back(NewPoll); //-> add the client socket to the pollfd
-	
 	std::cout << GRE << "\nNouvelle connexion acceptée\n" << "+Client <" << incoming_fd << "> Connected" << WHI << std::endl;
-	std::string message001 = "!Bienvenue sur le serveur IRC irc.server.com!\r\n";
-	send(incoming_fd, message001.c_str(), message001.length(), 0);
+	new_client.client_starting_point();
 }
 
 void	Server::manage_new_data(int fd) 

@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 01:19:18 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/01 07:02:17 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/02 08:12:32 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ class Client;
 class Server {
 	public :
 		Server();
+		Server(std::string passwd);
 		~Server();
 
 		void	configuration();
@@ -37,6 +38,7 @@ class Server {
 		struct pollfd NewPoll;
 		int serverSocket;
 		int port;
+		std::string password;
 		static bool signal;
 		std::vector<Client> client_vec; //-> vector of clients/users
 		std::vector<struct pollfd> fds; //-> vector of pollfd		
