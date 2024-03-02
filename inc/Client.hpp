@@ -25,8 +25,10 @@ class Client {
  		void set_IpAdd(std::string ipadd);//-> setter for ipadd
 		void	client_starting_point();
 		bool	check_password(std::string pw_to_check);
-
+		void	starting_point_data_set();
+		
 		int getSocket() const;
+		std::string& getUsername();
 		std::string& getNickname();
 		std::string& getIPAddress();
 
@@ -38,8 +40,13 @@ class Client {
 
 	//	struct sockaddr_in cliadd;
  	//	struct pollfd NewPoll;
+		std::string username;
 		std::string nickname;
 		std::string ip_addr;
+		std::string green;
+		std::string white;
+		std::string red;
+		std::string yellow;
 		
 };
 
