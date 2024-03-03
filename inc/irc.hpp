@@ -11,11 +11,24 @@
 #include <poll.h> //-> for poll()
 #include <csignal> //-> for signal()
 #include <cstring>
+#include <string>
+#include <sstream>
 
 #define RED "\e[1;31m" //-> for red color
 #define WHI "\e[0;37m" //-> for white color
 #define GRE "\e[1;32m" //-> for green color
 #define YEL "\e[1;33m" //-> for yellow color
+#define PUR	"\e[1;35m"
+
+//couleurs pas en gras
+#define BLACK	"\e[0;30m"
+#define GREEN	"\e[0;32m"
+#define YELLOW	"\e[0;33m"
+#define BLUE	"\e[0;34m"
+#define PURPLE	"\e[0;35m"
+#define CYAN	"\e[0;36m"
+#define WHITE	"\e[0;37m"
+#define RESET  "\e[0m"
 
 const int MAX_CLIENTS = 10;
 const int BUFFER_SIZE = 1024;

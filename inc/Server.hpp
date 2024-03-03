@@ -33,6 +33,9 @@ class Server {
 		void close_fds(); // close file descriptors
  		void clear_clients(int fd); // clear clients
 
+        int is_command(char *buffer, Client c_client); //parsing command
+        void    PRIVMSG(std::string buffer, Client c_client);
+
 	private :
 		struct sockaddr_in serverAddr;
 		struct pollfd NewPoll;

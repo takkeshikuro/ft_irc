@@ -105,6 +105,55 @@ void	Server::manage_new_client()
 	client_vec.back().client_starting_point();
 }
 
+void    Server::PRIVMSG(std::string buffer, Client c_client)
+{
+    std::string dest_name;
+    std::string msg;
+    std::stringstream sbuf(buffer);
+    Client  dest_cl;
+    std::string cmd;
+    std::getline(sbuf, cmd, ' ');
+
+    while (std::getline(sbuf, dest_name, ' ')) //get the dest client
+    {
+        if (!dest_name.empty())
+            break ;
+    }
+    while (std::getline(sbuf, msg, '\n')) //get the msg to send
+    {
+        if (!msg.empty())
+            break ;
+    }
+    for (size_t i = 0; i < client_vec.size(); i++)
+    {
+        if (client_vec[i].getNickname() == dest_name) //get the dest_client in vec_client
+        {
+            dest_cl = client_vec[i];
+            std::string to_send = "\e[1;35m[PRIVMSG] " + c_client.getNickname() + ": \e[0;37m" + msg + "\n";
+            send(dest_cl.get_client_fd(), to_send.c_str(), to_send.size(),0);
+            return ;
+        }
+    }
+
+    std::string invalid_dest = "Error: no user nicknamed " + dest_name + "\n";
+    send(c_client.get_client_fd(), invalid_dest.c_str(),invalid_dest.size(), 0);
+}
+
+int Server::is_command(char *buffer, Client c_client)
+{
+    std::string buf = buffer;
+    std::string cmd;
+    std::stringstream   sbuf(buf);
+
+    std::getline(sbuf, cmd, ' ');
+    if (cmd == "PRIVMSG")
+    {
+        PRIVMSG(buf, c_client);
+        return 1;
+    }
+    return 0;
+}
+
 void	Server::manage_new_data(int fd) 
 {
 	memset(buffer, 0, sizeof(buffer)); //-> clear the buffer
@@ -127,7 +176,9 @@ void	Server::manage_new_data(int fd)
 	else//-> print the received data
 	{ 
 		buffer[bytes] = '\0';
-		std::cout << YEL << current_client.getUsername() << ": " << WHI << buffer;
+        if (is_command(buffer, current_client))
+            return ;
+		std::cout << YEL << current_client.getNickname() << ": " << WHI << buffer;
 		// received data: parse, check, authenticate, handle the command
 	}
 }
