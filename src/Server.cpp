@@ -102,24 +102,32 @@ void	Server::manage_new_client()
 	client_vec.push_back(new_client); //-> add the client to the vector of clients
 	fds.push_back(NewPoll); //-> add the client socket to the pollfd
 	std::cout << GRE << "\nNouvelle connexion acceptée\n" << "+Client <" << incoming_fd << "> Connected" << WHI << std::endl;
-	new_client.client_starting_point();
+	client_vec.back().client_starting_point();
 }
 
 void	Server::manage_new_data(int fd) 
 {
 	memset(buffer, 0, sizeof(buffer)); //-> clear the buffer
 	ssize_t bytes = recv(fd, buffer, sizeof(buffer) - 1 , 0); //-> receive the data
+	unsigned long int i = 0;
 
+	while (i < this->client_vec.size())
+	{
+		if (client_vec[i].get_client_fd() == fd)
+			break ;
+		i++;
+	}
+	Client current_client = client_vec[i];
 	if(bytes <= 0)//-> check if the client disconnected
 	{ 
-		std::cout << RED << "Client <" << fd << "> Disconnected" << WHI << std::endl;
+		std::cout << RED << "User <" << current_client.getUsername() << "> Disconnected" << WHI << std::endl;
 		clear_clients(fd);
 		close(fd); //-> close the client socket
 	}
 	else//-> print the received data
 	{ 
 		buffer[bytes] = '\0';
-		std::cout << YEL << "Client <" << fd << "> Data/MSG: " << WHI << buffer;
+		std::cout << YEL << current_client.getUsername() << ": " << WHI << buffer;
 		// received data: parse, check, authenticate, handle the command
 	}
 }
