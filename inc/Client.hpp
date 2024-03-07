@@ -33,6 +33,8 @@ class Client {
 		std::string& getNickname();
 		std::string& getIPAddress();
 
+        void    setNickname(std::string new_nick);
+
 	private : 
 		std::string password;
 		int socket_usr;

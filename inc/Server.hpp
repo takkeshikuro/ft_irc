@@ -44,6 +44,7 @@ class Server {
 		void	JOIN(std::string buffer, Client c_client);
 		void	QUIT(std::string buffer, Client c_client);
 		void	LIST_CH(std::string buffer, Client c_client);
+        void    NICK(std::string buffer, Client c_client);
 
 	private :
 		struct sockaddr_in serverAddr;

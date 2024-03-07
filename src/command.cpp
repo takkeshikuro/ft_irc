@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   command.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
+/*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:41:42 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/07 04:24:34 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/07 12:11:21 by marecarraya      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,30 +17,35 @@ int Server::is_command(char *buffer, Client c_client)
 {
 	std::string buf = buffer;
 	std::string cmd;
-	
 	//command with arg
 	std::stringstream   sbuf(buf);
 	std::getline(sbuf, cmd, ' ');
-	if (cmd == "PRIVMSG")
+	std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::toupper);
+	
+	if (cmd == "/PRIVMSG")
 	{
 		PRIVMSG(buf, c_client);
 		return 1;
 	}
-	else if (cmd == "WHOIS")
+	else if (cmd == "/WHOIS")
 	{
 		WHOIS(buf, c_client);
 		return 1;
 	}
-	else if (cmd == "CREATE")
+	else if (cmd == "/CREATE")
 	{
 		CREATE(buf, c_client);
 		return 1;
 	}
-
+	else if (cmd == "/NICK")
+	{
+		NICK(buf, c_client);
+		return 1;
+	}
 	//command without arg
 	std::stringstream   okbuf(buf);
 	std::getline(okbuf, cmd, '\n');
-	if (cmd == "LIST_CH")
+	if (cmd == "/LIST_CH")
 	{
 		LIST_CH(buf, c_client);
 		return 1;
@@ -96,7 +101,7 @@ void    Server::REMOVE(std::string buffer, Client c_client)
 void    Server::CREATE(std::string buffer, Client c_client)
 {
 	//check arg()
-    std::string channel_name;
+	std::string channel_name;
 	std::stringstream sbuf(buffer);
 	std::string cmd;
 	std::getline(sbuf, cmd, ' ');
@@ -120,6 +125,39 @@ void    Server::CREATE(std::string buffer, Client c_client)
 	std::string creation_ok = "New channel " + channel_name + "created.\n";
 	send(c_client.get_client_fd(), creation_ok.c_str(), creation_ok.size(),0);
 	std::cout << "creation new chan over\n";
+}
+
+void    Server::NICK(std::string buffer, Client c_client)
+{
+	std::stringstream	sbuf(buffer);
+	std::string			new_nick;
+	std::string			cmd;
+	std::getline(sbuf, cmd, ' ');
+	
+	while (std::getline(sbuf, new_nick, '\n')) //get the msg to send
+	{
+		if (!new_nick.empty())
+			break ;
+	}
+	for (size_t i = 0; i < new_nick.size(); i++)
+	{
+		if (new_nick[i] == ' ')
+		{
+			std::string error = "Error: nickname can't contain spaces.\n";
+			send(c_client.get_client_fd(), error.c_str(), error.size(), 0);
+			return ;
+		}	
+	}
+	size_t	i;
+	for (i = 0; i < this->client_vec.size(); i++)
+	{
+		if (client_vec[i].getUsername() == c_client.getUsername())
+			break ;
+	}
+	client_vec[i].setNickname(new_nick);
+	std::string	success = "\e[1;32mYour nickname has been changed to " + new_nick + ".\n\e[0m";
+	send(c_client.get_client_fd(), success.c_str(), success.size(), 0);
+	return ;
 }
 
 void    Server::PRIVMSG(std::string buffer, Client c_client)
@@ -174,9 +212,9 @@ void    Server::WHOIS(std::string buffer, Client c_client)
 		if (client_vec[i].getNickname() == target_name)
 		{
 			target_cl = client_vec[i];
-		    std::stringstream ss;
-    		ss << target_cl.get_client_fd();
-    		std::string fd = ss.str();
+			std::stringstream ss;
+			ss << target_cl.get_client_fd();
+			std::string fd = ss.str();
 			std::string answer = "User " + target_name + " is :\n-username = " + target_cl.getUsername() \
 			+ "\n-nickname = " + target_cl.getNickname() + "\n-user number = " + fd + "\n";
 			send(c_client.get_client_fd(), answer.c_str(), answer.size(),0);

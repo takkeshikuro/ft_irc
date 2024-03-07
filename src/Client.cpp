@@ -165,3 +165,7 @@ std::string& Client::getNickname() {
 std::string& Client::getIPAddress() {
 	return ip_addr;
 }
+
+void    Client::setNickname(std::string new_nick){
+    nickname = new_nick;
+}
