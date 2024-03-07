@@ -6,7 +6,7 @@
 /*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:41:42 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/07 12:11:21 by marecarraya      ###   ########.fr       */
+/*   Updated: 2024/03/08 00:05:48 by marecarraya      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,11 @@ int Server::is_command(char *buffer, Client c_client)
 		NICK(buf, c_client);
 		return 1;
 	}
+	else if (cmd == "/JOIN")
+	{
+		JOIN(buf, c_client);
+		return 1;
+	}
 	//command without arg
 	std::stringstream   okbuf(buf);
 	std::getline(okbuf, cmd, '\n');
@@ -50,17 +55,13 @@ int Server::is_command(char *buffer, Client c_client)
 		LIST_CH(buf, c_client);
 		return 1;
 	}
-	// else if (cmd == "REMOVE")
+	// else if (cmd == "/REMOVE")
 	// {
 	// 	REMOVE(buf, c_client);
 	// 	return 1;
 	// }
-	// else if (cmd == "JOIN")
-	// {
-	// 	JOIN(buf, c_client);
-	// 	return 1;
-	// }
-	// else if (cmd == "QUIT")
+
+	// else if (cmd == "/QUIT")
 	// {
 	// 	QUIT(buf, c_client);
 	// 	return 1;
@@ -78,16 +79,46 @@ void    Server::LIST_CH(std::string buffer, Client c_client)
 	{
 		std::string ch_line = "-#" + channel_vec[i].get_name() + "\n";
 		send(c_client.get_client_fd(), ch_line.c_str(), ch_line.size(), 0);
+		for (size_t j = 0; j < channel_vec[i].client_list.size(); j++)
+		{
+			std::string members = "   - " + channel_vec[i].client_list[j]->getNickname() + "\n";
+			send(c_client.get_client_fd(), members.c_str(), members.size(), 0);
+		}
 	}
 	std::string bottom = "=============================================\n";
 	send(c_client.get_client_fd(), bottom.c_str(), bottom.size(), 0);
 }
 
-
 void    Server::JOIN(std::string buffer, Client c_client)
 {
-	(void)buffer;
-	(void)c_client;
+	std::string channel_name;
+	std::stringstream sbuf(buffer);
+	std::string cmd;
+	std::getline(sbuf, cmd, ' ');
+	int			exist = 0;
+	size_t		i;
+	size_t		j;
+	while (std::getline(sbuf, channel_name, '\n'))
+	{
+		if (!channel_name.empty())
+			break ;
+	}
+	for (i = 0; i < channel_vec.size(); i++)
+	{
+		if (channel_vec[i].get_name() == channel_name)
+		{
+			exist = 1;
+			break ;
+		}
+	}
+	if (!exist)
+		CREATE(buffer, c_client);
+	for (j = 0; j < client_vec.size(); j++)
+	{
+		if (client_vec[j].getNickname() == c_client.getNickname())
+			break ;
+	}		
+	channel_vec[i].add_user(&client_vec[j]);
 }
 void    Server::QUIT(std::string buffer, Client c_client)
 {	(void)buffer;

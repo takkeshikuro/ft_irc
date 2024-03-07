@@ -6,7 +6,7 @@
 /*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:45:49 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/07 11:56:58 by marecarraya      ###   ########.fr       */
+/*   Updated: 2024/03/07 23:43:01 by marecarraya      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,16 +30,18 @@ class Channel {
 		std::string &get_description();
 		void	set_description(std::string &s);
 
+        void    add_user(Client *to_add);
+        void    get_clients(void);
+		std::vector<Client *> client_list;
+
 	private :
 		std::string channel_name;
 	//	std::string topic_name;
-		std::list<Client> client_list;
 		int creator_fd;
 		std::string description;
 
 		std::string channel_pw;
 		int			user_max;
-
 
 
 

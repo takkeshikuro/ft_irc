@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
+/*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 02:23:18 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/07 04:26:10 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/08 00:08:15 by marecarraya      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,10 +71,28 @@ void	Channel::set_description(std::string &s) {
 	this->description = s;
 }
 
+void    Channel::get_clients()
+{
+    std::cout << YEL << "Users in channel " << this->get_name() << "\n";
+    for (size_t i = 0; i < client_list.size(); i++)
+    {
+        std::cout << YELLOW << client_list[i]->getNickname() << "\n";
+    }
+    return ;
+}
+
 void	Channel::rm_backslash_n(std::string &s) // mettre dans utils
 {
 	if (!s.empty() && s[s.length() - 1] == '\n') {
 		s[s.length() - 1] = '\0';
 		s.resize(s.length() - 1);
 	}	
+}
+
+void    Channel::add_user(Client *to_add)
+{
+    client_list.push_back(to_add);
+    std::cout << YEL << to_add->getNickname() << GRE 
+    << " has been added to channel #" << this->get_name() << "\n" << RESET; 
+    return ;
 }
