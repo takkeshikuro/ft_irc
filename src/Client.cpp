@@ -51,7 +51,7 @@ void	Client::starting_point_data_set()
 	while (1) 
 	{
 		char buffer[1024];
-    	int bytes_lus = read(client_fd, buffer, sizeof(buffer));
+		int bytes_lus = read(client_fd, buffer, sizeof(buffer));
 		if (bytes_lus > 0) {
 			buffer[bytes_lus] = '\0';
 			std::string client_username(buffer);
@@ -71,12 +71,12 @@ void	Client::starting_point_data_set()
 			break ;
 		}
 	}
-	std::string new_nick = "\nNew nickname :";
+	std::string new_nick = "\nNew nickname : ";
 	send(client_fd, new_nick.c_str(), new_nick.length(), 0);
 	while (1)
 	{
 		char buffer[1024];
-    	int bytes_lus = read(client_fd, buffer, sizeof(buffer));
+		int bytes_lus = read(client_fd, buffer, sizeof(buffer));
 		if (bytes_lus > 0) {
 			buffer[bytes_lus] = '\0';
 			std::string client_nickname(buffer);
@@ -110,7 +110,7 @@ void	Client::client_starting_point()
 	while (1) 
 	{
 		char buffer[1024];
-    	int bytes_lus = read(client_fd, buffer, sizeof(buffer));
+		int bytes_lus = read(client_fd, buffer, sizeof(buffer));
 		if (bytes_lus > 0) 
 		{
 			buffer[bytes_lus] = '\0';
