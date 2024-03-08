@@ -24,6 +24,7 @@ class Client {
 		int		get_client_fd();
  		void	set_client_fd(int fd);
  		void	set_IpAdd(std::string ipadd);
+        void    set_current_channel(std::string);
 		void	client_starting_point();
 		bool	check_password(std::string pw_to_check);
 		void	starting_point_data_set();
@@ -32,8 +33,10 @@ class Client {
 		std::string& getUsername();
 		std::string& getNickname();
 		std::string& getIPAddress();
-
+        std::string get_current_chan(void) const;
         void    setNickname(std::string new_nick);
+
+        bool in_channel;
 
 	private : 
 		std::string password;
@@ -49,6 +52,7 @@ class Client {
 		std::string white;
 		std::string red;
 		std::string yellow;
+        std::string current_channel;
 		
 };
 

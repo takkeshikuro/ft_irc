@@ -12,10 +12,10 @@
 
 #include "../inc/Client.hpp"
 
-Client::Client() {}
+Client::Client() : in_channel(0) {}
 
 
-Client::Client(std::string pw) : password(pw) {
+Client::Client(std::string pw) : in_channel(0), password(pw) {
 	green = "\e[1;32m";
 	white = "\e[0;37m";
 	red = "\e[1;31m";
@@ -166,6 +166,14 @@ std::string& Client::getIPAddress() {
 	return ip_addr;
 }
 
-void    Client::setNickname(std::string new_nick){
+void    Client::setNickname(std::string new_nick) {
     nickname = new_nick;
+}
+
+void    Client::set_current_channel(std::string new_chan) {
+    current_channel = new_chan;
+}
+
+std::string    Client::get_current_chan() const {
+    return current_channel;
 }

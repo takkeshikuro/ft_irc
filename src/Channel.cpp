@@ -6,7 +6,7 @@
 /*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 02:23:18 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/08 00:08:15 by marecarraya      ###   ########.fr       */
+/*   Updated: 2024/03/08 01:24:15 by marecarraya      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,4 +95,15 @@ void    Channel::add_user(Client *to_add)
     std::cout << YEL << to_add->getNickname() << GRE 
     << " has been added to channel #" << this->get_name() << "\n" << RESET; 
     return ;
+}
+
+void    Channel::send_to_all(std::string buffer, Client c_client)
+{
+    std::string nick = c_client.getNickname() + ": ";
+    std::string chan = "[#" + c_client.get_current_chan() + "] ";
+    std::string to_send = chan + nick + buffer;
+    for (size_t i = 0; i < client_list.size(); i++)
+    {
+        send(client_list[i]->get_client_fd(), to_send.c_str(), to_send.size(), 0);
+    }
 }

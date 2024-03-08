@@ -6,7 +6,7 @@
 /*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:41:42 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/08 00:05:48 by marecarraya      ###   ########.fr       */
+/*   Updated: 2024/03/08 01:04:35 by marecarraya      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,10 @@ void    Server::JOIN(std::string buffer, Client c_client)
 			break ;
 	}		
 	channel_vec[i].add_user(&client_vec[j]);
+	client_vec[j].in_channel = 1;
+	client_vec[j].set_current_channel(channel_name);
 }
+
 void    Server::QUIT(std::string buffer, Client c_client)
 {	(void)buffer;
 	(void)c_client;
