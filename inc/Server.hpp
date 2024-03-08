@@ -36,15 +36,18 @@ class Server {
 		void close_fds(); // close file descriptors
  		void clear_clients(int fd); // clear clients
 
-        int is_command(char *buffer, Client c_client); //parsing command
-        void    PRIVMSG(std::string buffer, Client c_client);
+		int is_command(char *buffer, Client c_client); //parsing command
+		void    PRIVMSG(std::string buffer, Client c_client);
 		void    WHOIS(std::string buffer, Client c_client);
 		void	CREATE(std::string buffer, Client c_client);
+		int	asking_to_create(std::string buffer, Client c_client);
+
 		void	REMOVE(std::string buffer, Client c_client);
 		void	JOIN(std::string buffer, Client c_client);
 		void	QUIT(std::string buffer, Client c_client);
 		void	LIST_CH(std::string buffer, Client c_client);
-        void    NICK(std::string buffer, Client c_client);
+		void    NICK(std::string buffer, Client c_client);
+		void    HELP(std::string buffer, Client c_client);
 
 	private :
 		struct sockaddr_in serverAddr;

@@ -96,8 +96,11 @@ void	Client::starting_point_data_set()
 			break ;
 		}
 	}
-	std::string data_save = green + "\nNew data saved.\nWelcome!\n" + white;
+	std::string data_save = green + "\nNew data saved.\nWelcome!\n";
+	std::string helper = "[press /help to get all the possible commands]\n" + white;
 	send(client_fd, data_save.c_str(), data_save.length(), 0);
+	send(client_fd, helper.c_str(), helper.length(), 0);
+
 }
 
 void	Client::client_starting_point() 

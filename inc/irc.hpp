@@ -14,6 +14,7 @@
 #include <string>
 #include <sstream>
 #include <list>
+#include <algorithm>
 
 #define RED "\e[1;31m" //-> for red color
 #define WHI "\e[0;37m" //-> for white color
