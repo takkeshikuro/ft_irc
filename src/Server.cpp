@@ -148,6 +148,8 @@ void	Server::manage_new_data(int fd)
 			//std::cout << current_client.get_current_chan() << std::endl;
 			
 			channel_vec[j].send_to_all(buffer, current_client);
+			std::string prompt = "# ";
+			send(current_client.get_client_fd(), prompt.c_str(), prompt.size(), 0);
 		}
 		else
 			std::cout << YEL << current_client.getNickname() << ": " << WHI << buffer;

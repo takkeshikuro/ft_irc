@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:41:42 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/08 06:11:53 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/08 06:18:12 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -271,7 +271,7 @@ void    Server::QUIT(std::string buffer, Client c_client)
 						channel_vec[i].rm_user(&client_vec[j]);
 						client_vec[j].in_channel = 0;
 						client_vec[j].set_current_channel("default");
-						std::string quit = yellow + "You just leave channel " + channel_vec[i].get_name() + "\n" + white;
+						std::string quit = yellow + "You just leave channel #" + channel_vec[i].get_name() + "\n" + white;
 						send(c_client.get_client_fd(), quit.c_str(), quit.size(), 0);
 						return ;
 					}
