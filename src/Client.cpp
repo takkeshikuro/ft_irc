@@ -16,6 +16,8 @@ Client::Client() : in_channel(0) {}
 
 
 Client::Client(std::string pw) : in_channel(0), password(pw) {
+	in_channel = 0;
+	is_admin = 0;
 	green = "\e[1;32m";
 	white = "\e[0;37m";
 	red = "\e[1;31m";
@@ -142,6 +144,15 @@ void	Client::client_starting_point()
 	std::cout << "starting point over\n";
 }
 
+
+void	Client::set_admin_perm()
+{
+	this->is_admin = 1;
+	std::cout <<GREEN <<"client [" <<YELLOW <<nickname <<GREEN \
+			  <<"] is know admin." << WHITE<< "\n";
+	return ;
+}
+
 int Client::get_client_fd() {
 	return client_fd;
 }
@@ -170,13 +181,13 @@ std::string& Client::getIPAddress() {
 }
 
 void    Client::setNickname(std::string new_nick) {
-    nickname = new_nick;
+	nickname = new_nick;
 }
 
 void    Client::set_current_channel(std::string new_chan) {
-    current_channel = new_chan;
+	current_channel = new_chan;
 }
 
 std::string    Client::get_current_chan() const {
-    return current_channel;
+	return current_channel;
 }

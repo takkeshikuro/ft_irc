@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
+/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:45:49 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/08 00:35:31 by marecarraya      ###   ########.fr       */
+/*   Updated: 2024/03/08 05:26:48 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ class Channel {
 		void	set_description(std::string &s);
         void    send_to_all(std::string buffer, Client c_client);
         void    add_user(Client *to_add);
+		void	rm_user(Client *to_rm);
+
         void    get_clients(void);
 		std::vector<Client *> client_list;
 

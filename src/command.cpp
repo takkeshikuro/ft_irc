@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:41:42 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/08 03:12:22 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/08 06:11:53 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,11 @@ int Server::is_command(char *buffer, Client c_client)
 		JOIN(buf, c_client);
 		return 1;
 	}
+	else if (cmd_arg == "/TOPIC")
+	{
+		TOPIC(buf, c_client, 1);
+		return 1;
+	}
 	//command without arg
 	std::string cmd_noarg;
 	std::stringstream   okbuf(buf);
@@ -63,18 +68,27 @@ int Server::is_command(char *buffer, Client c_client)
 		LIST_CH(buf, c_client);
 		return 1;
 	}
-
+	else if (cmd_noarg == "/TOPIC")
+	{
+		TOPIC(buf, c_client, 0);
+		return 1;
+	}
 	// else if (cmd == "/REMOVE")
 	// {
 	// 	REMOVE(buf, c_client);
 	// 	return 1;
 	// }
 
-	// else if (cmd == "/QUIT")
-	// {
-	// 	QUIT(buf, c_client);
-	// 	return 1;
-	// }
+	else if (cmd_noarg == "/QUIT")
+	{
+		QUIT(buf, c_client);
+		return 1;
+	}
+	else if (cmd_noarg == "/SECRET_ROOT")
+	{
+		SECRET_ROOT(buf, c_client);
+		return 1;
+	}
 	return 0;
 }
 void    Server::HELP(std::string buffer, Client c_client)
@@ -83,10 +97,13 @@ void    Server::HELP(std::string buffer, Client c_client)
 	std::string helper = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"; 
 	std::string helper1 = "| -/list_ch #to see all the channels                          |\n";
 	std::string helper2 = "| -/create + <channel_name> #to create a new channels         |\n";
-	std::string helper3 = "| -/join <channel_name> #to join a new channel                |\n";
-	std::string helper4 = "| -/nick <new_name> #to rename (nickname)                     |\n";
-	std::string helper5 = "| -/whois <user_nickname> #to get info about an user          |\n";
-	std::string helper6 = "| -/privmsg <user_nickname> #to dm an user (private)          |\n";
+	std::string helper3 = "| -/join + <channel_name> #to join a new channel              |\n";
+	std::string helper4 = "| -/nick + <new_name> #to rename (nickname)                   |\n";
+	std::string helper5 = "| -/whois + <user_nickname> #to get info about an user        |\n";
+	std::string helper6 = "| -/privmsg + <user_nickname> #to dm an user (private)        |\n";
+	std::string helper7 = "| -/quit #to leave a channel                                  |\n";
+	std::string helper8 = "| -/topic #to display channel's topic                         |\n";
+	std::string helper9 = "| -/topic + <new topic> #to update channel's topic            |\n";
 
 	send(c_client.get_client_fd(), helper.c_str(), helper.size(), 0);
 	send(c_client.get_client_fd(), helper1.c_str(), helper1.size(), 0);
@@ -95,14 +112,68 @@ void    Server::HELP(std::string buffer, Client c_client)
 	send(c_client.get_client_fd(), helper4.c_str(), helper4.size(), 0);
 	send(c_client.get_client_fd(), helper5.c_str(), helper5.size(), 0);
 	send(c_client.get_client_fd(), helper6.c_str(), helper6.size(), 0);
+	send(c_client.get_client_fd(), helper7.c_str(), helper7.size(), 0);
+	send(c_client.get_client_fd(), helper8.c_str(), helper8.size(), 0);
+	send(c_client.get_client_fd(), helper9.c_str(), helper9.size(), 0);
 	send(c_client.get_client_fd(), helper.c_str(), helper.size(), 0);
 	return;
 }
 
+void    Server::TOPIC(std::string buffer, Client c_client, int arg)
+{
+	if (!arg) // displaay bio
+	{	
+		std::string bio; 
+		if (c_client.in_channel)
+		{
+			size_t i;
+			for (i = 0; i < channel_vec.size(); i++)
+			{
+				if (channel_vec[i].get_name() == c_client.get_current_chan()) {
+					bio = yellow + "[" + channel_vec[i].get_description() + "]\n" + white;
+					break;
+				}
+				bio = red + "! no topic found.\n" + white;
+			}	
+		}
+		else {
+			std::string out_of_ch = red + "try /topic into a channel.\n" + white;
+			send(c_client.get_client_fd(), out_of_ch.c_str(), out_of_ch.size(), 0);
+			return ;
+		}
+		send(c_client.get_client_fd(), bio.c_str(), bio.size(), 0);
+		return ;
+	}
+	std::stringstream	sbuf(buffer);
+	std::string	new_bio;
+	std::string	cmd;
+	std::getline(sbuf, cmd, ' ');
+	while (std::getline(sbuf, new_bio, '\n')) {
+		if (!new_bio.empty())
+			break ;
+	}
+	std::string bio; 
+	if (c_client.in_channel) // need add check_permission()
+	{
+		size_t i;
+		for (i = 0; i < channel_vec.size(); i++)
+		{
+			if (channel_vec[i].get_name() == c_client.get_current_chan()) {
+				channel_vec[i].set_description(new_bio);
+				std::string save = green + "change saved.\n" + white;
+				send(c_client.get_client_fd(), save.c_str(), save.size(), 0);
+				return ;
+			}
+		}
+	}
+	std::string cannot = red + "you don't have permission\n" + white;
+	send(c_client.get_client_fd(), cannot.c_str(), cannot.size(), 0);	
+} 
+
 void    Server::LIST_CH(std::string buffer, Client c_client) 
 {
 	(void)buffer;
-	std::string head = "=============================================\n List of all the open channels : \n";
+	std::string head = "=============================================\n List of all opened channels : \n";
 	send(c_client.get_client_fd(), head.c_str(), head.size(), 0);
 	
 	for (size_t i = 0; i < channel_vec.size(); i++)
@@ -183,9 +254,35 @@ void    Server::JOIN(std::string buffer, Client c_client)
 }
 
 void    Server::QUIT(std::string buffer, Client c_client)
-{	(void)buffer;
-	(void)c_client;
+{	
+	(void)buffer;
+	size_t i;
+	if (c_client.in_channel)
+	{	
+		for (i = 0; i < channel_vec.size(); i++)
+		{
+			if (channel_vec[i].get_name() == c_client.get_current_chan()) 
+			{
+				size_t j;
+				for (j = 0; j < client_vec.size(); j++) 
+				{
+					if (client_vec[j].getNickname() == c_client.getNickname()) 
+					{
+						channel_vec[i].rm_user(&client_vec[j]);
+						client_vec[j].in_channel = 0;
+						client_vec[j].set_current_channel("default");
+						std::string quit = yellow + "You just leave channel " + channel_vec[i].get_name() + "\n" + white;
+						send(c_client.get_client_fd(), quit.c_str(), quit.size(), 0);
+						return ;
+					}
+				}
+			}
+		}
+	}
+	std::string quit_failed = red + "You are actually out of a channel\n" + white;
+	send(c_client.get_client_fd(), quit_failed.c_str(), quit_failed.size(), 0);
 }
+
 void    Server::REMOVE(std::string buffer, Client c_client)
 {	(void)buffer;
 	(void)c_client;
@@ -206,16 +303,17 @@ void    Server::CREATE(std::string buffer, Client c_client)
 	for (size_t i = 0; i < channel_vec.size(); i++) {
 		if (channel_vec[i].get_name() == channel_name)
 		{
-			std::string cannot_create = "Channel creation impossible, name already exist.\n";
+			std::string cannot_create = red + "Channel creation impossible, name already exist.\n" + white;
 			send(c_client.get_client_fd(), cannot_create.c_str(), cannot_create.size(),0);
 			return;
 		}
 	}
+	std::cout << "-creation new chan start\n";
 	Channel new_channel(channel_name, c_client.get_client_fd());
 	channel_vec.push_back(new_channel);
-	std::string creation_ok = "New channel " + channel_name + "created.\n";
+	std::string creation_ok = green + "New channel " + channel_name + " created.\n\n" + white;
 	send(c_client.get_client_fd(), creation_ok.c_str(), creation_ok.size(),0);
-	std::cout << "creation new chan over\n";
+	std::cout << "-creation new chan over\n";
 }
 
 void    Server::NICK(std::string buffer, Client c_client)
@@ -234,7 +332,7 @@ void    Server::NICK(std::string buffer, Client c_client)
 	{
 		if (new_nick[i] == ' ')
 		{
-			std::string error = "Error: nickname can't contain spaces.\n";
+			std::string error = red + "Error: nickname can't contain spaces.\n" + white;
 			send(c_client.get_client_fd(), error.c_str(), error.size(), 0);
 			return ;
 		}	
@@ -281,7 +379,7 @@ void    Server::PRIVMSG(std::string buffer, Client c_client)
 		}
 	}
 
-	std::string invalid_dest = "Error: no user nicknamed " + dest_name + "\n";
+	std::string invalid_dest = red + "Error: no user nicknamed " + dest_name + "\n" + white;
 	send(c_client.get_client_fd(), invalid_dest.c_str(),invalid_dest.size(), 0);
 }
 
@@ -306,12 +404,51 @@ void    Server::WHOIS(std::string buffer, Client c_client)
 			std::stringstream ss;
 			ss << target_cl.get_client_fd();
 			std::string fd = ss.str();
-			std::string answer = "User " + target_name + " is :\n-username = " + target_cl.getUsername() \
-			+ "\n-nickname = " + target_cl.getNickname() + "\n-user number = " + fd + "\n";
+			std::string answer = yellow + "User " + target_name + " is :\n-username = " + target_cl.getUsername() \
+			+ "\n-nickname = " + target_cl.getNickname() + "\n-user number = " + fd + "\n" + white;
 			send(c_client.get_client_fd(), answer.c_str(), answer.size(),0);
 			return ;
 		}
 	}
-	std::string invalid_target = "Error: no user nicknamed " + target_name + "\n";
+	std::string invalid_target = red + "Error: no user nicknamed " + target_name + "\n" + white;
 	send(c_client.get_client_fd(), invalid_target.c_str(), invalid_target.size(), 0);
+}
+
+
+void	Server::SECRET_ROOT(std::string buffer, Client c_client)
+{
+	(void)buffer;
+	std::string root_password = "doumpied\n";
+	std::string root = "please give root password to have root's permission : ";
+	send(c_client.get_client_fd(), root.c_str(), root.size(),0);
+	while (1)
+	{
+		char buff[1024];
+		int byte = read(c_client.get_client_fd(), buff, sizeof(buff));
+		if (byte > 0) 
+		{
+			buff[byte] = '\0';
+			std::string pw(buff);
+			if (pw == root_password) 
+			{	
+				for (size_t i = 0; i < client_vec.size(); i++) 
+				{
+					if (client_vec[i].getNickname() == c_client.getNickname())
+						client_vec[i].set_admin_perm();
+					std::string good = yellow + "You are know admin." + white + "\n";
+					send(c_client.get_client_fd(), good.c_str(), good.size(), 0);				
+					return;
+				}	
+			}
+			else {
+				std::string bad = red + "bad password.\n" + white;
+				send(c_client.get_client_fd(), bad.c_str(), bad.size(), 0);
+				return ;
+			}
+		}
+		else if (byte == 0) {
+			std::cerr << "Connexion fermée par le client" << std::endl;
+			break ;
+		}
+	}
 }

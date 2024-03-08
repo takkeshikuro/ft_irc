@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
+/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 02:23:18 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/08 01:24:15 by marecarraya      ###   ########.fr       */
+/*   Updated: 2024/03/08 05:40:07 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,12 +73,12 @@ void	Channel::set_description(std::string &s) {
 
 void    Channel::get_clients()
 {
-    std::cout << YEL << "Users in channel " << this->get_name() << "\n";
-    for (size_t i = 0; i < client_list.size(); i++)
-    {
-        std::cout << YELLOW << client_list[i]->getNickname() << "\n";
-    }
-    return ;
+	std::cout << YEL << "Users in channel " << this->get_name() << "\n";
+	for (size_t i = 0; i < client_list.size(); i++)
+	{
+		std::cout << YELLOW << client_list[i]->getNickname() << "\n";
+	}
+	return ;
 }
 
 void	Channel::rm_backslash_n(std::string &s) // mettre dans utils
@@ -91,19 +91,35 @@ void	Channel::rm_backslash_n(std::string &s) // mettre dans utils
 
 void    Channel::add_user(Client *to_add)
 {
-    client_list.push_back(to_add);
-    std::cout << YEL << to_add->getNickname() << GRE 
-    << " has been added to channel #" << this->get_name() << "\n" << RESET; 
-    return ;
+	client_list.push_back(to_add);
+	std::cout << YEL << to_add->getNickname() << GRE 
+	<< " has been added to channel #" << this->get_name() << "\n" << RESET; 
+	return ;
 }
 
+void	Channel::rm_user(Client *to_rm)
+{
+	std::vector<Client>::iterator it;
+	for (size_t i = 0; i < client_list.size(); ++i) 
+	{
+		
+		if (client_list[i] == to_rm) {
+			client_list.erase(client_list.begin() + i);
+			std::cout << YEL << to_rm->getNickname() << GRE 
+   			<< " leave channel #" << this->get_name() << "\n" << RESET; 
+			break;
+		}
+	}
+
+}
+	
 void    Channel::send_to_all(std::string buffer, Client c_client)
 {
-    std::string nick = c_client.getNickname() + ": ";
-    std::string chan = "[#" + c_client.get_current_chan() + "] ";
-    std::string to_send = chan + nick + buffer;
-    for (size_t i = 0; i < client_list.size(); i++)
-    {
-        send(client_list[i]->get_client_fd(), to_send.c_str(), to_send.size(), 0);
-    }
+	std::string nick = c_client.getNickname() + ": ";
+	std::string chan = "[#" + c_client.get_current_chan() + "] ";
+	std::string to_send = chan + nick + buffer;
+	for (size_t i = 0; i < client_list.size(); i++)
+	{
+		send(client_list[i]->get_client_fd(), to_send.c_str(), to_send.size(), 0);
+	}
 }
