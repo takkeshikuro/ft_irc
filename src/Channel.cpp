@@ -6,7 +6,7 @@
 /*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 02:23:18 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/10 15:55:11 by marecarraya      ###   ########.fr       */
+/*   Updated: 2024/03/10 16:24:36 by marecarraya      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,13 +99,12 @@ void    Channel::add_user(Client to_add)
 
 void	Channel::rm_user(Client to_rm)
 {
-	std::vector<Client>::iterator it;
 	for (size_t i = 0; i < client_list.size(); ++i) 
 	{		
 		if (client_list[i].get_client_fd() == to_rm.get_client_fd()) {
 			client_list.erase(client_list.begin() + i);
 			std::cout << YEL << to_rm.getNickname() << GRE 
-   			<< " leave channel #" << this->get_name() << "\n" << RESET; 
+   			<< " left the channel #" << this->get_name() << "\n" << RESET; 
 			break;
 		}
 	}

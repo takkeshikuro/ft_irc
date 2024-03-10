@@ -6,7 +6,7 @@
 /*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:41:42 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/10 15:41:18 by marecarraya      ###   ########.fr       */
+/*   Updated: 2024/03/10 16:31:55 by marecarraya      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,9 +79,9 @@ int Server::is_command(char *buffer, Client c_client)
 	// 	return 1;
 	// }
 
-	else if (cmd_noarg == "/QUIT")
+	else if (cmd_noarg == "/LEAVE")
 	{
-		QUIT(buf, c_client);
+		LEAVE(buf, c_client);
 		return 1;
 	}
 	else if (cmd_noarg == "/SECRET_ROOT")
@@ -101,7 +101,7 @@ void    Server::HELP(std::string buffer, Client c_client)
 	std::string helper4 = "| -/nick + <new_name> #to rename (nickname)                   |\n";
 	std::string helper5 = "| -/whois + <user_nickname> #to get info about an user        |\n";
 	std::string helper6 = "| -/privmsg + <user_nickname> #to dm an user (private)        |\n";
-	std::string helper7 = "| -/quit #to leave a channel                                  |\n";
+	std::string helper7 = "| -/leave #to leave a channel                                  |\n";
 	std::string helper8 = "| -/topic #to display channel's topic                         |\n";
 	std::string helper9 = "| -/topic + <new topic> #to update channel's topic            |\n";
 
@@ -253,7 +253,7 @@ void    Server::JOIN(std::string buffer, Client c_client)
 	send(c_client.get_client_fd(), welcome_channel.c_str(), welcome_channel.size(), 0);
 }
 
-void    Server::QUIT(std::string buffer, Client c_client)
+void    Server::LEAVE(std::string buffer, Client c_client)
 {	
 	(void)buffer;
 	size_t i;
@@ -271,15 +271,20 @@ void    Server::QUIT(std::string buffer, Client c_client)
 						channel_vec[i].rm_user(client_vec[j]);
 						client_vec[j].in_channel = 0;
 						client_vec[j].set_current_channel("default");
-						std::string quit = yellow + "You just leave channel #" + channel_vec[i].get_name() + "\n" + white;
+						std::string quit = yellow + "You have left the channel #" + channel_vec[i].get_name() + "\n" + white;
 						send(c_client.get_client_fd(), quit.c_str(), quit.size(), 0);
-						return ;
+                        if (channel_vec[j].client_list.size() == 0)
+                        {
+                            std::cout << RED << "Channel #" << channel_vec[j].get_name() << " has been deleted.\n";
+                            channel_vec.erase(channel_vec.begin() + j);
+                        }
+                        return ;
 					}
 				}
 			}
 		}
 	}
-	std::string quit_failed = red + "You are actually out of a channel\n" + white;
+	std::string quit_failed = red + "You are not in a channel\n" + white;
 	send(c_client.get_client_fd(), quit_failed.c_str(), quit_failed.size(), 0);
 }
 
@@ -328,6 +333,12 @@ void    Server::NICK(std::string buffer, Client c_client)
 		if (!new_nick.empty())
 			break ;
 	}
+    if (new_nick.empty())
+    {
+        std::string err = red + "Error: empty new nickname.\n" + white;
+        send(c_client.get_client_fd(), err.c_str(), err.size(), 0);
+        return ;
+    }
 	for (size_t i = 0; i < new_nick.size(); i++)
 	{
 		if (new_nick[i] == ' ')

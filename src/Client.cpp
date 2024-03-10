@@ -14,7 +14,6 @@
 
 Client::Client() : in_channel(0) {}
 
-
 Client::Client(std::string pw) : in_channel(0), password(pw) {
 	in_channel = 0;
 	is_admin = 0;
@@ -144,12 +143,11 @@ void	Client::client_starting_point()
 	std::cout << "starting point over\n";
 }
 
-
 void	Client::set_admin_perm()
 {
 	this->is_admin = 1;
 	std::cout <<GREEN <<"client [" <<YELLOW <<nickname <<GREEN \
-			  <<"] is know admin." << WHITE<< "\n";
+			  <<"] is now admin." << WHITE<< "\n";
 	return ;
 }
 
@@ -172,6 +170,7 @@ int Client::getSocket() const {
 std::string& Client::getUsername() {
 	return username;
 }
+
 std::string& Client::getNickname() {
 	return nickname;
 }

@@ -45,7 +45,7 @@ class Server {
 
 		void	REMOVE(std::string buffer, Client c_client);
 		void	JOIN(std::string buffer, Client c_client);
-		void	QUIT(std::string buffer, Client c_client);
+		void	LEAVE(std::string buffer, Client c_client);
 		void	LIST_CH(std::string buffer, Client c_client);
 		void    NICK(std::string buffer, Client c_client);
 		void    HELP(std::string buffer, Client c_client);
