@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   command.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
+/*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:41:42 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/08 06:18:12 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/10 15:41:18 by marecarraya      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,7 +182,7 @@ void    Server::LIST_CH(std::string buffer, Client c_client)
 		send(c_client.get_client_fd(), ch_line.c_str(), ch_line.size(), 0);
 		for (size_t j = 0; j < channel_vec[i].client_list.size(); j++)
 		{
-			std::string members = "   - " + channel_vec[i].client_list[j]->getNickname() + "\n";
+			std::string members = "   - " + channel_vec[i].client_list[j].getNickname() + "\n";
 			send(c_client.get_client_fd(), members.c_str(), members.size(), 0);
 		}
 	}
@@ -246,7 +246,7 @@ void    Server::JOIN(std::string buffer, Client c_client)
 		if (client_vec[j].getNickname() == c_client.getNickname())
 			break ;
 	}		
-	channel_vec[i].add_user(&client_vec[j]);
+	channel_vec[i].add_user(client_vec[j]);
 	client_vec[j].in_channel = 1;
 	client_vec[j].set_current_channel(channel_name);
 	std::string welcome_channel = "# Welcome to " + channel_name + " channel !\n";
@@ -266,9 +266,9 @@ void    Server::QUIT(std::string buffer, Client c_client)
 				size_t j;
 				for (j = 0; j < client_vec.size(); j++) 
 				{
-					if (client_vec[j].getNickname() == c_client.getNickname()) 
+					if (client_vec[j].get_client_fd() == c_client.get_client_fd()) 
 					{
-						channel_vec[i].rm_user(&client_vec[j]);
+						channel_vec[i].rm_user(client_vec[j]);
 						client_vec[j].in_channel = 0;
 						client_vec[j].set_current_channel("default");
 						std::string quit = yellow + "You just leave channel #" + channel_vec[i].get_name() + "\n" + white;
@@ -343,6 +343,20 @@ void    Server::NICK(std::string buffer, Client c_client)
 		if (client_vec[i].getUsername() == c_client.getUsername())
 			break ;
 	}
+    if (c_client.in_channel)
+    {
+        for (size_t j = 0; j < channel_vec.size(); j++)
+        {
+            if (c_client.get_current_chan() == channel_vec[j].get_name())
+            {
+                for (size_t k = 0; k < channel_vec[j].client_list.size(); k++)
+                {
+                    if (channel_vec[j].client_list[k].getUsername() == c_client.getUsername())
+                        channel_vec[j].client_list[k].setNickname(new_nick);
+                }
+            }
+        }
+    }
 	client_vec[i].setNickname(new_nick);
 	std::string	success = "\e[1;32mYour nickname has been changed to " + new_nick + ".\n\e[0m";
 	send(c_client.get_client_fd(), success.c_str(), success.size(), 0);
@@ -413,7 +427,6 @@ void    Server::WHOIS(std::string buffer, Client c_client)
 	std::string invalid_target = red + "Error: no user nicknamed " + target_name + "\n" + white;
 	send(c_client.get_client_fd(), invalid_target.c_str(), invalid_target.size(), 0);
 }
-
 
 void	Server::SECRET_ROOT(std::string buffer, Client c_client)
 {

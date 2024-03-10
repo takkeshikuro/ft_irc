@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
+/*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 02:23:18 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/08 05:40:07 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/10 15:55:11 by marecarraya      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ void    Channel::get_clients()
 	std::cout << YEL << "Users in channel " << this->get_name() << "\n";
 	for (size_t i = 0; i < client_list.size(); i++)
 	{
-		std::cout << YELLOW << client_list[i]->getNickname() << "\n";
+		std::cout << YELLOW << client_list[i].getNickname() << "\n";
 	}
 	return ;
 }
@@ -89,37 +89,40 @@ void	Channel::rm_backslash_n(std::string &s) // mettre dans utils
 	}	
 }
 
-void    Channel::add_user(Client *to_add)
+void    Channel::add_user(Client to_add)
 {
 	client_list.push_back(to_add);
-	std::cout << YEL << to_add->getNickname() << GRE 
+	std::cout << YEL << to_add.getNickname() << GRE 
 	<< " has been added to channel #" << this->get_name() << "\n" << RESET; 
 	return ;
 }
 
-void	Channel::rm_user(Client *to_rm)
+void	Channel::rm_user(Client to_rm)
 {
 	std::vector<Client>::iterator it;
 	for (size_t i = 0; i < client_list.size(); ++i) 
-	{
-		
-		if (client_list[i] == to_rm) {
+	{		
+		if (client_list[i].get_client_fd() == to_rm.get_client_fd()) {
 			client_list.erase(client_list.begin() + i);
-			std::cout << YEL << to_rm->getNickname() << GRE 
+			std::cout << YEL << to_rm.getNickname() << GRE 
    			<< " leave channel #" << this->get_name() << "\n" << RESET; 
 			break;
 		}
 	}
-
 }
 	
 void    Channel::send_to_all(std::string buffer, Client c_client)
 {
-	std::string nick = c_client.getNickname() + ": ";
-	std::string chan = "[#" + c_client.get_current_chan() + "] ";
+	std::string nick = "\e[1;33m" + c_client.getNickname() + ": " + "\e[0m";
+	std::string chan = "\e[1;34m[" + c_client.get_current_chan() + "] ";
 	std::string to_send = chan + nick + buffer;
+    std::string sender = chan + "\e[1;35m" +  c_client.getNickname() + "(you): " + "\e[0m" + buffer;
+    
 	for (size_t i = 0; i < client_list.size(); i++)
 	{
-		send(client_list[i]->get_client_fd(), to_send.c_str(), to_send.size(), 0);
+        if (client_list[i].getUsername() == c_client.getUsername())
+            send(client_list[i].get_client_fd(), sender.c_str(), sender.size(), 0);
+        else
+		    send(client_list[i].get_client_fd(), to_send.c_str(), to_send.size(), 0);
 	}
 }
