@@ -6,7 +6,7 @@
 /*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:41:42 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/10 16:31:55 by marecarraya      ###   ########.fr       */
+/*   Updated: 2024/03/12 21:00:40 by marecarraya      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,6 +221,15 @@ int	Server::asking_to_create(std::string buffer, Client c_client)
 	return 0;
 }
 
+int is_in_channel(Client c_client, Channel chan)
+{
+    for (size_t i = 0; i < chan.client_list.size(); i++)
+    {
+        if (chan.client_list[i].getUsername() == c_client.getUsername())
+            return 1;
+    }
+    return 0;
+}
 void    Server::JOIN(std::string buffer, Client c_client)
 {
 	std::string channel_name;
@@ -245,12 +254,21 @@ void    Server::JOIN(std::string buffer, Client c_client)
 	for (j = 0; j < client_vec.size(); j++) {
 		if (client_vec[j].getNickname() == c_client.getNickname())
 			break ;
-	}		
-	channel_vec[i].add_user(client_vec[j]);
-	client_vec[j].in_channel = 1;
+	}
+	if (!is_in_channel(c_client, channel_vec[i]))
+    {
+	    channel_vec[i].add_user(client_vec[j]);
+	    client_vec[j].in_channel += 1;
+        std::string welcome_channel = "# Welcome to " + channel_name + " channel !\n";
+	    send(c_client.get_client_fd(), welcome_channel.c_str(), welcome_channel.size(), 0);
+    }
+    else
+    {
+        std::string active_channel = "# You are currently in " + channel_name + " channel.\n";
+	    send(c_client.get_client_fd(), active_channel.c_str(), active_channel.size(), 0);
+    }
+    std::cout << client_vec[j].in_channel << "\n";
 	client_vec[j].set_current_channel(channel_name);
-	std::string welcome_channel = "# Welcome to " + channel_name + " channel !\n";
-	send(c_client.get_client_fd(), welcome_channel.c_str(), welcome_channel.size(), 0);
 }
 
 void    Server::LEAVE(std::string buffer, Client c_client)
@@ -269,14 +287,15 @@ void    Server::LEAVE(std::string buffer, Client c_client)
 					if (client_vec[j].get_client_fd() == c_client.get_client_fd()) 
 					{
 						channel_vec[i].rm_user(client_vec[j]);
-						client_vec[j].in_channel = 0;
+						client_vec[j].in_channel -= 1;
 						client_vec[j].set_current_channel("default");
 						std::string quit = yellow + "You have left the channel #" + channel_vec[i].get_name() + "\n" + white;
 						send(c_client.get_client_fd(), quit.c_str(), quit.size(), 0);
-                        if (channel_vec[j].client_list.size() == 0)
+                        if (channel_vec[i].client_list.size() == 0 
+                            && channel_vec[i].get_name() != "random" && channel_vec[i].get_name() != "announcements")
                         {
-                            std::cout << RED << "Channel #" << channel_vec[j].get_name() << " has been deleted.\n";
-                            channel_vec.erase(channel_vec.begin() + j);
+                            std::cout << RED << "Channel #" << channel_vec[i].get_name() << " has been deleted.\n";
+                            channel_vec.erase(channel_vec.begin() + i);
                         }
                         return ;
 					}

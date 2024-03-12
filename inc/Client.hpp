@@ -37,7 +37,7 @@ class Client {
         void    setNickname(std::string new_nick);
 		void	set_admin_perm();
 		
-        bool in_channel;
+        int in_channel;
 
 	private : 
 		std::string password;
