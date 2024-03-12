@@ -6,7 +6,7 @@
 /*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 02:23:18 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/10 16:24:36 by marecarraya      ###   ########.fr       */
+/*   Updated: 2024/03/12 23:42:22 by marecarraya      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,4 +124,34 @@ void    Channel::send_to_all(std::string buffer, Client c_client)
         else
 		    send(client_list[i].get_client_fd(), to_send.c_str(), to_send.size(), 0);
 	}
+}
+
+void    Channel::rm_operator(Client to_rm)
+{
+    for (size_t i = 0; i < op_clients.size(); i++)
+    {
+        if (op_clients[i].getUsername() == to_rm.getUsername())
+        {
+			op_clients.erase(op_clients.begin() + i);
+			std::cout << YEL << to_rm.getNickname() << RED
+   			<< " was removed from operators in #" << this->get_name() << "\n" << RESET; 
+			break;
+        }
+    }
+}
+
+void    Channel::add_operator(Client to_add)
+{
+    for (size_t i = 0; i < op_clients.size(); i++)
+    {
+        if (op_clients[i].getUsername() == to_add.getUsername())
+        {
+			std::cout << YEL << to_add.getNickname() << GRE
+   			<< " is already an operator in #" << this->get_name() << "\n" << RESET; 
+			return ;
+        }
+    }
+    std::cout << YEL << to_add.getNickname() << GRE
+   	<< " is now an operator in #" << this->get_name() << "\n" << RESET; 
+    op_clients.push_back(to_add);
 }

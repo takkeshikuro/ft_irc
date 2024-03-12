@@ -2,7 +2,7 @@ NAME		= ft_irc
 CXX		= c++
 CPPFLAGS	= -Wall -Wextra -Werror -std=c++98 -c -I includes/
 
-SRCS		= main.cpp Server.cpp Client.cpp command.cpp Channel.cpp
+SRCS		= main.cpp Server.cpp Client.cpp commands.cpp Channel.cpp commands2.cpp
 DIR_SRCS	= src/
 DIR_OBJS	= .objs/
 

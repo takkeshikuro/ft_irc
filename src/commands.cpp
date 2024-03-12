@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   command.cpp                                        :+:      :+:    :+:   */
+/*   commands.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:41:42 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/12 21:00:40 by marecarraya      ###   ########.fr       */
+/*   Updated: 2024/03/12 23:43:58 by marecarraya      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,12 @@ int Server::is_command(char *buffer, Client c_client)
 		JOIN(buf, c_client);
 		return 1;
 	}
+
+    else if (cmd_arg == "/MODE")
+    {
+        MODE(buf, c_client);
+        return 1;
+    }
 	else if (cmd_arg == "/TOPIC")
 	{
 		TOPIC(buf, c_client, 1);
@@ -91,6 +97,7 @@ int Server::is_command(char *buffer, Client c_client)
 	}
 	return 0;
 }
+
 void    Server::HELP(std::string buffer, Client c_client)
 {
 	(void)buffer;
@@ -230,6 +237,7 @@ int is_in_channel(Client c_client, Channel chan)
     }
     return 0;
 }
+
 void    Server::JOIN(std::string buffer, Client c_client)
 {
 	std::string channel_name;
@@ -267,7 +275,6 @@ void    Server::JOIN(std::string buffer, Client c_client)
         std::string active_channel = "# You are currently in " + channel_name + " channel.\n";
 	    send(c_client.get_client_fd(), active_channel.c_str(), active_channel.size(), 0);
     }
-    std::cout << client_vec[j].in_channel << "\n";
 	client_vec[j].set_current_channel(channel_name);
 }
 
@@ -334,6 +341,7 @@ void    Server::CREATE(std::string buffer, Client c_client)
 	}
 	std::cout << "-creation new chan start\n";
 	Channel new_channel(channel_name, c_client.get_client_fd());
+    new_channel.add_operator(c_client);
 	channel_vec.push_back(new_channel);
 	std::string creation_ok = green + "New channel " + channel_name + " created.\n\n" + white;
 	send(c_client.get_client_fd(), creation_ok.c_str(), creation_ok.size(),0);
@@ -495,3 +503,4 @@ void	Server::SECRET_ROOT(std::string buffer, Client c_client)
 		}
 	}
 }
+
