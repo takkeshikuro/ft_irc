@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 02:23:18 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/15 15:42:41 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/15 16:04:34 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,14 +105,14 @@ void		Channel::set_keypass(Client c_client)
 	while (1)
 	{
 		char buffer[1024];
-		int bytes = read(creator_fd, buffer, sizeof(buffer));
+		int bytes = read(c_client.get_client_fd(), buffer, sizeof(buffer));
 		if (bytes > 0) {
 			buffer[bytes] = '\0';
 			std::string keypass(buffer);
 			rm_backslash_n(keypass);
 			if (keypass.empty()) {
 				std::string null_buffer = red + "cant be null.\e[0;33m\nNew keypass : ";
-				send(creator_fd, null_buffer.c_str(), null_buffer.length(), 0);
+				send(c_client.get_client_fd(), null_buffer.c_str(), null_buffer.length(), 0);
 			}
 			else {
 				std::cout << "[new keypass : " << keypass << "]\n";
@@ -147,7 +147,7 @@ bool	Channel::check_keypass(Client c_client)
 		while (1)
 		{
 			char buffer[1024];
-			int bytes = read(creator_fd, buffer, sizeof(buffer));
+			int bytes = read(c_client.get_client_fd(), buffer, sizeof(buffer));
 			if (bytes > 0) 
 			{
 				buffer[bytes] = '\0';
