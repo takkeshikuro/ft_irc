@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 02:23:18 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/15 04:53:54 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/15 15:42:41 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,6 @@ bool	Channel::check_kp(std::string kp_to_check)
 	return false;
 }
 
-
 bool	Channel::check_keypass(Client c_client)
 {
 	if (this->keypass_set == true)
@@ -172,6 +171,7 @@ bool	Channel::check_keypass(Client c_client)
 			}
 		}
 	}
+	std::cout << "error keypass ask\n";
 	return true;
 }
 

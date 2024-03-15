@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:41:42 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/15 04:31:00 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/15 15:28:49 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,9 +108,10 @@ void    Server::HELP(std::string buffer, Client c_client)
 	std::string helper4 = "| -/nick + <new_name> #to rename (nickname)                   |\n";
 	std::string helper5 = "| -/whois + <user_nickname> #to get info about an user        |\n";
 	std::string helper6 = "| -/privmsg + <user_nickname> #to dm an user (private)        |\n";
-	std::string helper7 = "| -/leave #to leave a channel                                  |\n";
+	std::string helper7 = "| -/leave #to leave a channel                                 |\n";
 	std::string helper8 = "| -/topic #to display channel's topic                         |\n";
 	std::string helper9 = "| -/topic + <new topic> #to update channel's topic            |\n";
+	std::string helper10 = "| -/mode + <channel> + option #for operators option           |\n";
 
 	send(c_client.get_client_fd(), helper.c_str(), helper.size(), 0);
 	send(c_client.get_client_fd(), helper1.c_str(), helper1.size(), 0);
@@ -122,21 +123,22 @@ void    Server::HELP(std::string buffer, Client c_client)
 	send(c_client.get_client_fd(), helper7.c_str(), helper7.size(), 0);
 	send(c_client.get_client_fd(), helper8.c_str(), helper8.size(), 0);
 	send(c_client.get_client_fd(), helper9.c_str(), helper9.size(), 0);
+	send(c_client.get_client_fd(), helper10.c_str(), helper10.size(), 0);
 	send(c_client.get_client_fd(), helper.c_str(), helper.size(), 0);
 	return;
 }
 
 void    Server::TOPIC(std::string buffer, Client c_client, int arg)
 {
-	if (!arg) // displaay bio
-	{	
+	if (!arg) 
+	{
 		std::string bio; 
-		if (c_client.in_channel)
+		if (c_client.in_channel) // faut chercher si il est dans le boon chan
 		{
 			size_t i;
-			for (i = 0; i < channel_vec.size(); i++)
-			{
-				if (channel_vec[i].get_name() == c_client.get_current_chan()) {
+			for (i = 0; i < channel_vec.size(); i++) {
+				if (channel_vec[i].get_name() == c_client.get_current_chan()) 
+				{
 					bio = yellow + "[" + channel_vec[i].get_description() + "]\n" + white;
 					break;
 				}
@@ -152,9 +154,10 @@ void    Server::TOPIC(std::string buffer, Client c_client, int arg)
 		return ;
 	}
 	std::stringstream	sbuf(buffer);
-	std::string	new_bio;
-	std::string	cmd;
+	std::string			new_bio;
+	std::string			cmd;
 	std::getline(sbuf, cmd, ' ');
+	
 	while (std::getline(sbuf, new_bio, '\n')) {
 		if (!new_bio.empty())
 			break ;
@@ -163,9 +166,9 @@ void    Server::TOPIC(std::string buffer, Client c_client, int arg)
 	if (c_client.in_channel) // need add check_permission()
 	{
 		size_t i;
-		for (i = 0; i < channel_vec.size(); i++)
-		{
-			if (channel_vec[i].get_name() == c_client.get_current_chan()) {
+		for (i = 0; i < channel_vec.size(); i++) {
+			if (channel_vec[i].get_name() == c_client.get_current_chan()) 
+			{
 				channel_vec[i].set_description(new_bio);
 				std::string save = green + "change saved.\n" + white;
 				send(c_client.get_client_fd(), save.c_str(), save.size(), 0);
@@ -197,159 +200,10 @@ void    Server::LIST_CH(std::string buffer, Client c_client)
 	send(c_client.get_client_fd(), bottom.c_str(), bottom.size(), 0);
 }
 
-int	Server::asking_to_create(std::string buffer, Client c_client)
-{
-	std::string y_n = "[y/n] : ";
-	std::string ask = "This channel don't exist yet. Do you want to create it ? [y/n] : ";
-	send(c_client.get_client_fd(), ask.c_str(), ask.size(), 0);
-	while (1)
-	{
-		char buff[1024];
-		int byte = read(c_client.get_client_fd(), buff, sizeof(buff));
-		if (byte > 0) 
-		{
-			buff[byte] = '\0';
-			std::string answer(buff);
-			if (answer.size() == 2 && answer[0] == 'y') {
-				CREATE(buffer, c_client);
-				return 1;
-			}
-			else if (answer.size() == 2 && answer[0] == 'n')
-				return 0;
-			else
-				send(c_client.get_client_fd(), y_n.c_str(), y_n.size(), 0);
-		}
-		else if (byte == 0) {
-			std::cerr << "Connexion fermée par le client" << std::endl;
-			break ;
-		}
-	}
-	return 0;
-}
-
-int is_in_channel(Client c_client, Channel chan)
-{
-    for (size_t i = 0; i < chan.client_list.size(); i++)
-    {
-        if (chan.client_list[i].getUsername() == c_client.getUsername())
-            return 1;
-    }
-    return 0;
-}
-
-void    Server::JOIN(std::string buffer, Client c_client)
-{
-	std::string channel_name;
-	std::stringstream sbuf(buffer);
-	std::string cmd;
-	std::getline(sbuf, cmd, ' ');
-	int			exist = 0;
-	size_t		i;
-	size_t		j;
-	while (std::getline(sbuf, channel_name, '\n')) {
-		if (!channel_name.empty())
-			break ;
-	}
-	for (i = 0; i < channel_vec.size(); i++) {
-		if (channel_vec[i].get_name() == channel_name) {
-			exist = 1;
-			break ;
-		}
-	}
-	if (!exist && (asking_to_create(buffer, c_client) == 0)) 
-		return ;
-	for (j = 0; j < client_vec.size(); j++) {
-		if (client_vec[j].getNickname() == c_client.getNickname())
-			break ;
-	}
-	if (!is_in_channel(c_client, channel_vec[i]))
-	{
-		if (channel_vec[i].check_keypass(c_client) == true)
-		{
-			channel_vec[i].add_user(client_vec[j]);
-			client_vec[j].in_channel += 1;
-			std::string welcome_channel = "# Welcome to " + channel_name + " channel !\n";
-			send(c_client.get_client_fd(), welcome_channel.c_str(), welcome_channel.size(), 0);
-		}
-		else
-			return ;
-	}
-	else
-	{
-		std::string active_channel = "# You are currently in " + channel_name + " channel.\n";
-		send(c_client.get_client_fd(), active_channel.c_str(), active_channel.size(), 0);
-	}
-	client_vec[j].set_current_channel(channel_name);
-}
-
-void    Server::LEAVE(std::string buffer, Client c_client)
-{	
-	(void)buffer;
-	size_t i;
-	if (c_client.in_channel)
-	{	
-		for (i = 0; i < channel_vec.size(); i++)
-		{
-			if (channel_vec[i].get_name() == c_client.get_current_chan()) 
-			{
-				size_t j;
-				for (j = 0; j < client_vec.size(); j++) 
-				{
-					if (client_vec[j].get_client_fd() == c_client.get_client_fd()) 
-					{
-						channel_vec[i].rm_user(client_vec[j]);
-						client_vec[j].in_channel -= 1;
-						client_vec[j].set_current_channel("default");
-						std::string quit = yellow + "You have left the channel #" + channel_vec[i].get_name() + "\n" + white;
-						send(c_client.get_client_fd(), quit.c_str(), quit.size(), 0);
-                        if (channel_vec[i].client_list.size() == 0 
-                            && channel_vec[i].get_name() != "random" && channel_vec[i].get_name() != "announcements")
-                        {
-                            std::cout << RED << "Channel #" << channel_vec[i].get_name() << " has been deleted.\n";
-                            channel_vec.erase(channel_vec.begin() + i);
-                        }
-                        return ;
-					}
-				}
-			}
-		}
-	}
-	std::string quit_failed = red + "You are not in a channel\n" + white;
-	send(c_client.get_client_fd(), quit_failed.c_str(), quit_failed.size(), 0);
-}
-
 void    Server::REMOVE(std::string buffer, Client c_client)
-{	(void)buffer;
-	(void)c_client;
-}
-
-void    Server::CREATE(std::string buffer, Client c_client)
 {
-	//check arg()
-	std::string channel_name;
-	std::stringstream sbuf(buffer);
-	std::string cmd;
-	std::getline(sbuf, cmd, ' ');
-	
-	while (std::getline(sbuf, channel_name, '\n')) {
-		if (!channel_name.empty())
-			break ;
-	}
-	for (size_t i = 0; i < channel_vec.size(); i++) {
-		if (channel_vec[i].get_name() == channel_name)
-		{
-			std::string cannot_create = red + "Channel creation impossible, name already exist.\n" + white;
-			send(c_client.get_client_fd(), cannot_create.c_str(), cannot_create.size(),0);
-			return;
-		}
-	}
-	std::cout << "-creation new chan start\n";
-	Channel new_channel(channel_name, c_client.get_client_fd());
-    new_channel.add_operator(c_client);
-	channel_vec.push_back(new_channel);
-	std::string creation_ok = green + "New channel " + channel_name + " created.\n\n" + white;
-	send(c_client.get_client_fd(), creation_ok.c_str(), creation_ok.size(),0);
-	std::cout << "-creation new chan over\n";
+	(void)buffer;
+	(void)c_client;
 }
 
 void    Server::NICK(std::string buffer, Client c_client)
@@ -359,40 +213,32 @@ void    Server::NICK(std::string buffer, Client c_client)
 	std::string			cmd;
 	std::getline(sbuf, cmd, ' ');
 	
-	while (std::getline(sbuf, new_nick, '\n')) //get the msg to send
-	{
+	while (std::getline(sbuf, new_nick, '\n')) {
 		if (!new_nick.empty())
 			break ;
 	}
-    if (new_nick.empty())
-    {
+    if (new_nick.empty()) {
         std::string err = red + "Error: empty new nickname.\n" + white;
         send(c_client.get_client_fd(), err.c_str(), err.size(), 0);
         return ;
     }
-	for (size_t i = 0; i < new_nick.size(); i++)
-	{
-		if (new_nick[i] == ' ')
-		{
+	for (size_t i = 0; i < new_nick.size(); i++) {
+		if (new_nick[i] == ' ') {
 			std::string error = red + "Error: nickname can't contain spaces.\n" + white;
 			send(c_client.get_client_fd(), error.c_str(), error.size(), 0);
 			return ;
 		}	
 	}
 	size_t	i;
-	for (i = 0; i < this->client_vec.size(); i++)
-	{
+	for (i = 0; i < this->client_vec.size(); i++) {
 		if (client_vec[i].getUsername() == c_client.getUsername())
 			break ;
 	}
     if (c_client.in_channel)
     {
-        for (size_t j = 0; j < channel_vec.size(); j++)
-        {
-            if (c_client.get_current_chan() == channel_vec[j].get_name())
-            {
-                for (size_t k = 0; k < channel_vec[j].client_list.size(); k++)
-                {
+        for (size_t j = 0; j < channel_vec.size(); j++) {
+            if (c_client.get_current_chan() == channel_vec[j].get_name()) {
+                for (size_t k = 0; k < channel_vec[j].client_list.size(); k++) {
                     if (channel_vec[j].client_list[k].getUsername() == c_client.getUsername())
                         channel_vec[j].client_list[k].setNickname(new_nick);
                 }
@@ -414,20 +260,16 @@ void    Server::PRIVMSG(std::string buffer, Client c_client)
 	std::string cmd;
 	std::getline(sbuf, cmd, ' ');
 
-	while (std::getline(sbuf, dest_name, ' ')) //get the dest client
-	{
+	while (std::getline(sbuf, dest_name, ' ')) {
 		if (!dest_name.empty())
 			break ;
 	}
-	while (std::getline(sbuf, msg, '\n')) //get the msg to send
-	{
+	while (std::getline(sbuf, msg, '\n')) {
 		if (!msg.empty())
 			break ;
 	}
-	for (size_t i = 0; i < client_vec.size(); i++)
-	{
-		if (client_vec[i].getNickname() == dest_name) //get the dest_client in vec_client
-		{
+	for (size_t i = 0; i < client_vec.size(); i++) {
+		if (client_vec[i].getNickname() == dest_name) {
 			dest_cl = client_vec[i];
 			std::string to_send = "\e[1;35m[PRIVMSG] " + c_client.getNickname() + ": \e[0;37m" + msg + "\n";
 			send(dest_cl.get_client_fd(), to_send.c_str(), to_send.size(),0);
@@ -447,15 +289,12 @@ void    Server::WHOIS(std::string buffer, Client c_client)
 	std::string cmd;
 	std::getline(sbuf, cmd, ' ');
 
-	while (std::getline(sbuf, target_name, '\n'))
-	{
+	while (std::getline(sbuf, target_name, '\n')) {
 		if (!target_name.empty())
 			break ;
 	}
-	for (size_t i = 0; i < client_vec.size(); i++)
-	{
-		if (client_vec[i].getNickname() == target_name)
-		{
+	for (size_t i = 0; i < client_vec.size(); i++) {
+		if (client_vec[i].getNickname() == target_name) {
 			target_cl = client_vec[i];
 			std::stringstream ss;
 			ss << target_cl.get_client_fd();
@@ -476,7 +315,7 @@ void	Server::SECRET_ROOT(std::string buffer, Client c_client)
 	std::string root_password = "doumpied\n";
 	std::string root = "please give root password to have root's permission : ";
 	send(c_client.get_client_fd(), root.c_str(), root.size(),0);
-	while (1)
+	while (1) 
 	{
 		char buff[1024];
 		int byte = read(c_client.get_client_fd(), buff, sizeof(buff));
@@ -486,8 +325,7 @@ void	Server::SECRET_ROOT(std::string buffer, Client c_client)
 			std::string pw(buff);
 			if (pw == root_password) 
 			{	
-				for (size_t i = 0; i < client_vec.size(); i++) 
-				{
+				for (size_t i = 0; i < client_vec.size(); i++)  {
 					if (client_vec[i].getNickname() == c_client.getNickname())
 						client_vec[i].set_admin_perm();
 					std::string good = yellow + "You are know admin." + white + "\n";
