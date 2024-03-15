@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:45:49 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/15 04:50:35 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/15 17:15:21 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,14 @@ class Channel {
         void        rm_operator(Client to_set);
         void        get_clients(void);
 		
-		bool		get_key_set();
-		std::string get_keypass();
-		void		set_keypass(Client c_client);
+		bool		get_key_set(); // to know if keypass set or not
+		void		set_key_set(); // to modify keypass_set
+		
+		std::string get_keypass(); // to get the string keypass
+		void		set_keypass(Client c_client); // to set the string keypass
+		
 		bool		check_keypass(Client c_client);
-        bool	check_kp(std::string kp_to_check);
+        bool		check_kp(std::string kp_to_check);
 
 		std::vector<Client> client_list;
         std::vector<Client> op_clients;

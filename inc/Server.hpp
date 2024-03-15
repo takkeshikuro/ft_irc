@@ -42,7 +42,6 @@ class Server {
 		void	CREATE(std::string buffer, Client c_client);
 		int	    asking_to_create(std::string buffer, Client c_client);
 		void	TOPIC(std::string buffer, Client c_client, int arg);
-		void	REMOVE(std::string buffer, Client c_client);
 		void	JOIN(std::string buffer, Client c_client);
 		void	LEAVE(std::string buffer, Client c_client);
 		void	LIST_CH(std::string buffer, Client c_client);
@@ -52,7 +51,8 @@ class Server {
 		void    MODE(std::string buffer, Client clear_client);
 		void    check_MODE_args(std::string args[3], Client c_client);
 		void    MODE_oprt(Channel &chan, std::string args[3], Client c_client);
-		void	MODE_keypass(Channel &chan, Client c_client);
+		void	MODE_keypass_add(Channel &chan, Client c_client);
+		void	MODE_keypass_rm(Channel &chan, Client c_client);
 
 	private :
 		struct sockaddr_in serverAddr;

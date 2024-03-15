@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:17:25 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/15 15:20:14 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/15 17:39:09 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,8 +117,14 @@ void    Server::JOIN(std::string buffer, Client c_client)
 		{
 			channel_vec[i].add_user(client_vec[j]);
 			client_vec[j].in_channel += 1;
-			std::string welcome_channel = "# Welcome to " + channel_name + " channel !\n";
+			
+			
+			std::string line = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+			send(c_client.get_client_fd(), line.c_str(), line.size(), 0);
+			send(c_client.get_client_fd(), line.c_str(), line.size(), 0);
+			std::string welcome_channel = "\n# Welcome to " + channel_name + " channel !\n";
 			send(c_client.get_client_fd(), welcome_channel.c_str(), welcome_channel.size(), 0);
+
 		}
 		else
 			return ;

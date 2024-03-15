@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 02:23:18 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/15 16:04:34 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/15 17:29:28 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,13 @@ bool	Channel::get_key_set() {
 		return false;
 }
 
+void	Channel::set_key_set() {
+	if (this->keypass_set == true)
+		this->keypass_set = false;
+	else
+		this->keypass_set = true;
+}
+
 std::string Channel::get_keypass() {
 	return this->channel_keypass;
 }
@@ -100,7 +107,7 @@ void		Channel::set_keypass(Client c_client)
 			return ;
 		}
 	}
-	std::string key = "please enter the new keypass : ";
+	std::string key = yellow + "please enter the new keypass : ";
 	send(c_client.get_client_fd(), key.c_str(), key.size(), 0);
 	while (1)
 	{
@@ -115,7 +122,8 @@ void		Channel::set_keypass(Client c_client)
 				send(c_client.get_client_fd(), null_buffer.c_str(), null_buffer.length(), 0);
 			}
 			else {
-				std::cout << "[new keypass : " << keypass << "]\n";
+				std::string set_ok = green + "[New keypass set]\n" + white;
+				send(c_client.get_client_fd(), set_ok.c_str(), set_ok.size(), 0);
 				this->channel_keypass = keypass;
 				this->keypass_set = true;
 				break ;
@@ -171,8 +179,7 @@ bool	Channel::check_keypass(Client c_client)
 			}
 		}
 	}
-	std::cout << "error keypass ask\n";
-	return true;
+	return true; //no keypass set
 }
 
 void    Channel::get_clients()

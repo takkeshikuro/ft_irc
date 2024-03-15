@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   commands2.cpp                                      :+:      :+:    :+:   */
+/*   mode_cmd.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/12 21:41:39 by marecarraya       #+#    #+#             */
-/*   Updated: 2024/03/15 15:20:59 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/15 17:30:19 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void    Server::MODE_oprt(Channel &chan, std::string args[3], Client c_client)
 }
 
 
-void	Server::MODE_keypass(Channel &chan, Client c_client)
+void	Server::MODE_keypass_add(Channel &chan, Client c_client)
 {
 	std::string y_n = "[y/n] : ";
 	if (chan.get_key_set() == true)
@@ -72,9 +72,9 @@ void	Server::MODE_keypass(Channel &chan, Client c_client)
 	}
 	else
 	{
-		std::string key_set = "This channel has no keypass yet.\n";
+		std::string key_set = yellow + "This channel has no keypass yet.\n";
 		send(c_client.get_client_fd(), key_set.c_str(), key_set.size(), 0);
-		std::string ask = "Do you want to set it ? [y/n] : ";
+		std::string ask = "Do you want to set it ? [y/n] : " + white;
 		send(c_client.get_client_fd(), ask.c_str(), ask.size(), 0);
 		while (1) {
 			char buff[1024];
@@ -97,6 +97,21 @@ void	Server::MODE_keypass(Channel &chan, Client c_client)
 	}
 }
 
+void	Server::MODE_keypass_rm(Channel &chan, Client c_client)
+{
+	if (chan.get_key_set() == true)
+	{
+		std::string remove = "You just remove channel's keypass.\n";
+		send(c_client.get_client_fd(), remove.c_str(), remove.size(), 0);
+		for (size_t i = 0; i < this->channel_vec.size(); i++) {
+			if (chan.get_name() == channel_vec[i].get_name())
+				channel_vec[i].set_key_set();
+		}
+		return ;
+	}
+	std::string no_kp = "This channel has no keypass, press +k to add one.\n";
+	send(c_client.get_client_fd(), no_kp.c_str(), no_kp.size(), 0);
+}
 
 void Server::check_MODE_args(std::string args[3], Client c_client)
 {
@@ -127,8 +142,10 @@ void Server::check_MODE_args(std::string args[3], Client c_client)
 	}
 	if (args[1] == "-o" || args[1] == "+o")
 		MODE_oprt(channel_vec[i], args, c_client);
+	else if (args[1] == "+k" || args[1] == "+k\n") 
+		MODE_keypass_add(channel_vec[i], c_client);
 	else if (args[1] == "-k" || args[1] == "-k\n") 
-		MODE_keypass(channel_vec[i], c_client);
+		MODE_keypass_rm(channel_vec[i], c_client);
 	else if (args[1].empty())
 	{
 		for (size_t k = 0; k < channel_vec[i].op_clients.size(); k++)

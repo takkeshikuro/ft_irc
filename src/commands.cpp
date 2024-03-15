@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:41:42 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/15 15:28:49 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/15 17:35:13 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,12 +79,6 @@ int Server::is_command(char *buffer, Client c_client)
 		TOPIC(buf, c_client, 0);
 		return 1;
 	}
-	// else if (cmd == "/REMOVE")
-	// {
-	// 	REMOVE(buf, c_client);
-	// 	return 1;
-	// }
-
 	else if (cmd_noarg == "/LEAVE")
 	{
 		LEAVE(buf, c_client);
@@ -188,7 +182,11 @@ void    Server::LIST_CH(std::string buffer, Client c_client)
 	
 	for (size_t i = 0; i < channel_vec.size(); i++)
 	{
-		std::string ch_line = "-#" + channel_vec[i].get_name() + "\n";
+		std::string ch_line;
+		if (channel_vec[i].get_key_set() == true)
+			ch_line = "-#" + channel_vec[i].get_name() + " (keypass lock)\n";
+		else
+			ch_line = "-#" + channel_vec[i].get_name() + "\n";
 		send(c_client.get_client_fd(), ch_line.c_str(), ch_line.size(), 0);
 		for (size_t j = 0; j < channel_vec[i].client_list.size(); j++)
 		{
@@ -198,12 +196,6 @@ void    Server::LIST_CH(std::string buffer, Client c_client)
 	}
 	std::string bottom = "=============================================\n";
 	send(c_client.get_client_fd(), bottom.c_str(), bottom.size(), 0);
-}
-
-void    Server::REMOVE(std::string buffer, Client c_client)
-{
-	(void)buffer;
-	(void)c_client;
 }
 
 void    Server::NICK(std::string buffer, Client c_client)
