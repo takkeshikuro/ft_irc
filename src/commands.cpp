@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commands.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
+/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:41:42 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/12 23:43:58 by marecarraya      ###   ########.fr       */
+/*   Updated: 2024/03/15 04:31:00 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,6 +199,7 @@ void    Server::LIST_CH(std::string buffer, Client c_client)
 
 int	Server::asking_to_create(std::string buffer, Client c_client)
 {
+	std::string y_n = "[y/n] : ";
 	std::string ask = "This channel don't exist yet. Do you want to create it ? [y/n] : ";
 	send(c_client.get_client_fd(), ask.c_str(), ask.size(), 0);
 	while (1)
@@ -215,10 +216,8 @@ int	Server::asking_to_create(std::string buffer, Client c_client)
 			}
 			else if (answer.size() == 2 && answer[0] == 'n')
 				return 0;
-			else {
-				std::string y_n = "[y/n] : ";
+			else
 				send(c_client.get_client_fd(), y_n.c_str(), y_n.size(), 0);
-			}
 		}
 		else if (byte == 0) {
 			std::cerr << "Connexion fermée par le client" << std::endl;
@@ -264,17 +263,22 @@ void    Server::JOIN(std::string buffer, Client c_client)
 			break ;
 	}
 	if (!is_in_channel(c_client, channel_vec[i]))
-    {
-	    channel_vec[i].add_user(client_vec[j]);
-	    client_vec[j].in_channel += 1;
-        std::string welcome_channel = "# Welcome to " + channel_name + " channel !\n";
-	    send(c_client.get_client_fd(), welcome_channel.c_str(), welcome_channel.size(), 0);
-    }
-    else
-    {
-        std::string active_channel = "# You are currently in " + channel_name + " channel.\n";
-	    send(c_client.get_client_fd(), active_channel.c_str(), active_channel.size(), 0);
-    }
+	{
+		if (channel_vec[i].check_keypass(c_client) == true)
+		{
+			channel_vec[i].add_user(client_vec[j]);
+			client_vec[j].in_channel += 1;
+			std::string welcome_channel = "# Welcome to " + channel_name + " channel !\n";
+			send(c_client.get_client_fd(), welcome_channel.c_str(), welcome_channel.size(), 0);
+		}
+		else
+			return ;
+	}
+	else
+	{
+		std::string active_channel = "# You are currently in " + channel_name + " channel.\n";
+		send(c_client.get_client_fd(), active_channel.c_str(), active_channel.size(), 0);
+	}
 	client_vec[j].set_current_channel(channel_name);
 }
 

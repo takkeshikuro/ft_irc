@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
+/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:45:49 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/12 22:33:01 by marecarraya      ###   ########.fr       */
+/*   Updated: 2024/03/15 04:50:35 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,20 +36,29 @@ class Channel {
         void        rm_operator(Client to_set);
         void        get_clients(void);
 		
-        std::vector<Client> client_list;
+		bool		get_key_set();
+		std::string get_keypass();
+		void		set_keypass(Client c_client);
+		bool		check_keypass(Client c_client);
+        bool	check_kp(std::string kp_to_check);
+
+		std::vector<Client> client_list;
         std::vector<Client> op_clients;
 
 	private :
 		std::string channel_name;
-	//	std::string topic_name;
 		int         creator_fd;
 		std::string description;
-		std::string channel_pw;
-		int			user_max;
+		int			user_max;	
 
-
+		bool		keypass_set;
+		std::string channel_keypass;
+		
 
 		std::string red;
+		std::string green;
+		std::string white;
+		std::string yellow;
 };
 
 #endif

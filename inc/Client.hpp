@@ -52,7 +52,6 @@ class Client {
 
         std::string current_channel;
 		
-		
 		std::string green;
 		std::string white;
 		std::string red;

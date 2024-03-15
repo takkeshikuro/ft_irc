@@ -14,9 +14,9 @@
 
 Client::Client() : in_channel(0) {}
 
-Client::Client(std::string pw) : in_channel(0), password(pw) {
+Client::Client(std::string pw) : password(pw) {
 	in_channel = 0;
-	is_admin = 0;
+	is_admin = false;
 	green = "\e[1;32m";
 	white = "\e[0;37m";
 	red = "\e[1;31m";
@@ -145,7 +145,7 @@ void	Client::client_starting_point()
 
 void	Client::set_admin_perm()
 {
-	this->is_admin = 1;
+	this->is_admin = true;
 	std::cout <<GREEN <<"client [" <<YELLOW <<nickname <<GREEN \
 			  <<"] is now admin." << WHITE<< "\n";
 	return ;
