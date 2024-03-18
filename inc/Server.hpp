@@ -35,7 +35,7 @@ class Server {
 		static void SignalHandler(int sig);
 		void close_fds(); // close file descriptors
  		void clear_clients(int fd); // clear clients
-
+        ;
 		int     is_command(char *buffer, Client c_client); //parsing command
 		void    PRIVMSG(std::string buffer, Client c_client);
 		void	WHOIS(std::string buffer, Client c_client);
@@ -48,11 +48,13 @@ class Server {
 		void    NICK(std::string buffer, Client c_client);
 		void    HELP(std::string buffer, Client c_client);
 		void    SECRET_ROOT(std::string buffer, Client c_client);
-		void    MODE(std::string buffer, Client clear_client);
+		
+        void    MODE(std::string buffer, Client clear_client);
 		void    check_MODE_args(std::string args[3], Client c_client);
 		void    MODE_oprt(Channel &chan, std::string args[3], Client c_client);
 		void	MODE_keypass_add(Channel &chan, Client c_client);
 		void	MODE_keypass_rm(Channel &chan, Client c_client);
+        void    MODE_limit(Channel &chan, std::string args[3], Client c_client);
 
 	private :
 		struct sockaddr_in serverAddr;

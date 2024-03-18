@@ -23,6 +23,7 @@ class Client {
 
 		int		get_client_fd();
  		void	set_client_fd(int fd);
+        int     get_size();
  		void	set_IpAdd(std::string ipadd);
         void    set_current_channel(std::string);
 		void	client_starting_point();

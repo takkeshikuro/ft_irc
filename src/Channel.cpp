@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
+/*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 02:23:18 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/15 17:29:28 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/18 18:04:42 by marecarraya      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,12 @@ Channel::Channel(std::string name) {
 	this->channel_name = name;
 	this->creator_fd = 0;
 	this->user_max = 10;
+    this->limit = -1;
 	keypass_set = false;
 	//	
 }
 
-Channel::Channel(std::string name, int fd) : creator_fd(fd) 
+Channel::Channel(std::string name, int fd) : creator_fd(fd), limit(-1)
 {
     green = "\e[1;32m";
 	white = "\e[0;37m";
@@ -265,4 +266,25 @@ void    Channel::add_operator(Client to_add)
     std::cout << YEL << to_add.getNickname() << GRE
    	<< " is now an operator in #" << this->get_name() << "\n" << RESET; 
     op_clients.push_back(to_add);
+}
+
+void    Channel::set_limit(int lim)
+{
+    limit = lim;
+}
+
+int    Channel::get_limit()
+{
+    return limit;
+}
+
+int Channel::get_size()
+{
+    return client_list.size();
+}
+
+void    Channel::send_string(std::string to_send)
+{
+	for (size_t i = 0; i < client_list.size(); i++)
+		    send(client_list[i].get_client_fd(), to_send.c_str(), to_send.size(), 0);
 }

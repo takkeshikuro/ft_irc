@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   channel_cmd.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
+/*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:17:25 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/15 17:39:09 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/18 18:51:26 by marecarraya      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,20 @@ int is_in_channel(Client c_client, Channel chan)
 	return 0;
 }
 
+int     check_limit(Channel &chan, Client c_client)
+{
+    if (chan.get_limit() == -1)
+        return 0;
+    if (chan.get_limit() <= chan.get_size())
+    {
+        std::cout << chan.get_limit() << "\n";
+        std::string full = "\e[1;31mCannot join this channel because it is full.\n\e[0m";
+        send(c_client.get_client_fd(), full.c_str(), full.size(), 0);
+        return 1;
+    }
+    return 0;
+}
+
 void    Server::JOIN(std::string buffer, Client c_client)
 {
 	std::string channel_name;
@@ -105,6 +119,11 @@ void    Server::JOIN(std::string buffer, Client c_client)
 			break ;
 		}
 	}
+    if (exist)
+    {
+        if (check_limit(channel_vec[i], c_client))
+            return ;
+    }
 	if (!exist && (asking_to_create(buffer, c_client) == 0)) 
 		return ;
 	for (j = 0; j < client_vec.size(); j++) {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
+/*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:45:49 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/15 17:15:21 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/18 18:03:47 by marecarraya      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,13 @@ class Channel {
 		std::string &get_description();
 		void	    set_description(std::string &s);
         void        send_to_all(std::string buffer, Client c_client);
+        void        send_string(std::string tosend);
         void        add_user(Client to_add);
 		void	    rm_user(Client to_rm);
         void        add_operator(Client to_set);
         void        rm_operator(Client to_set);
-        void        get_clients(void);
+        int         get_size(void);
+        void        get_clients();
 		
 		bool		get_key_set(); // to know if keypass set or not
 		void		set_key_set(); // to modify keypass_set
@@ -45,6 +47,8 @@ class Channel {
 		bool		check_keypass(Client c_client);
         bool		check_kp(std::string kp_to_check);
 
+        int         get_limit();
+        void        set_limit(int lim);
 		std::vector<Client> client_list;
         std::vector<Client> op_clients;
 
@@ -53,7 +57,7 @@ class Channel {
 		int         creator_fd;
 		std::string description;
 		int			user_max;	
-
+        int         limit;
 		bool		keypass_set;
 		std::string channel_keypass;
 		

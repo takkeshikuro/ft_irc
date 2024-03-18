@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mode_cmd.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
+/*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/12 21:41:39 by marecarraya       #+#    #+#             */
-/*   Updated: 2024/03/15 17:30:19 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/18 18:30:48 by marecarraya      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,44 @@ void    Server::MODE_oprt(Channel &chan, std::string args[3], Client c_client)
 		chan.rm_operator(client_vec[j]);
 }
 
+void    Server::MODE_limit(Channel &chan, std::string args[3], Client c_client)
+{
+    // /MODE #channel +l value
+    for (size_t i = 0; i < args[2].size(); i++)
+    {
+        if (!isdigit(args[2][i]) && args[2][i] != '\n' && args[2][i] != ' ')
+        {
+            std::string invalid = "\e[1;31mError: Invalid limit value (" + args[2] + ")\n" + RESET;
+            send(c_client.get_client_fd(), invalid.c_str(), invalid.size(), 0);
+            return ;
+        }
+    }
+
+    if (args[1] == "-l" || args[1] == "-l\n")
+    {
+        chan.set_limit(-1);
+        std::string tosend = YEL + c_client.getNickname() 
+            + GRE + " has unset users limit in " + BLU + "#" + chan.get_name() + RESET + "\n";
+        chan.send_string(tosend);
+        std::cout << tosend;
+    }
+    else
+    {
+        if (chan.get_size() > std::atoi(args[2].c_str()))
+        {
+            std::string errr = BLU + chan.get_name() + RED + " currently has more than " 
+                +  args[2] + " users. Can't set limit to this value.\n" + RESET;
+            send(c_client.get_client_fd(), errr.c_str(), errr.size(), 0);
+        }
+        else
+        {
+            chan.set_limit(std::atoi(args[2].c_str()));
+            std::string success = GRE + chan.get_name() 
+                + " channel now have a limit of " + args[2] + " users\n" + RESET;
+            chan.send_string(success);
+        }
+    }
+}
 
 void	Server::MODE_keypass_add(Channel &chan, Client c_client)
 {
@@ -119,7 +157,7 @@ void Server::check_MODE_args(std::string args[3], Client c_client)
 	size_t  j;
 	std::string ops;
 	
-	for (i = 0; i < channel_vec.size(); i++) {
+	for (i = 0; i < channel_vec.size(); i++) {                  //check if channel exists
 		if (args[0] == channel_vec[i].get_name() 
 			|| args[0] == (channel_vec[i].get_name() + "\n"))
 			break ;
@@ -146,6 +184,8 @@ void Server::check_MODE_args(std::string args[3], Client c_client)
 		MODE_keypass_add(channel_vec[i], c_client);
 	else if (args[1] == "-k" || args[1] == "-k\n") 
 		MODE_keypass_rm(channel_vec[i], c_client);
+    else if (args[1] == "-l" || "+l" || "-l\n")
+        MODE_limit(channel_vec[i], args, c_client);
 	else if (args[1].empty())
 	{
 		for (size_t k = 0; k < channel_vec[i].op_clients.size(); k++)

@@ -21,6 +21,7 @@
 #define GRE "\e[1;32m" //-> for green color
 #define YEL "\e[1;33m" //-> for yellow color
 #define PUR	"\e[1;35m"
+#define BLU	"\e[1;34m"
 
 //couleurs pas en gras
 #define BLACK	"\e[0;30m"
