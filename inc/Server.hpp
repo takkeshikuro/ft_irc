@@ -48,6 +48,7 @@ class Server {
 		void	LIST_CL(std::string buffer, Client c_client);
 		void    NICK(std::string buffer, Client c_client);
 		void    HELP(std::string buffer, Client c_client);
+		void    HELP_OPERATOR(std::string buffer, Client c_client);
 		void    SECRET_ROOT(std::string buffer, Client c_client);
 		void	INVITE(std::string buffer, Client c_client);
 		bool	check_channel(Client &c_client);

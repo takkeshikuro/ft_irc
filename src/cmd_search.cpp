@@ -6,7 +6,7 @@
 /*   By: tmorikaw <tmorikaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 02:11:04 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/03/19 06:03:14 by tmorikaw         ###   ########.fr       */
+/*   Updated: 2024/03/19 07:55:35 by tmorikaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,8 @@ int	search_cmd(std::string &cmd, int arg)
 	}
 	else if (!arg)
 	{
-		std::string commands[6] = {"/HELP", "/LIST_CH", "/LIST_CL", "/TOPIC", "/LEAVE", "/SECRET_ROOT"};
-		for (int i = 0; i < 6; i++)
+		std::string commands[7] = {"/HELP", "/LIST_CH", "/LIST_CL", "/TOPIC", "/LEAVE", "/SECRET_ROOT", "/HELP_OPERATOR"};
+		for (int i = 0; i < 7; i++)
 		{
 			if (cmd == commands[i])
 				return (i);
@@ -112,6 +112,9 @@ int Server::is_command(char *buffer, Client c_client)
 					break;
 				case 5 :
 					SECRET_ROOT(buf, c_client);
+					break;
+				case 6 :
+					HELP_OPERATOR(buf, c_client);
 					break; 
 				case -1 :
 					command_unknow(c_client);
