@@ -3,94 +3,128 @@
 /*                                                        :::      ::::::::   */
 /*   commands.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tmorikaw <tmorikaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:41:42 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/15 17:35:13 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/19 02:05:57 by tmorikaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/Server.hpp"
-//#include "../inc/Channel.hpp"
+
+bool space(std::string& chaine) 
+{
+	std::string::const_iterator it;
+	for (it = chaine.begin(); it != chaine.end(); ++it)
+	{
+		if (*it == ' ')
+			return true;
+	}
+	return false;
+}
+
+int	search_cmd(std::string &cmd, int arg)
+{
+	if (arg)
+	{
+		
+		std::string commands[7] = {"/PRIVMSG", "/WHOIS", "/CREATE", "/NICK", "/JOIN", "/MODE", "/TOPIC"};
+		for (int i = 0; i < 7; i++)
+		{
+			if (cmd == commands[i])
+				return (i);
+		}
+	}
+	else if (!arg)
+	{
+		std::string commands[6] = {"/HELP", "/LIST_CH", "/LIST_CL", "/TOPIC", "/LEAVE", "/SECRET_ROOT"};
+		for (int i = 0; i < 6; i++)
+		{
+			if (cmd == commands[i])
+				return (i);
+		}
+	}
+	return -1;
+}
 
 int Server::is_command(char *buffer, Client c_client)
 {
-	std::string buf = buffer;
-	std::string cmd_arg;
-	//command with arg
-	std::stringstream   sbuf(buf);
-	std::getline(sbuf, cmd_arg, ' ');
-	std::transform(cmd_arg.begin(), cmd_arg.end(), cmd_arg.begin(), ::toupper);
-
-	if (cmd_arg == "/PRIVMSG")
+	std::string			buf = buffer;
+	std::string			cmd_string;
+	std::stringstream	sbuf(buf);
+	std::getline(sbuf, cmd_string, '\n');
+	std::transform(cmd_string.begin(), cmd_string.end(), cmd_string.begin(), ::toupper);
+	
+	if (space(cmd_string) == true) // command with arguments
 	{
-		PRIVMSG(buf, c_client);
-		return 1;
+  		size_t index_space = cmd_string.find(' ');
+	    std::string cmd_arg = cmd_string.substr(0, index_space);
+		switch (search_cmd(cmd_arg, 1))
+		{
+			case 0 :
+				PRIVMSG(buf, c_client);
+				break;
+			case 1 :
+				WHOIS(buf, c_client);
+				break;
+			case 2 :
+				CREATE(buf, c_client);
+				break; 
+			case 3 :
+				NICK(buf, c_client);
+				break;
+			case 4 :
+				JOIN(buf, c_client);
+				break;
+			case 5 :
+				MODE(buf, c_client);
+				break; 
+			case 6 :
+				TOPIC(buf, c_client, 1);
+				break ;
+			case -1 :
+				command_unknow(c_client);
+				break ;		
+		}
 	}
-	else if (cmd_arg == "/WHOIS")
+	else		//command without argument
 	{
-		WHOIS(buf, c_client);
-		return 1;
-	}
-	else if (cmd_arg == "/CREATE")
-	{
-		CREATE(buf, c_client);
-		return 1;
-	}
-	else if (cmd_arg == "/NICK")
-	{
-		NICK(buf, c_client);
-		return 1;
-	}
-	else if (cmd_arg == "/JOIN")
-	{
-		JOIN(buf, c_client);
-		return 1;
-	}
-
-    else if (cmd_arg == "/MODE")
-    {
-        MODE(buf, c_client);
-        return 1;
-    }
-	else if (cmd_arg == "/TOPIC")
-	{
-		TOPIC(buf, c_client, 1);
-		return 1;
-	}
-	//command without arg
-	std::string cmd_noarg;
-	std::stringstream   okbuf(buf);
-	std::getline(okbuf, cmd_noarg, '\n');
-	std::transform(cmd_noarg.begin(), cmd_noarg.end(), cmd_noarg.begin(), ::toupper);
-
-	if (cmd_noarg == "/HELP")
-	{
-		HELP(buf, c_client);
-		return 1;
-	}
-	else if (cmd_noarg == "/LIST_CH")
-	{
-		LIST_CH(buf, c_client);
-		return 1;
-	}
-	else if (cmd_noarg == "/TOPIC")
-	{
-		TOPIC(buf, c_client, 0);
-		return 1;
-	}
-	else if (cmd_noarg == "/LEAVE")
-	{
-		LEAVE(buf, c_client);
-		return 1;
-	}
-	else if (cmd_noarg == "/SECRET_ROOT")
-	{
-		SECRET_ROOT(buf, c_client);
-		return 1;
+		switch (search_cmd(cmd_string, 0))
+		{
+			case 0 :
+				HELP(buf, c_client);
+				break;
+			case 1 :
+				LIST_CH(buf, c_client);
+				break;
+			case 2 :
+				LIST_CL(buf, c_client);
+				break; 
+			case 3 :
+				TOPIC(buf, c_client, 0);
+				break;
+			case 4 :
+				LEAVE(buf, c_client);
+				break;
+			case 5 :
+				SECRET_ROOT(buf, c_client);
+				break; 
+			case -1 :
+				command_unknow(c_client);
+				break ;		
+		}
 	}
 	return 0;
 }
+
+
+int	Server::command_unknow(Client c_client)
+{
+	std::string cmd_unk = red + "Command unknow. (press /help).\n" + white;
+	send(c_client.get_client_fd(), cmd_unk.c_str(), cmd_unk.size(), 0);
+	return 1;
+}
+
 
 void    Server::HELP(std::string buffer, Client c_client)
 {
@@ -198,6 +232,21 @@ void    Server::LIST_CH(std::string buffer, Client c_client)
 	send(c_client.get_client_fd(), bottom.c_str(), bottom.size(), 0);
 }
 
+void    Server::LIST_CL(std::string buffer, Client c_client) 
+{
+	(void)buffer;
+	std::string head = "=============================================\n List of all clients in server : \n";
+	send(c_client.get_client_fd(), head.c_str(), head.size(), 0);
+	
+	for (size_t i = 0; i < client_vec.size(); i++)
+	{
+		std::string cl_line = "-#" + client_vec[i].getNickname() + "\n";
+		send(c_client.get_client_fd(), cl_line.c_str(), cl_line.size(), 0);
+	}
+	std::string bottom = "=============================================\n";
+	send(c_client.get_client_fd(), bottom.c_str(), bottom.size(), 0);
+}
+
 void    Server::NICK(std::string buffer, Client c_client)
 {
 	std::stringstream	sbuf(buffer);
@@ -209,11 +258,11 @@ void    Server::NICK(std::string buffer, Client c_client)
 		if (!new_nick.empty())
 			break ;
 	}
-    if (new_nick.empty()) {
-        std::string err = red + "Error: empty new nickname.\n" + white;
-        send(c_client.get_client_fd(), err.c_str(), err.size(), 0);
-        return ;
-    }
+	if (new_nick.empty()) {
+		std::string err = red + "Error: empty new nickname.\n" + white;
+		send(c_client.get_client_fd(), err.c_str(), err.size(), 0);
+		return ;
+	}
 	for (size_t i = 0; i < new_nick.size(); i++) {
 		if (new_nick[i] == ' ') {
 			std::string error = red + "Error: nickname can't contain spaces.\n" + white;
@@ -226,17 +275,17 @@ void    Server::NICK(std::string buffer, Client c_client)
 		if (client_vec[i].getUsername() == c_client.getUsername())
 			break ;
 	}
-    if (c_client.in_channel)
-    {
-        for (size_t j = 0; j < channel_vec.size(); j++) {
-            if (c_client.get_current_chan() == channel_vec[j].get_name()) {
-                for (size_t k = 0; k < channel_vec[j].client_list.size(); k++) {
-                    if (channel_vec[j].client_list[k].getUsername() == c_client.getUsername())
-                        channel_vec[j].client_list[k].setNickname(new_nick);
-                }
-            }
-        }
-    }
+	if (c_client.in_channel)
+	{
+		for (size_t j = 0; j < channel_vec.size(); j++) {
+			if (c_client.get_current_chan() == channel_vec[j].get_name()) {
+				for (size_t k = 0; k < channel_vec[j].client_list.size(); k++) {
+					if (channel_vec[j].client_list[k].getUsername() == c_client.getUsername())
+						channel_vec[j].client_list[k].setNickname(new_nick);
+				}
+			}
+		}
+	}
 	client_vec[i].setNickname(new_nick);
 	std::string	success = "\e[1;32mYour nickname has been changed to " + new_nick + ".\n\e[0m";
 	send(c_client.get_client_fd(), success.c_str(), success.size(), 0);

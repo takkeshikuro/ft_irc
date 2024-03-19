@@ -45,10 +45,11 @@ class Server {
 		void	JOIN(std::string buffer, Client c_client);
 		void	LEAVE(std::string buffer, Client c_client);
 		void	LIST_CH(std::string buffer, Client c_client);
+		void	LIST_CL(std::string buffer, Client c_client);
 		void    NICK(std::string buffer, Client c_client);
 		void    HELP(std::string buffer, Client c_client);
 		void    SECRET_ROOT(std::string buffer, Client c_client);
-		
+		int		command_unknow(Client c_client);
         void    MODE(std::string buffer, Client clear_client);
 		void    check_MODE_args(std::string args[3], Client c_client);
 		void    MODE_oprt(Channel &chan, std::string args[3], Client c_client);
