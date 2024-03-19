@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
+/*   By: tmorikaw <tmorikaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 02:23:18 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/18 18:04:42 by marecarraya      ###   ########.fr       */
+/*   Updated: 2024/03/19 03:16:48 by tmorikaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ Channel::Channel(std::string name) {
 	this->user_max = 10;
     this->limit = -1;
 	keypass_set = false;
+	invite_mode = false;
 	//	
 }
 
@@ -182,6 +183,20 @@ bool	Channel::check_keypass(Client c_client)
 	}
 	return true; //no keypass set
 }
+
+bool	Channel::get_invite_set()
+{
+	return this->invite_mode;
+}
+
+void	Channel::set_invite_set()
+{
+	if (this->invite_mode == false)
+		this->invite_mode = true;
+	else
+		this->invite_mode = false;
+}
+
 
 void    Channel::get_clients()
 {

@@ -1,20 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   mode_cmd.cpp                                       :+:      :+:    :+:   */
+/*   3_mode.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
+/*   By: tmorikaw <tmorikaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/12 21:41:39 by marecarraya       #+#    #+#             */
-/*   Updated: 2024/03/18 18:30:48 by marecarraya      ###   ########.fr       */
+/*   Updated: 2024/03/19 06:13:57 by tmorikaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/Server.hpp"
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////// MODE ////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+
+// 1 - +o/-o
+// 2 - -l
+// 3 - +k/-k
+// 4 - checking mode
 
 void    Server::MODE_oprt(Channel &chan, std::string args[3], Client c_client)
 {
@@ -43,41 +45,41 @@ void    Server::MODE_oprt(Channel &chan, std::string args[3], Client c_client)
 
 void    Server::MODE_limit(Channel &chan, std::string args[3], Client c_client)
 {
-    // /MODE #channel +l value
-    for (size_t i = 0; i < args[2].size(); i++)
-    {
-        if (!isdigit(args[2][i]) && args[2][i] != '\n' && args[2][i] != ' ')
-        {
-            std::string invalid = "\e[1;31mError: Invalid limit value (" + args[2] + ")\n" + RESET;
-            send(c_client.get_client_fd(), invalid.c_str(), invalid.size(), 0);
-            return ;
-        }
-    }
+	// /MODE #channel +l value
+	for (size_t i = 0; i < args[2].size(); i++)
+	{
+		if (!isdigit(args[2][i]) && args[2][i] != '\n' && args[2][i] != ' ')
+		{
+			std::string invalid = "\e[1;31mError: Invalid limit value (" + args[2] + ")\n" + RESET;
+			send(c_client.get_client_fd(), invalid.c_str(), invalid.size(), 0);
+			return ;
+		}
+	}
 
-    if (args[1] == "-l" || args[1] == "-l\n")
-    {
-        chan.set_limit(-1);
-        std::string tosend = YEL + c_client.getNickname() 
-            + GRE + " has unset users limit in " + BLU + "#" + chan.get_name() + RESET + "\n";
-        chan.send_string(tosend);
-        std::cout << tosend;
-    }
-    else
-    {
-        if (chan.get_size() > std::atoi(args[2].c_str()))
-        {
-            std::string errr = BLU + chan.get_name() + RED + " currently has more than " 
-                +  args[2] + " users. Can't set limit to this value.\n" + RESET;
-            send(c_client.get_client_fd(), errr.c_str(), errr.size(), 0);
-        }
-        else
-        {
-            chan.set_limit(std::atoi(args[2].c_str()));
-            std::string success = GRE + chan.get_name() 
-                + " channel now have a limit of " + args[2] + " users\n" + RESET;
-            chan.send_string(success);
-        }
-    }
+	if (args[1] == "-l" || args[1] == "-l\n")
+	{
+		chan.set_limit(-1);
+		std::string tosend = YEL + c_client.getNickname() 
+			+ GRE + " has unset users limit in " + BLU + "#" + chan.get_name() + RESET + "\n";
+		chan.send_string(tosend);
+		std::cout << tosend;
+	}
+	else
+	{
+		if (chan.get_size() > std::atoi(args[2].c_str()))
+		{
+			std::string errr = BLU + chan.get_name() + RED + " currently has more than " 
+				+  args[2] + " users. Can't set limit to this value.\n" + RESET;
+			send(c_client.get_client_fd(), errr.c_str(), errr.size(), 0);
+		}
+		else
+		{
+			chan.set_limit(std::atoi(args[2].c_str()));
+			std::string success = GRE + chan.get_name() 
+				+ " channel now have a limit of " + args[2] + " users\n" + RESET;
+			chan.send_string(success);
+		}
+	}
 }
 
 void	Server::MODE_keypass_add(Channel &chan, Client c_client)
@@ -151,6 +153,22 @@ void	Server::MODE_keypass_rm(Channel &chan, Client c_client)
 	send(c_client.get_client_fd(), no_kp.c_str(), no_kp.size(), 0);
 }
 
+void	Server::MODE_invite(Channel &chan, Client c_client)
+{
+	if (chan.get_invite_set() == false)
+	{
+		std::string invite = yellow + "This channel is know in invite mode only.\n" + white;
+		send(c_client.get_client_fd(), invite.c_str(), invite.size(), 0);
+		chan.set_invite_set();
+	}
+	else
+	{
+		std::string invite = yellow + "This channel is know in normal access mode.\n" + white;
+		send(c_client.get_client_fd(), invite.c_str(), invite.size(), 0);
+		chan.set_invite_set();
+	}
+}
+
 void Server::check_MODE_args(std::string args[3], Client c_client)
 {
 	size_t  i;
@@ -173,8 +191,8 @@ void Server::check_MODE_args(std::string args[3], Client c_client)
 	}
 	if (j == channel_vec[i].op_clients.size())    //check if user is an operator in the active channel
 	{
-		std::string str = "You do not have the permissions to use /MODE in #"
-						+ channel_vec[i].get_name() + "\n";
+		std::string str = red + "You do not have the permissions to use /MODE in #"
+						+ channel_vec[i].get_name() + "\n" + white;
 		send(c_client.get_client_fd(), str.c_str(), str.size(), 0);
 		return ;
 	}
@@ -184,8 +202,10 @@ void Server::check_MODE_args(std::string args[3], Client c_client)
 		MODE_keypass_add(channel_vec[i], c_client);
 	else if (args[1] == "-k" || args[1] == "-k\n") 
 		MODE_keypass_rm(channel_vec[i], c_client);
-    else if (args[1] == "-l" || "+l" || "-l\n")
-        MODE_limit(channel_vec[i], args, c_client);
+	else if (args[1] == "-l" || args[1] == "+l" || args[1] == "-l\n")
+		MODE_limit(channel_vec[i], args, c_client);
+	else if (args[1] == "+i" || args[1] == "+i\n" || args[1] == "-i" || args[1] == "-i\n") 
+		MODE_invite(channel_vec[i], c_client);
 	else if (args[1].empty())
 	{
 		for (size_t k = 0; k < channel_vec[i].op_clients.size(); k++)

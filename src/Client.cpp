@@ -16,7 +16,9 @@ Client::Client() : in_channel(0) {}
 
 Client::Client(std::string pw) : password(pw) {
 	in_channel = 0;
+	invite_access = 0;
 	is_admin = false;
+	set_current_channel("!no_chan!");
 	green = "\e[1;32m";
 	white = "\e[0;37m";
 	red = "\e[1;31m";
@@ -189,4 +191,15 @@ void    Client::set_current_channel(std::string new_chan) {
 
 std::string    Client::get_current_chan() const {
 	return current_channel;
+}
+
+void	Client::set_invite_access() {
+	if (this->invite_access == 0)
+		this->invite_access = 1;
+	else
+		this->invite_access = 0;
+}
+
+int	Client::get_invite_access() {
+	return this->invite_access;
 }

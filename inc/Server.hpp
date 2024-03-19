@@ -49,13 +49,18 @@ class Server {
 		void    NICK(std::string buffer, Client c_client);
 		void    HELP(std::string buffer, Client c_client);
 		void    SECRET_ROOT(std::string buffer, Client c_client);
+		void	INVITE(std::string buffer, Client c_client);
+		bool	check_channel(Client &c_client);
+		bool	invite_target(Client &c_client, Client &target, std::string chan);
 		int		command_unknow(Client c_client);
+
         void    MODE(std::string buffer, Client clear_client);
 		void    check_MODE_args(std::string args[3], Client c_client);
 		void    MODE_oprt(Channel &chan, std::string args[3], Client c_client);
 		void	MODE_keypass_add(Channel &chan, Client c_client);
 		void	MODE_keypass_rm(Channel &chan, Client c_client);
         void    MODE_limit(Channel &chan, std::string args[3], Client c_client);
+		void	MODE_invite(Channel &chan, Client c_client);
 
 	private :
 		struct sockaddr_in serverAddr;
