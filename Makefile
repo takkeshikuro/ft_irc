@@ -3,7 +3,9 @@ CXX		= c++
 CPPFLAGS	= -Wall -Wextra -Werror -std=c++98 -c -I includes/
 
 SRCS		= main.cpp Server.cpp Client.cpp cmd_search.cpp 0_commands.cpp \
-			1_commands.cpp 2_commands.cpp 3_mode.cpp Channel.cpp
+			1_commands.cpp 2_commands.cpp 3_mode.cpp Channel.cpp \
+			utils.cpp 
+
 DIR_SRCS	= src/
 DIR_OBJS	= .objs/
 

@@ -6,7 +6,7 @@
 /*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:41:42 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/20 23:10:14 by marecarraya      ###   ########.fr       */
+/*   Updated: 2024/03/20 23:23:32 by marecarraya      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,26 +153,6 @@ void    Server::LIST_CL(std::string buffer, Client c_client)
 	send(c_client.get_client_fd(), bottom.c_str(), bottom.size(), 0);
 }
 
-int is_in_channel(Client c_client, Channel &chan)
-{
-    for (int i = 0; i < chan.get_size(); i++)
-    {
-        if (chan.client_list[i].getUsername() == c_client.getUsername())
-            return i;
-    }
-    return -1;
-}
-
-int is_operator(Client c_client, Channel &chan)
-{
-    for (size_t i = 0; i < chan.op_clients.size(); i++)
-    {
-        if (chan.op_clients[i].getUsername() == c_client.getUsername())
-            return i;
-    }
-    return -1;
-}
-
 void    Server::NICK(std::string buffer, Client c_client)
 {
 	std::stringstream	sbuf(buffer);
@@ -203,13 +183,13 @@ void    Server::NICK(std::string buffer, Client c_client)
 	}
     for (size_t k = 0; k < channel_vec.size(); k++)         //change nickname in all channels vectors
     {
-        index = is_in_channel(c_client, channel_vec[k]);
+        index = index_channel(c_client, channel_vec[k]);
         if (index != -1)
             channel_vec[k].client_list[index].setNickname(new_nick);
     }
     for (size_t k = 0; k < channel_vec.size(); k++)         //change nickname in all channels operators vectors
     {
-        index = is_operator(c_client, channel_vec[k]);
+        index = index_operator(c_client, channel_vec[k]);
         if (index != -1)
             channel_vec[k].op_clients[index].setNickname(new_nick);
     }

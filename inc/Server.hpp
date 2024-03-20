@@ -17,7 +17,7 @@
 #include "exception.hpp"
 #include "Client.hpp"
 #include "Channel.hpp"
-
+#include "utils.hpp"
 class Client;
 //class Channel;
 
