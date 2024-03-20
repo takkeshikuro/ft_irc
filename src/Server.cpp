@@ -154,6 +154,8 @@ void	Server::manage_new_data(int fd)
 
 void Server::clear_clients(int fd)
 {
+    int index;
+
 	for(size_t i = 0; i < fds.size(); i++)// rm the client from the pollfd
 	{ 
 		if (fds[i].fd == fd) 
@@ -170,6 +172,18 @@ void Server::clear_clients(int fd)
 			break;
 		}
  	}
+    for (size_t i = 0; i < channel_vec.size(); i++)  //rm the client from channels
+    {
+        index = index_channel_fd(fd, channel_vec[i]);
+        if (index != -1)
+            channel_vec[i].client_list.erase(channel_vec[i].client_list.begin() + index);
+    }
+    for (size_t i = 0; i < channel_vec.size(); i++)  //rm the client from operator vectors 
+    {
+        index = index_operator_fd(fd, channel_vec[i]);
+        if (index != -1)
+            channel_vec[i].op_clients.erase(channel_vec[i].op_clients.begin() + index);
+    }
 }
 
 void Server::close_fds()
