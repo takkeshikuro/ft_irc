@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_search.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmorikaw <tmorikaw@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 02:11:04 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/03/19 07:55:35 by tmorikaw         ###   ########.fr       */
+/*   Updated: 2024/03/21 00:41:56 by marecarraya      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,8 @@ int	search_cmd(std::string &cmd, int arg)
 {
 	if (arg)
 	{
-		
-		std::string commands[8] = {"/PRIVMSG", "/WHOIS", "/CREATE", "/NICK", "/JOIN", "/MODE", "/TOPIC", "/INVITE"};
-		for (int i = 0; i < 8; i++)
+		std::string commands[9] = {"/PRIVMSG", "/WHOIS", "/CREATE", "/NICK", "/JOIN", "/MODE", "/TOPIC", "/INVITE", "/KICK"};
+		for (int i = 0; i < 9; i++)
 		{
 			if (cmd == commands[i])
 				return (i);
@@ -86,6 +85,9 @@ int Server::is_command(char *buffer, Client c_client)
 				case 7 :
 					INVITE(buf, c_client);
 					break ;
+                case 8 :
+                    KICK(buf, c_client);
+                    break ;
 				case -1 :
 					command_unknow(c_client);
 					break ;		
@@ -127,7 +129,7 @@ int Server::is_command(char *buffer, Client c_client)
 
 int	Server::command_unknow(Client c_client)
 {
-	std::string cmd_unk = red + "Command unknow. (press /help).\n" + white;
+	std::string cmd_unk = red + "Command unknown. (press /help).\n" + white;
 	send(c_client.get_client_fd(), cmd_unk.c_str(), cmd_unk.size(), 0);
 	return 1;
 }

@@ -54,6 +54,8 @@ class Server {
 		bool	check_channel(Client &c_client);
 		bool	invite_target(Client &c_client, Client &target, std::string chan);
 		int		command_unknow(Client c_client);
+        
+        void    KICK(std::string buffer, Client c_client);
 
         void    MODE(std::string buffer, Client clear_client);
 		void    check_MODE_args(std::string args[3], Client c_client);
