@@ -6,7 +6,7 @@
 /*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 02:13:54 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/03/21 01:05:37 by marecarraya      ###   ########.fr       */
+/*   Updated: 2024/03/21 15:16:21 by marecarraya      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,6 +167,13 @@ void    Server::KICK(std::string buffer, Client c_client)
         send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
         return ;
     }
+    index = index_operator_nick(args[2], channel_vec[i]);
+    if (index != -1)
+    {
+        std::string to_send = YEL "\e[1;31mYou can't kick an operator (\e[1;33m" + args[2] + "\e[1;31m).\n" + RESET;
+        send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
+        return ;   
+    }
     index = index_channel_nick(args[2], channel_vec[i]);
     if (index == -1) //target not in channel
     {
@@ -179,6 +186,6 @@ void    Server::KICK(std::string buffer, Client c_client)
     channel_vec[i].client_list.erase(channel_vec[i].client_list.begin() + index);
     std::string to_send = YEL + c_client.getNickname() 
                 + "\e[1;31m has kicked " + YEL + args[2] 
-                + "\e[1;31m from \e[1;34m#" + args[2] + RESET + ".\n";
+                + "\e[1;31m from \e[1;34m#" + args[1] + RESET + ".\n";
     channel_vec[i].send_string(to_send);
 }
