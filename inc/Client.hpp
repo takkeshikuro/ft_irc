@@ -21,6 +21,8 @@ class Client {
 		Client(std::string pw);
 		~Client();
 		
+		void	client_starting_point_irssi(std::string &irssi_base);
+
 		void	set_client_fd(int fd);
 		int		get_client_fd();
 	//	int     get_size();

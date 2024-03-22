@@ -35,7 +35,8 @@ class Server {
 		static void SignalHandler(int sig);
 		void close_fds(); // close file descriptors
  		void clear_clients(int fd); // clear clients
-        ;
+		int		check_irssi_entrance(int fd);
+
 		int     is_command(char *buffer, Client c_client); //parsing command
 		void    PRIVMSG(std::string buffer, Client c_client);
 		void	WHOIS(std::string buffer, Client c_client);
@@ -54,15 +55,15 @@ class Server {
 		bool	check_channel(Client &c_client);
 		bool	invite_target(Client &c_client, Client &target, std::string chan);
 		int		command_unknow(Client c_client);
-        
-        void    KICK(std::string buffer, Client c_client);
+		
+		void    KICK(std::string buffer, Client c_client);
 
-        void    MODE(std::string buffer, Client clear_client);
+		void    MODE(std::string buffer, Client clear_client);
 		void    check_MODE_args(std::string args[3], Client c_client);
 		void    MODE_oprt(Channel &chan, std::string args[3], Client c_client);
 		void	MODE_keypass_add(Channel &chan, Client c_client);
 		void	MODE_keypass_rm(Channel &chan, Client c_client);
-        void    MODE_limit(Channel &chan, std::string args[3], Client c_client);
+		void    MODE_limit(Channel &chan, std::string args[3], Client c_client);
 		void	MODE_invite(Channel &chan, Client c_client);
 
 	private :
@@ -76,7 +77,7 @@ class Server {
 		std::vector<Channel> channel_vec;
 		std::vector<struct pollfd> fds; //-> vector of pollfd		
 		char buffer[BUFFER_SIZE];
-
+		std::string irssi_base;
 		std::string green;
 		std::string white;
 		std::string red;

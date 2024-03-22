@@ -109,7 +109,10 @@ void	Server::manage_new_client()
 	client_vec.push_back(new_client); //-> add the client to the vector of clients
 	fds.push_back(NewPoll); //-> add the client socket to the pollfd
 	std::cout << GRE << "\nNouvelle connexion acceptée\n" << "+Client <" << incoming_fd << "> Connected" << WHI << std::endl;
-	client_vec.back().client_starting_point();
+	if (check_irssi_entrance(incoming_fd))
+		client_vec.back().client_starting_point_irssi(this->irssi_base);
+	else
+		client_vec.back().client_starting_point();
 }
 
 void	Server::manage_new_data(int fd) 
