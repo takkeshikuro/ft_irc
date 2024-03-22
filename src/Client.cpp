@@ -29,6 +29,35 @@ Client::~Client() {
 	//std::cout << "Client " << nickname << " is gone\n";
 }
 
+//----------> GETTER
+int				Client::get_client_fd() { return client_fd; }
+int				Client::getSocket() const { return socket_usr; }
+std::string&	Client::getUsername() { return username; }
+std::string&	Client::getNickname() { return nickname; }
+std::string&	Client::getIPAddress() { return ip_addr; }
+int				Client::get_invite_access() { return this->invite_access; }
+std::string		Client::get_current_chan() const { return current_channel; }
+
+//--------->SETTER
+void	Client::set_client_fd(int fd) { client_fd = fd; } 
+void	Client::set_IpAdd(std::string ipadd) { IPadd = ipadd; }
+void    Client::setNickname(std::string new_nick) { nickname = new_nick; }
+void    Client::set_current_channel(std::string new_chan) { current_channel = new_chan; }
+void	Client::set_admin_perm()
+{
+	this->is_admin = true;
+	std::cout <<GREEN <<"client [" <<YELLOW <<nickname <<GREEN \
+			  <<"] is now admin." << WHITE<< "\n";
+	return ;
+}
+
+void	Client::set_invite_access() {
+	if (this->invite_access == 0)
+		this->invite_access = 1;
+	else
+		this->invite_access = 0;
+}
+
 bool	Client::check_password(std::string pw_to_check)
 {
 	if (pw_to_check.length() == password.length())
@@ -145,61 +174,3 @@ void	Client::client_starting_point()
 	std::cout << "starting point over\n";
 }
 
-void	Client::set_admin_perm()
-{
-	this->is_admin = true;
-	std::cout <<GREEN <<"client [" <<YELLOW <<nickname <<GREEN \
-			  <<"] is now admin." << WHITE<< "\n";
-	return ;
-}
-
-int Client::get_client_fd() {
-	return client_fd;
-}
-
-void Client::set_client_fd(int fd) {
-	client_fd = fd;
-} 
-
-void Client::set_IpAdd(std::string ipadd) {
-	IPadd = ipadd;
-}
-		
-int Client::getSocket() const {
-	return socket_usr;
-}
-
-std::string& Client::getUsername() {
-	return username;
-}
-
-std::string& Client::getNickname() {
-	return nickname;
-}
-
-std::string& Client::getIPAddress() {
-	return ip_addr;
-}
-
-void    Client::setNickname(std::string new_nick) {
-	nickname = new_nick;
-}
-
-void    Client::set_current_channel(std::string new_chan) {
-	current_channel = new_chan;
-}
-
-std::string    Client::get_current_chan() const {
-	return current_channel;
-}
-
-void	Client::set_invite_access() {
-	if (this->invite_access == 0)
-		this->invite_access = 1;
-	else
-		this->invite_access = 0;
-}
-
-int	Client::get_invite_access() {
-	return this->invite_access;
-}
