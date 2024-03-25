@@ -36,7 +36,9 @@ class Server {
 		void close_fds(); // close file descriptors
  		void clear_clients(int fd); // clear clients
 		int		check_irssi_entrance(int fd);
-
+		
+		
+		int		is_irssi_command(char *buffer, Client c_client);
 		int     is_command(char *buffer, Client c_client); //parsing command
 		void    PRIVMSG(std::string buffer, Client c_client);
 		void	WHOIS(std::string buffer, Client c_client);

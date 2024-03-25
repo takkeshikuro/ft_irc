@@ -28,31 +28,45 @@ class Client {
 	//	int     get_size();
  		void	set_IpAdd(std::string ipadd);
 		void	setNickname(std::string new_nick);
+		void	setUsername(std::string new_user);
+		void	setRealname(std::string new_real);
+
 		void	client_starting_point();
 		bool	check_password(std::string pw_to_check);
 		void	starting_point_data_set();
 		int 	getSocket() const;
-		std::string&	getUsername();
 		std::string&	getNickname();
+		std::string&	getUsername();
+		std::string&	getRealname();
+		
 		std::string&	getIPAddress();
 		
+		void		set_is_irssi();
 		void		set_admin_perm();
 		void		set_current_channel(std::string);
 		std::string get_current_chan(void) const;
 		void		set_invite_access();
 		int			get_invite_access();
+
+		bool		get_is_irssi() const;
+
 		int in_channel;
 
 	private : 
 		std::string	password;
 		std::string IPadd; //-> client ip address
 		int			socket_usr;
+		bool		is_irssi;
 		int			client_fd;
  		bool		is_admin;
 		int			invite_access;
 
-		std::string username;
+		
+		
 		std::string nickname;
+		std::string username;
+		std::string realname;
+		
 		std::string ip_addr;
 		std::string current_channel;
 		

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_search.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marecarrayan <marecarrayan@student.42.f    +#+  +:+       +#+        */
+/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 02:11:04 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/03/21 00:41:56 by marecarraya      ###   ########.fr       */
+/*   Updated: 2024/03/25 22:48:59 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,18 @@ int	search_cmd(std::string &cmd, int arg)
 	return -1;
 }
 
+int Server::is_irssi_command(char *buffer, Client c_client)
+{
+	std::cout << "is irssi command\n";
+	(void)buffer;
+	(void)c_client;
+	return 0;
+}
+
 int Server::is_command(char *buffer, Client c_client)
 {
+	if (c_client.get_is_irssi() == true)
+		return -1;
 	std::string			buf = buffer;
 	std::string			cmd_string;
 	std::stringstream	sbuf(buf);

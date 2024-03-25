@@ -110,7 +110,10 @@ void	Server::manage_new_client()
 	fds.push_back(NewPoll); //-> add the client socket to the pollfd
 	std::cout << GRE << "\nNouvelle connexion acceptée\n" << "+Client <" << incoming_fd << "> Connected" << WHI << std::endl;
 	if (check_irssi_entrance(incoming_fd))
+	{
+		client_vec.back().set_is_irssi();
 		client_vec.back().client_starting_point_irssi(this->irssi_base);
+	}
 	else
 		client_vec.back().client_starting_point();
 }
@@ -137,8 +140,13 @@ void	Server::manage_new_data(int fd)
 	else//-> print the received data
 	{ 
 		buffer[bytes] = '\0';
-		if (is_command(buffer, current_client))
+		int iscmd = is_command(buffer, current_client);
+		if (iscmd)
 			return ;
+		else if (iscmd == -1) {
+			if (is_irssi_command(buffer, current_client))
+				return ;
+		}
 		if (current_client.in_channel)
 		{
 			size_t j;

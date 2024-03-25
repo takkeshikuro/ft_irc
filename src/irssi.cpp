@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   irssi.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmorikaw <tmorikaw@student.42.fr>          +#+  +:+       +#+        */
+/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 05:00:55 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/03/22 05:01:01 by tmorikaw         ###   ########.fr       */
+/*   Updated: 2024/03/25 23:46:30 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,20 @@ void	Client::client_starting_point_irssi(std::string &irssi_base)
 {
 	std::cerr << "|||" << irssi_base << "|||\n";
 	
+	std::string nickname_irssi;
+	std::size_t nick_start = irssi_base.find("NICK");
+	std::size_t nickname_start = irssi_base.find(' ', nick_start);
+	std::size_t nickname_end = irssi_base.find('\n', nickname_start);
+	nickname_irssi = irssi_base.substr(nickname_start + 1, (nickname_end - nickname_start) - 2);
+	this->setNickname(nickname_irssi);
+	this->setUsername("username ok");
+	this->setRealname("realname ok");
 	
-	std::string welcome = ":server 001 tmorikaw :Welcome\n";
-    send(client_fd, welcome.c_str(), welcome.size(), 0);
-    char mode[1024];
+
+	std::string welcome = ":server 001 " + this->nickname + " :Welcome to the pirate Network, " + nickname +":"+ IPadd + "\r\n";
+	//std::string welcome = ":server 001 tmorikaw :Welcome\n";
+	send(client_fd, welcome.c_str(), welcome.size(), 0);
+	char mode[1024];
 	int byte1 = read(client_fd, mode, sizeof(mode));
 	if (byte1 > 0) 
 	{
@@ -27,11 +37,11 @@ void	Client::client_starting_point_irssi(std::string &irssi_base)
 		std::string s1(mode);
 		std::cerr << ";irssi_s1; = " << s1 << "|" << std::endl;
 		std::string ss1 = s1 + "after s1\n";
-    	send(client_fd, ss1.c_str(), ss1.size(), 0);
+		send(client_fd, ss1.c_str(), ss1.size(), 0);
 	}
 
 	
-    char ping[1024];
+	char ping[1024];
 	int byte2 = read(client_fd, ping, sizeof(ping));
 	if (byte2 > 0) 
 	{
@@ -42,9 +52,9 @@ void	Client::client_starting_point_irssi(std::string &irssi_base)
 		send(client_fd, ss2.c_str(), ss2.size(), 0);
 	}
 	
-    
+	
 
-    char quit[1024];
+	char quit[1024];
 	int byte3 = read(client_fd, quit, sizeof(quit));
 	if (byte3 > 0) 
 	{
@@ -52,7 +62,7 @@ void	Client::client_starting_point_irssi(std::string &irssi_base)
 		std::string s3(quit);
 		std::cerr << ";irssi_s3; = " << s3 << "|" << std::endl;
 		std::string ss3 = s3 + "after s3\n";
-    	send(client_fd, ss3.c_str(), ss3.size(), 0);
+		send(client_fd, ss3.c_str(), ss3.size(), 0);
 	}
 
 
@@ -95,12 +105,12 @@ int cmp(std::string s1)
 {
 	std::string cap_ls = "CAP LS";
 
-    for (int i = 0; i < 6; ++i) 
+	for (int i = 0; i < 6; ++i) 
 	{
-        if (s1[i] != cap_ls[i])
-            return 1;
-    }
-    return 0;
+		if (s1[i] != cap_ls[i])
+			return 1;
+	}
+	return 0;
 }
 
 
@@ -116,8 +126,8 @@ int Server::check_irssi_entrance(int fd)
 		{
 			std::cerr << ";irssi connexion;\n";
 			this->irssi_base = answer;
-            return 1;
+			return 1;
 		}
 	}
-    return 0;
+	return 0;
 }
