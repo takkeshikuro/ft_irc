@@ -6,67 +6,57 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 05:00:55 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/03/25 23:46:30 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/27 00:09:19 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/Server.hpp"
 
+void	Client::set_user_data(std::string &s_data)
+{
+	std::string nickname_i;
+	std::size_t nick_start = (s_data.find(' ', 8) + 1);
+	std::size_t nick_end = (s_data.find('\n', nick_start) - 1);
+	nickname_i = s_data.substr(nick_start, (nick_end - nick_start));	
+	this->setNickname(nickname_i);
+	
+	
+	std::string username_i;
+	std::size_t start = s_data.find("USER");
+	std::size_t user_start = (s_data.find(' ', start) + 1);
+	std::size_t user_end = s_data.find(' ', user_start);
+	username_i = s_data.substr(user_start, (user_end - user_start));
+	this->setUsername(username_i);
+
+	std::string realname_i;
+	start = s_data.find("127.0.0.1");
+	std::size_t real_start = (s_data.find(' ', start) + 2);
+	std::size_t real_end = s_data.find('\n', real_start);
+	realname_i = s_data.substr(real_start, (real_end - real_start));
+	this->setRealname(realname_i);
+	return ;
+}
+
 void	Client::client_starting_point_irssi(std::string &irssi_base) 
 {
-	std::cerr << "|||" << irssi_base << "|||\n";
-	
-	std::string nickname_irssi;
-	std::size_t nick_start = irssi_base.find("NICK");
-	std::size_t nickname_start = irssi_base.find(' ', nick_start);
-	std::size_t nickname_end = irssi_base.find('\n', nickname_start);
-	nickname_irssi = irssi_base.substr(nickname_start + 1, (nickname_end - nickname_start) - 2);
-	this->setNickname(nickname_irssi);
-	this->setUsername("username ok");
-	this->setRealname("realname ok");
+	set_user_data(irssi_base);
+	std::string RPL_WELCOME = ":localhost 001 " + getNickname() + " :Welcome to the Internet Relay Network, " + getNickname() +":"+ IPadd + "\r\n";
+	std::string RPL_YOURHOST = ":localhost 002 " + getNickname() + " :Your host is <server_name> (localhost), running version 1.0.1\r\n";
+	std::string RPL_CREATED = ":localhost 003 " + getNickname() + " :This server was created <include date_time>\r\n";
+	std::string RPL_MYINFO = ":localhost 004 " + getNickname() + " :<include server_name> 1.0.1 io kost k\r\n";
+	std::string RPL_ISUPPORT = ":localhost 005 " + getNickname() + " :CHANNELLEN=32 NICKLEN=9 TOPICLEN=307 : are supported by this server\r\nEnjoy!!\r\n";
+	send(client_fd, RPL_WELCOME.c_str(), RPL_WELCOME.size(), 0);
+	send(client_fd, RPL_YOURHOST.c_str(), RPL_YOURHOST.size(), 0);
+	send(client_fd, RPL_CREATED.c_str(), RPL_CREATED.size(), 0);
+	send(client_fd, RPL_MYINFO.c_str(), RPL_MYINFO.size(), 0);
+	send(client_fd, RPL_ISUPPORT.c_str(), RPL_ISUPPORT.size(), 0);
+
+	// addToClientBuffer(server, client_fd, RPL_YOURHOST(it->second.getNickname(), "42_Ftirc", "1.1"));
+	// addToClientBuffer(server, client_fd, RPL_CREATED(it->second.getNickname(), server->getDatetime()));
+	// addToClientBuffer(server, client_fd, RPL_MYINFO(it->second.getNickname(), "localhost", "1.1", "io", "kost", "k"));
+	// addToClientBuffer(server, client_fd, RPL_ISUPPORT(it->second.getNickname(), "CHANNELLEN=32 NICKLEN=9 TOPICLEN=307"));
 	
 
-	std::string welcome = ":server 001 " + this->nickname + " :Welcome to the pirate Network, " + nickname +":"+ IPadd + "\r\n";
-	//std::string welcome = ":server 001 tmorikaw :Welcome\n";
-	send(client_fd, welcome.c_str(), welcome.size(), 0);
-	char mode[1024];
-	int byte1 = read(client_fd, mode, sizeof(mode));
-	if (byte1 > 0) 
-	{
-		mode[byte1] = '\0';
-		std::string s1(mode);
-		std::cerr << ";irssi_s1; = " << s1 << "|" << std::endl;
-		std::string ss1 = s1 + "after s1\n";
-		send(client_fd, ss1.c_str(), ss1.size(), 0);
-	}
-
-	
-	char ping[1024];
-	int byte2 = read(client_fd, ping, sizeof(ping));
-	if (byte2 > 0) 
-	{
-		ping[byte2] = '\0';
-		std::string s2(ping);
-		std::cerr << ";irssi_s2; = " << s2 << "|" << std::endl;
-		std::string ss2 = s2 + "after s2\n";
-		send(client_fd, ss2.c_str(), ss2.size(), 0);
-	}
-	
-	
-
-	char quit[1024];
-	int byte3 = read(client_fd, quit, sizeof(quit));
-	if (byte3 > 0) 
-	{
-		quit[byte3] = '\0';
-		std::string s3(quit);
-		std::cerr << ";irssi_s3; = " << s3 << "|" << std::endl;
-		std::string ss3 = s3 + "after s3\n";
-		send(client_fd, ss3.c_str(), ss3.size(), 0);
-	}
-
-
-	
 	// std::string needpw = "\nPassword required for authentication : ";
 	// send(client_fd, needpw.c_str(), needpw.length(), 0);
 	// while (1) 
@@ -98,21 +88,21 @@ void	Client::client_starting_point_irssi(std::string &irssi_base)
 	// 	}
 	// }
 //	starting_point_data_set();
-	std::cout << "starting point irssi over\n";
+
+	
+	std::cout <<") starting point irssi over\n";
 }
 
 int cmp(std::string s1) 
 {
 	std::string cap_ls = "CAP LS";
 
-	for (int i = 0; i < 6; ++i) 
-	{
+	for (int i = 0; i < 6; ++i) {
 		if (s1[i] != cap_ls[i])
 			return 1;
 	}
 	return 0;
 }
-
 
 int Server::check_irssi_entrance(int fd)
 {
@@ -124,10 +114,12 @@ int Server::check_irssi_entrance(int fd)
 		std::string answer(buff);
 		if (cmp(answer) == 0)
 		{
-			std::cerr << ";irssi connexion;\n";
+			std::cerr << "!irssi connexion!\n";
 			this->irssi_base = answer;
 			return 1;
 		}
 	}
+	else
+		std::cerr << "check irssi entrance failed\n";
 	return 0;
 }

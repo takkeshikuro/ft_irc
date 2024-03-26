@@ -22,6 +22,7 @@ class Client {
 		~Client();
 		
 		void	client_starting_point_irssi(std::string &irssi_base);
+		void	set_user_data(std::string &s_data);
 
 		void	set_client_fd(int fd);
 		int		get_client_fd();

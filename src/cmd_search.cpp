@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 02:11:04 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/03/25 22:48:59 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/25 23:54:05 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ int	search_cmd(std::string &cmd, int arg)
 
 int Server::is_irssi_command(char *buffer, Client c_client)
 {
-	std::cout << "is irssi command\n";
+	std::cerr << "is irssi command\n";
 	(void)buffer;
 	(void)c_client;
 	return 0;

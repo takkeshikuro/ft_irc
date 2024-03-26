@@ -140,6 +140,8 @@ void	Server::manage_new_data(int fd)
 	else//-> print the received data
 	{ 
 		buffer[bytes] = '\0';
+		std::cerr << "debug buffer = " << buffer << "\n";
+		
 		int iscmd = is_command(buffer, current_client);
 		if (iscmd)
 			return ;
