@@ -29,8 +29,10 @@ class Server {
 
 		void	configuration();
 		void	default_channel_creation();
+		int 	tooManyClients(int client_socket);
+
 		void	launch_server();
-		void	manage_new_client();
+		int		manage_new_client();
 		void	manage_new_data(int fd);
 		static void SignalHandler(int sig);
 		void close_fds(); // close file descriptors

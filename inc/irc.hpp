@@ -16,6 +16,14 @@
 #include <list>
 #include <algorithm>
 
+
+# define ERR_FULL_SERV "[Server] You cannot join, the server is already full"
+# define MAX_CLIENT_NB 10
+# define SUCCESS 0
+# define FAILURE -1
+# define BREAK 2
+# define CONTINUE 3
+
 #define RED "\e[1;31m" //-> for red color
 #define WHI "\e[0;37m" //-> for white color
 #define GRE "\e[1;32m" //-> for green color

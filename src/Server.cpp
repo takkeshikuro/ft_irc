@@ -75,8 +75,16 @@ void	Server::launch_server()
 		{
 			if (fds[i].revents & POLLIN)//-> check if there is data to read
 			{
+
 				if (fds[i].fd == serverSocket)
+				{
 					manage_new_client();
+				}
+				// else // => If the dedicated fd for the Client/Server connection already exists
+				// {
+				// 	if (this->handleExistingConnexion(poll_fds, it) == BREAK)
+				// 		break ;
+				// }
 				else
 					manage_new_data(fds[i].fd);
 			}
@@ -85,37 +93,48 @@ void	Server::launch_server()
 	close_fds(); //close the fds when server stops
 }
 
-void	Server::manage_new_client() 
+int Server::tooManyClients(int client_socket)
 {
-	Client			new_client(password);
+	std::cout << RED << ERR_FULL_SERV << RESET << std::endl;
+	send(client_socket, ERR_FULL_SERV, strlen(ERR_FULL_SERV) + 1, 0);
+	close(client_socket);
+	return SUCCESS;
+}
+
+int	Server::manage_new_client() 
+{
+	Client				new_client(password);
 	struct sockaddr_in	ClientAddr;
-	struct pollfd	NewPoll;
-	socklen_t		len = sizeof(ClientAddr);
+	struct pollfd		NewPoll;
+	socklen_t			len = sizeof(ClientAddr);
+	int 				incoming_fd;
 	
-	int incoming_fd = accept(serverSocket, (sockaddr *)&(ClientAddr), &len);
-	if (incoming_fd == -1)
-		std::cerr << "Erreur lors de l'acceptation de la connexion entrante" << std::endl;
-	
+	incoming_fd = accept(serverSocket, (sockaddr *)&(ClientAddr), &len);
+	if (incoming_fd == -1) {
+		std::cerr << RED << "[Server] Accept() failed" << RESET << std::endl;
+		return (CONTINUE);
+	}
+	if (fds.size() > MAX_CLIENT_NB)
+		return tooManyClients(incoming_fd);
 	if (fcntl(incoming_fd, F_SETFL, O_NONBLOCK) == -1) //set the socket option (O_NONBLOCK) for non-blocking socket
 		throw SetOptionO_NONBLOCKError();
-	
 	NewPoll.fd = incoming_fd;//-> add the client socket to the pollfd
 	NewPoll.events = POLLIN; // set the event to POLLIN for reading data
 	NewPoll.revents = 0;
-	
 	new_client.set_client_fd(incoming_fd); //-> set the client file descriptor
 	new_client.set_IpAdd(inet_ntoa((ClientAddr.sin_addr))); //-> convert the ip address to string and set it
-	
 	client_vec.push_back(new_client); //-> add the client to the vector of clients
 	fds.push_back(NewPoll); //-> add the client socket to the pollfd
-	std::cout << GRE << "\nNouvelle connexion acceptée\n" << "+Client <" << incoming_fd << "> Connected" << WHI << std::endl;
-	if (check_irssi_entrance(incoming_fd))
+	
+	std::cout << GRE << "\nNouvelle connexion acceptée\n" << "+Client <" << incoming_fd << "> Connected\n" << RESET;
+	if (check_irssi_entrance(incoming_fd)) 
 	{
 		client_vec.back().set_is_irssi();
 		client_vec.back().client_starting_point_irssi(this->irssi_base);
 	}
 	else
 		client_vec.back().client_starting_point();
+	return SUCCESS;
 }
 
 void	Server::manage_new_data(int fd) 
