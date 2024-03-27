@@ -38,8 +38,8 @@ class Server {
 		void close_fds(); // close file descriptors
  		void clear_clients(int fd); // clear clients
 		int		check_irssi_entrance(int fd);
-		
-		
+		void	PING(std::string buffer, Client c_client);
+
 		int		is_irssi_command(char *buffer, Client c_client);
 		int     is_command(char *buffer, Client c_client); //parsing command
 		void    PRIVMSG(std::string buffer, Client c_client);
@@ -58,7 +58,7 @@ class Server {
 		void	INVITE(std::string buffer, Client c_client);
 		bool	check_channel(Client &c_client);
 		bool	invite_target(Client &c_client, Client &target, std::string chan);
-		int		command_unknow(Client c_client);
+		void	command_unknow(Client c_client, std::string cmd);
 		
 		void    KICK(std::string buffer, Client c_client);
 

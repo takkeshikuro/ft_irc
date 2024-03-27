@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 05:00:55 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/03/27 00:09:19 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/27 07:26:25 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,23 +40,17 @@ void	Client::set_user_data(std::string &s_data)
 void	Client::client_starting_point_irssi(std::string &irssi_base) 
 {
 	set_user_data(irssi_base);
-	std::string RPL_WELCOME = ":localhost 001 " + getNickname() + " :Welcome to the Internet Relay Network, " + getNickname() +":"+ IPadd + "\r\n";
-	std::string RPL_YOURHOST = ":localhost 002 " + getNickname() + " :Your host is <server_name> (localhost), running version 1.0.1\r\n";
-	std::string RPL_CREATED = ":localhost 003 " + getNickname() + " :This server was created <include date_time>\r\n";
-	std::string RPL_MYINFO = ":localhost 004 " + getNickname() + " :<include server_name> 1.0.1 io kost k\r\n";
-	std::string RPL_ISUPPORT = ":localhost 005 " + getNickname() + " :CHANNELLEN=32 NICKLEN=9 TOPICLEN=307 : are supported by this server\r\nEnjoy!!\r\n";
-	send(client_fd, RPL_WELCOME.c_str(), RPL_WELCOME.size(), 0);
-	send(client_fd, RPL_YOURHOST.c_str(), RPL_YOURHOST.size(), 0);
-	send(client_fd, RPL_CREATED.c_str(), RPL_CREATED.size(), 0);
-	send(client_fd, RPL_MYINFO.c_str(), RPL_MYINFO.size(), 0);
-	send(client_fd, RPL_ISUPPORT.c_str(), RPL_ISUPPORT.size(), 0);
+	send(client_fd, RPL_WELCOME(nickname, IPadd).c_str(), RPL_WELCOME(nickname, IPadd).size(), 0);
+	send(client_fd, RPL_YOURHOST(nickname, "[pirate server]").c_str(), RPL_YOURHOST(nickname, "pirate server").size(), 0);
+	send(client_fd, RPL_CREATED(nickname).c_str(), RPL_CREATED(nickname).size(), 0);
+	send(client_fd, RPL_MYINFO(nickname, "[pirate server]").c_str(), RPL_MYINFO(nickname, "pirate server").size(), 0);
+	send(client_fd, RPL_ISUPPORT(nickname).c_str(), RPL_ISUPPORT(nickname).size(), 0);
 
 	// addToClientBuffer(server, client_fd, RPL_YOURHOST(it->second.getNickname(), "42_Ftirc", "1.1"));
 	// addToClientBuffer(server, client_fd, RPL_CREATED(it->second.getNickname(), server->getDatetime()));
 	// addToClientBuffer(server, client_fd, RPL_MYINFO(it->second.getNickname(), "localhost", "1.1", "io", "kost", "k"));
 	// addToClientBuffer(server, client_fd, RPL_ISUPPORT(it->second.getNickname(), "CHANNELLEN=32 NICKLEN=9 TOPICLEN=307"));
 	
-
 	// std::string needpw = "\nPassword required for authentication : ";
 	// send(client_fd, needpw.c_str(), needpw.length(), 0);
 	// while (1) 

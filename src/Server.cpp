@@ -77,17 +77,20 @@ void	Server::launch_server()
 			{
 
 				if (fds[i].fd == serverSocket)
-				{
 					manage_new_client();
-				}
-				// else // => If the dedicated fd for the Client/Server connection already exists
-				// {
-				// 	if (this->handleExistingConnexion(poll_fds, it) == BREAK)
-				// 		break ;
-				// }
 				else
 					manage_new_data(fds[i].fd);
 			}
+			// else if (fds[i].revents & POLLOUT) {
+			// 	if (handlePolloutEvent(fds) == BREAK)
+			// 		break;
+			// }
+			// else if (fds[i].revents & POLLERR) {
+			// 	if (handlePollerEvent(fds) == BREAK)
+			// 		break ;
+			// 	else
+			// 		return (FAILURE);
+			// }
 		}
 	}
 	close_fds(); //close the fds when server stops
@@ -159,15 +162,11 @@ void	Server::manage_new_data(int fd)
 	else//-> print the received data
 	{ 
 		buffer[bytes] = '\0';
-		std::cerr << "debug buffer = " << buffer << "\n";
-		
-		int iscmd = is_command(buffer, current_client);
-		if (iscmd)
+		std::cerr << "[debug buffer = " << buffer << "]\n"; 
+		if (is_command(buffer, current_client))
 			return ;
-		else if (iscmd == -1) {
-			if (is_irssi_command(buffer, current_client))
-				return ;
-		}
+		else  
+			is_irssi_command(buffer, current_client);
 		if (current_client.in_channel)
 		{
 			size_t j;
