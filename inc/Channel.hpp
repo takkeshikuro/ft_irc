@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmorikaw <tmorikaw@student.42.fr>          +#+  +:+       +#+        */
+/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:45:49 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/19 04:51:54 by tmorikaw         ###   ########.fr       */
+/*   Updated: 2024/03/28 05:20:07 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ class Channel {
 		bool		get_invite_set();
 		void		set_invite_set();
 
-		
+	//	std::vector<Client> &Channel::getClientList();
 		std::vector<Client> client_list;
         std::vector<Client> op_clients;
 

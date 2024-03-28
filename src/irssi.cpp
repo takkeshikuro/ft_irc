@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 05:00:55 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/03/27 07:26:25 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/28 02:36:49 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void	Client::client_starting_point_irssi(std::string &irssi_base)
 //	starting_point_data_set();
 
 	
-	std::cout <<") starting point irssi over\n";
+	std::cout <<"starting point irssi over\n";
 }
 
 int cmp(std::string s1) 

@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 02:11:04 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/03/27 06:55:55 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/28 05:34:36 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,15 +43,15 @@ int	search_cmd(std::string &cmd, int arg)
 int	search_irssi_cmd(std::string &cmd, int arg)
 {
 	if (!arg) {
-		std::string commands[1] = {"PING"};
+		std::string commands[1] = {"LIST"};
 		for (int i = 0; i < 1; i++) {
 			if (cmd == commands[i])
 				return (i);
 		}
 	}
 	else {
-		std::string commands[1] = {"PING"};
-		for (int i = 0; i < 1; i++) {
+		std::string commands[3] = {"PING", "NICK", "LIST"};
+		for (int i = 0; i < 3; i++) {
 			if (cmd == commands[i])
 				return (i);
 		}
@@ -71,10 +71,12 @@ int Server::is_irssi_command(char *buffer, Client c_client)
 	{
 		size_t index_space = cmd_string.find(' ');
 		std::string cmd_arg = cmd_string.substr(0, index_space);
-		std::cout << "[" << cmd_arg <<"] = debug\n";
+	//	std::cout << "[" << cmd_arg <<"] = debug\n";
 		switch (search_irssi_cmd(cmd_arg, 1))
 		{
 			case 0 : PING(buffer, c_client); break;
+			case 1 : nick(buffer, c_client); break;
+			case 2 : list(buffer, c_client); break;
 			case -1 : command_unknow(c_client, cmd_arg); break ;		
 		}
 	}
@@ -82,6 +84,7 @@ int Server::is_irssi_command(char *buffer, Client c_client)
 	{
 		switch (search_irssi_cmd(cmd_string, 0))
 		{
+			case 0 : list(buffer, c_client); break;
 			case -1 : command_unknow(c_client, cmd_string); break ;		
 		}
 	}

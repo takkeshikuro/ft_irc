@@ -52,6 +52,9 @@ class Server {
 		void	LIST_CH(std::string buffer, Client c_client);
 		void	LIST_CL(std::string buffer, Client c_client);
 		void    NICK(std::string buffer, Client c_client);
+		void	nick(std::string buffer, Client c_client);
+		void	list(std::string buffer, Client c_client);
+
 		void    HELP(std::string buffer, Client c_client);
 		void    HELP_OPERATOR(std::string buffer, Client c_client);
 		void    SECRET_ROOT(std::string buffer, Client c_client);
