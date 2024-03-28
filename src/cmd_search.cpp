@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 02:11:04 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/03/28 05:34:36 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/28 07:15:54 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,8 @@ int	search_irssi_cmd(std::string &cmd, int arg)
 		}
 	}
 	else {
-		std::string commands[3] = {"PING", "NICK", "LIST"};
-		for (int i = 0; i < 3; i++) {
+		std::string commands[4] = {"PING", "NICK", "LIST", "JOIN"};
+		for (int i = 0; i < 4; i++) {
 			if (cmd == commands[i])
 				return (i);
 		}
@@ -77,6 +77,7 @@ int Server::is_irssi_command(char *buffer, Client c_client)
 			case 0 : PING(buffer, c_client); break;
 			case 1 : nick(buffer, c_client); break;
 			case 2 : list(buffer, c_client); break;
+			case 3 : join(buffer, c_client); break;
 			case -1 : command_unknow(c_client, cmd_arg); break ;		
 		}
 	}

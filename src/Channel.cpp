@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 02:23:18 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/28 05:22:33 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/28 09:24:59 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ std::string		Channel::get_keypass() { return this->channel_keypass; }
 int				Channel::get_limit() { return limit; }
 int				Channel::get_size() { return client_list.size(); }
 bool			Channel::get_invite_set() { return this->invite_mode; }
+size_t				Channel::get_user_max() { return this->user_max; }
 
 //-------> SETTER
 void	Channel::set_description(std::string &s) { this->description = s; }

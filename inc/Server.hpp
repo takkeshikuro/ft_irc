@@ -38,9 +38,15 @@ class Server {
 		void close_fds(); // close file descriptors
  		void clear_clients(int fd); // clear clients
 		int		check_irssi_entrance(int fd);
-		void	PING(std::string buffer, Client c_client);
-
+		
+		//irssi
 		int		is_irssi_command(char *buffer, Client c_client);
+		void	PING(std::string buffer, Client c_client);
+		void	nick(std::string buffer, Client c_client);
+		void	list(std::string buffer, Client c_client);
+		void	join(std::string buffer, Client c_client);
+		
+		//netcat
 		int     is_command(char *buffer, Client c_client); //parsing command
 		void    PRIVMSG(std::string buffer, Client c_client);
 		void	WHOIS(std::string buffer, Client c_client);
@@ -52,19 +58,12 @@ class Server {
 		void	LIST_CH(std::string buffer, Client c_client);
 		void	LIST_CL(std::string buffer, Client c_client);
 		void    NICK(std::string buffer, Client c_client);
-		void	nick(std::string buffer, Client c_client);
-		void	list(std::string buffer, Client c_client);
-
 		void    HELP(std::string buffer, Client c_client);
 		void    HELP_OPERATOR(std::string buffer, Client c_client);
 		void    SECRET_ROOT(std::string buffer, Client c_client);
 		void	INVITE(std::string buffer, Client c_client);
 		bool	check_channel(Client &c_client);
 		bool	invite_target(Client &c_client, Client &target, std::string chan);
-		void	command_unknow(Client c_client, std::string cmd);
-		
-		void    KICK(std::string buffer, Client c_client);
-
 		void    MODE(std::string buffer, Client clear_client);
 		void    check_MODE_args(std::string args[3], Client c_client);
 		void    MODE_oprt(Channel &chan, std::string args[3], Client c_client);
@@ -72,6 +71,9 @@ class Server {
 		void	MODE_keypass_rm(Channel &chan, Client c_client);
 		void    MODE_limit(Channel &chan, std::string args[3], Client c_client);
 		void	MODE_invite(Channel &chan, Client c_client);
+		void    KICK(std::string buffer, Client c_client);
+
+		void	command_unknow(Client c_client, std::string cmd);
 
 	private :
 		struct sockaddr_in serverAddr;

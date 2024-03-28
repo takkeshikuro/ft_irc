@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:45:49 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/28 05:20:07 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/03/28 09:24:29 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ class Channel {
 		void	    rm_user(Client to_rm);
         void        add_operator(Client to_set);
         void        rm_operator(Client to_set);
+		size_t			get_user_max();
         int         get_size(void);
         void        get_clients();
 		
@@ -58,7 +59,7 @@ class Channel {
 		std::string channel_name;
 		int         creator_fd;
 		std::string description;
-		int			user_max;	
+		size_t			user_max;	
         int         limit;
 		bool		keypass_set;
 		std::string channel_keypass;

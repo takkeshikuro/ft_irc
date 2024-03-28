@@ -8,6 +8,7 @@
 # define CONTINUE 3
 
 
+# define user_id(nickname, username) (":" + nickname + "!" + username + "@localhost")
 
 /*		MESSAGE		*/
 //welcome
@@ -23,8 +24,21 @@
 # define ERR_NICKNAMEINUSE(client, nickname) (":localhost 433 " + client + " " + nickname + " :Nickname is already in use.\r\n")
 # define RPL_NICK(oclient, uclient, client) (":" + oclient + "!" + uclient + "@localhost NICK " +  client + "\r\n")
 
+# define ERR_NEEDMOREPARAMS(client, command) (":localhost 461 " + client + " " + command + " :Not enough parameters.\r\n")
+// JOIN
+# define RPL_JOIN(user_id, channel) (user_id + " JOIN :#" +  channel + "\r\n")
+# define ERR_BANNEDFROMCHAN(client, channel) ("474 " + client + " #" + channel + " :Cannot join channel (+b)\r\n")
+# define ERR_BADCHANNELKEY(client, channel) ("475 " + client + " #" + channel + " :Cannot join channel (+k)\r\n")
+# define ERR_CHANNELISFULL(client, channel) ("471 " + client + " #" + channel + " :Cannot join channel (+l)\r\n")
+
+// NAMES
+# define RPL_NAMREPLY(client, channel, list_of_nicks) (":localhost 353 " + client + " #" + channel + " :" + list_of_nicks + "\r\n")
+# define RPL_ENDOFNAMES(client, channel) (":localhost 366 " + client + " #" + channel + " :End of /NAMES list.\r\n")
 
 
+// TOPIC
+# define RPL_TOPIC(client, channel, topic) (":localhost 332 " + client + " #" + channel + " " + topic + "\r\n")
+# define RPL_NOTOPIC(client, channel) (":localhost 331 " + client + " #" + channel + " :No topic is set\r\n")
 //pong
 # define RPL_PONG(client, token) ("PONG reply to " + client + " " + token + "\r\n")
 
