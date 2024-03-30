@@ -169,12 +169,17 @@ void    Server::NICK(std::string buffer, Client c_client)
 		send(c_client.get_client_fd(), err.c_str(), err.size(), 0);
 		return ;
 	}
-	for (size_t i = 0; i < new_nick.size(); i++) {
-		if (new_nick[i] == ' ') {
-			std::string error = red + "Error: nickname can't contain spaces.\n" + white;
-			send(c_client.get_client_fd(), error.c_str(), error.size(), 0);
-			return ;
-		}	
+	if (invalid_char(new_nick))
+	{
+		std::string error = red + "Error: Invalid character in new nickname.\n" + white;
+		send(c_client.get_client_fd(), error.c_str(), error.size(), 0);
+		return ;	
+	}
+	if (nickname_already_used(client_vec, new_nick))
+	{
+		std::string error = red + "Error: nickname " + new_nick + " is already used by someone.\n";
+		send(c_client.get_client_fd(), error.c_str(), error.size(), 0);
+		return ;
 	}
 	size_t	i;
 	for (i = 0; i < this->client_vec.size(); i++) {

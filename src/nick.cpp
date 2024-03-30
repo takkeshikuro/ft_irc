@@ -1,8 +1,6 @@
 #include "../inc/Server.hpp"
 
 
-bool	invalid_char(std::string nickname);
-bool	nickname_already_used(std::vector<Client> &client_vec, std::string name);
 
 /**
  * @brief The NICK command is used to give the client a nickname or 

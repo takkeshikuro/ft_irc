@@ -70,17 +70,17 @@ void    Server::join(std::string buffer, Client c_client)
 			if (channel_vec[i].get_name() == channel_name) 
 			{
 				check = 1;
-			//	if (channel_vec[i].getMode() == 'k') // Si channel en mode +k
-			//	{
-			//		std::string key = retrieveKey(cmd_infos.message);
-			//		total_arg.erase(cmd_infos.message.find(key), key.length()); // on erase la key de la string
-			//		if (key != channel_vec[i].getChannelPassword())
-			//		{
-			//			size_t size = ERR_BADCHANNELKEY(client_nickname, channel_name).size();
-			//			send(c_client.get_client_fd(), ERR_BADCHANNELKEY(client_nickname, channel_name).c_str(), size, 0);
-			//			continue; // on passe la suite, au prochain channel à ajouter síl y en a un
-			//		}
-			//	}
+				// if (channel_vec[i].get_key_set()) // Si channel en mode +k
+				// {
+				// 	std::string key = retrieveKey(cmd_infos.message);
+				// 	total_arg.erase(cmd_infos.message.find(key), key.length()); // on erase la key de la string
+				// 	if (key != channel_vec[i].getChannelPassword())
+				// 	{
+				// 		size_t size = ERR_BADCHANNELKEY(client_nickname, channel_name).size();
+				// 		send(c_client.get_client_fd(), ERR_BADCHANNELKEY(client_nickname, channel_name).c_str(), size, 0);
+				// 		continue; // on passe la suite, au prochain channel à ajouter síl y en a un
+				// 	}
+				// }
 				// vérifier si le channel est full
 				if (channel_vec[i].client_list.size() + 1 > channel_vec[i].get_user_max())
 				{
