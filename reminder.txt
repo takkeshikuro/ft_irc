@@ -1,5 +1,6 @@
 irssi :
-
+irssi -c 127.0.0.1
+irssi -c 127.0.0.1 -p password
 /connect 127.0.0.1 6667
 
 
