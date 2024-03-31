@@ -1,4 +1,4 @@
-#include "../inc/Server.hpp"
+#include "../../inc/Server.hpp"
 
 static std::string	findAnyChannel(std::string buffer);
 static std::string	get_rpl_list(std::string client_nick, Channel &chan);

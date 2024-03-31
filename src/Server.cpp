@@ -162,7 +162,7 @@ void	Server::manage_new_data(int fd)
 	else//-> print the received data
 	{ 
 		buffer[bytes] = '\0';
-		std::cerr << "[debug buffer = " << buffer << "\n"; 
+		std::cerr << "[debug buffer] = " << buffer << "\n"; 
 		if (is_command(buffer, current_client))
 			return ;
 		else  
@@ -242,4 +242,14 @@ void	Server::default_channel_creation()
 	channel_vec.push_back(announcements);
 	std::string bio_a = "~default #announcements channel to stay informed~";
 	channel_vec.back().set_description(bio_a);
+}
+
+int	Server::index_client(std::string nick)
+{
+	for (size_t i = 0; i < client_vec.size(); i++)
+	{
+		if (client_vec[i].getNickname() == nick)
+			return i;
+	}
+	return -1;
 }

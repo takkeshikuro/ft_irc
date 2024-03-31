@@ -1,4 +1,4 @@
-#include "../inc/Server.hpp"
+#include "../../inc/Server.hpp"
 
 bool		is_alpha_in(std::string str);
 std::string get_channel_name(std::string arg);

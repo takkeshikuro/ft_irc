@@ -1,4 +1,4 @@
-#include "../inc/Server.hpp"
+#include "../../inc/Server.hpp"
 
 /**
  * @brief The PING command is sent to check the other side of the connection is still

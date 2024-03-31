@@ -18,6 +18,9 @@
 # define RPL_MYINFO(client, serv_name) (":localhost 004 " + client + " :" + serv_name + " 1.0.1 io kost k\r\n")
 # define RPL_ISUPPORT(client) (":localhost 005 " + client+ " :CHANNELLEN=32 NICKLEN=9 TOPICLEN=307 : are supported by this server\r\nEnjoy!!\r\n")
 
+//privmsg
+
+# define ERR_NOSUCHNICK(nick) (":localhost 401 " + nick + " :No such nick.\r\n")
 //nick
 # define ERR_NONICKNAMEGIVEN(client) (":localhost 431 " + client + " :There is no nickname.\r\n")
 # define ERR_ERRONEUSNICKNAME(client, nickname) (":localhost 432 " + client + " " + nickname + " :Erroneus nickname\r\n")

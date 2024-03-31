@@ -31,20 +31,21 @@ class Server {
 		void	default_channel_creation();
 		int 	tooManyClients(int client_socket);
 
-		void	launch_server();
-		int		manage_new_client();
-		void	manage_new_data(int fd);
+		void		launch_server();
+		int			manage_new_client();
+		void		manage_new_data(int fd);
 		static void SignalHandler(int sig);
-		void close_fds(); // close file descriptors
- 		void clear_clients(int fd); // clear clients
-		int		check_irssi_entrance(int fd);
-		
+		void 		close_fds(); // close file descriptors
+ 		void 		clear_clients(int fd); // clear clients
+		int			check_irssi_entrance(int fd);
+		int			index_client(std::string nick);
 		//irssi
 		int		is_irssi_command(char *buffer, Client c_client);
 		void	PING(std::string buffer, Client c_client);
 		void	nick(std::string buffer, Client c_client);
 		void	list(std::string buffer, Client c_client);
 		void	join(std::string buffer, Client c_client);
+		void    msg(std::string buffer, Client c_client);
 		
 		//netcat
 		int     is_command(char *buffer, Client c_client); //parsing command

@@ -2,9 +2,10 @@ NAME		= ft_irc
 CXX		= c++
 CPPFLAGS	= -Wall -Wextra -Werror -std=c++98 -c -I includes/
 
-SRCS		= main.cpp Server.cpp Client.cpp cmd_search.cpp 0_commands.cpp \
-			1_commands.cpp 2_commands.cpp 3_mode.cpp Channel.cpp irssi.cpp \
-			utils.cpp ping.cpp nick.cpp  list.cpp join.cpp
+SRCS		= main.cpp Server.cpp Client.cpp cmd_search.cpp \
+			old_cmd/0_commands.cpp old_cmd/1_commands.cpp old_cmd/2_commands.cpp old_cmd/3_mode.cpp \
+			Channel.cpp irssi.cpp utils.cpp \
+			new_cmd/ping.cpp new_cmd/nick.cpp  new_cmd/list.cpp new_cmd/join.cpp new_cmd/privmsg.cpp
 
 DIR_SRCS	= src/
 DIR_OBJS	= .objs/
