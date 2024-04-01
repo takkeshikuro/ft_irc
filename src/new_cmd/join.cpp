@@ -59,7 +59,8 @@ void    Server::join(std::string buffer, Client c_client)
 	{
 		channel_name.clear();
 		channel_name = get_channel_name(total_arg);
-
+		if (channel_name[0] != '#')
+			channel_name = "#" + channel_name;
 		// erase de la string le channel = "#foo,#bar" devient "#,#bar"
 		total_arg.erase(total_arg.find(channel_name), channel_name.length()); 
 		
@@ -122,6 +123,7 @@ void    Server::join(std::string buffer, Client c_client)
 		if (!check)
 		{
 			Channel new_channel(channel_name, c_client.get_client_fd());
+			new_channel.add_user(c_client);
 			new_channel.add_operator(c_client);
 			channel_vec.push_back(new_channel);
 			std::cout << "-creation of new chan named [" <<channel_name<< "]\n";

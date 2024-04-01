@@ -15,7 +15,10 @@
 Channel::Channel() {}
 
 Channel::Channel(std::string name) {
-	this->channel_name = name;
+	if (name[0] == '#')
+		this->channel_name = name;
+	else
+		this->channel_name = "#" + name;
 	this->creator_fd = 0;
 	this->user_max = 10;
 	this->limit = -1;
@@ -32,8 +35,10 @@ Channel::Channel(std::string name, int fd) : creator_fd(fd), limit(-1)
 	yellow = "\e[1;33m";
 	
 // yaura dautre variable a set genre nb max d'user tt ca
-
-	channel_name = name;
+	if (name[0] == '#')
+		channel_name = name;
+	else
+		channel_name = "#" + name;
 	keypass_set = false;
 // +ask for max user
 
@@ -214,7 +219,7 @@ void	Channel::rm_backslash_n(std::string &s) // mettre dans utils
 void    Channel::add_user(Client to_add)
 {
 	client_list.push_back(to_add);
-	std::cout << YEL << to_add.getNickname() << GRE << " has been added to channel #" << get_name() << "\n" << RESET; 
+	std::cout << YEL << to_add.getNickname() << GRE << " has been added to channel " << get_name() << "\n" << RESET; 
 	return ;
 }
 
@@ -223,7 +228,7 @@ void	Channel::rm_user(Client to_rm)
 	for (size_t i = 0; i < client_list.size(); ++i)  {		
 		if (client_list[i].get_client_fd() == to_rm.get_client_fd()) {
 			client_list.erase(client_list.begin() + i);
-			std::cout << YEL << to_rm.getNickname() << GRE << " left the channel #" << get_name() << "\n" << RESET; 
+			std::cout << YEL << to_rm.getNickname() << GRE << " left the channel " << get_name() << "\n" << RESET; 
 			break;
 		}
 	}
@@ -248,11 +253,11 @@ void    Channel::add_operator(Client to_add)
 {
 	for (size_t i = 0; i < op_clients.size(); i++) {
 		if (op_clients[i].getUsername() == to_add.getUsername()) {
-			std::cout << YEL << to_add.getNickname() << GRE << " is already an operator in #" << get_name() << "\n" << RESET; 
+			std::cout << YEL << to_add.getNickname() << GRE << " is already an operator in " << get_name() << "\n" << RESET; 
 			return ;
 		}
 	}
-	std::cout << YEL << to_add.getNickname() << GRE << " is now an operator in #" << get_name() << "\n" << RESET; 
+	std::cout << YEL << to_add.getNickname() << GRE << " is now an operator in " << get_name() << "\n" << RESET; 
 	op_clients.push_back(to_add);
 }
 
@@ -261,7 +266,7 @@ void    Channel::rm_operator(Client to_rm)
 	for (size_t i = 0; i < op_clients.size(); i++) {
 		if (op_clients[i].getUsername() == to_rm.getUsername()) {
 			op_clients.erase(op_clients.begin() + i);
-			std::cout << YEL << to_rm.getNickname() << RED << " was removed from operators in #" << get_name() << "\n" << RESET; 
+			std::cout << YEL << to_rm.getNickname() << RED << " was removed from operators in " << get_name() << "\n" << RESET; 
 			break;
 		}
 	}

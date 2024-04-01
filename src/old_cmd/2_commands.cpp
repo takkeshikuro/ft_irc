@@ -41,6 +41,7 @@ void    Server::CREATE(std::string buffer, Client c_client)
 	new_channel.add_operator(c_client);
 	channel_vec.push_back(new_channel);
 	std::string creation_ok = green + "New channel " + channel_name + " created.\n\n" + white;
+	c_client.in_channel ++;
 	send(c_client.get_client_fd(), creation_ok.c_str(), creation_ok.size(),0);
 	std::cout << "-creation new chan over\n";
 }
@@ -112,6 +113,8 @@ void    Server::JOIN(std::string buffer, Client c_client)
 		if (!channel_name.empty())
 			break ;
 	}
+	if (channel_name[0] != '#')
+		channel_name = "#" + channel_name;
 	for (i = 0; i < channel_vec.size(); i++) {
 		if (channel_vec[i].get_name() == channel_name) {
 			exist = 1;

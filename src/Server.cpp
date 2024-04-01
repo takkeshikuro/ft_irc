@@ -165,8 +165,11 @@ void	Server::manage_new_data(int fd)
 		std::cerr << "[debug buffer] = " << buffer << "\n"; 
 		if (is_command(buffer, current_client))
 			return ;
-		else  
+		if (current_client.get_is_irssi() == true)
+		{
 			is_irssi_command(buffer, current_client);
+			return ;
+		}
 		if (current_client.in_channel)
 		{
 			size_t j;
@@ -175,6 +178,7 @@ void	Server::manage_new_data(int fd)
 				if (channel_vec[j].get_name() == current_client.get_current_chan())
 					break ;
 			}
+			std::cout << "current_client.get_current_chan()";
 			channel_vec[j].send_to_all(buffer, current_client);
 		}
 		else

@@ -124,9 +124,9 @@ void    Server::LIST_CH(std::string buffer, Client c_client)
 	{
 		std::string ch_line;
 		if (channel_vec[i].get_key_set() == true)
-			ch_line = "-#" + channel_vec[i].get_name() + " (keypass lock)\n";
+			ch_line = "-" + channel_vec[i].get_name() + " (keypass lock)\n";
 		else
-			ch_line = "-#" + channel_vec[i].get_name() + "\n";
+			ch_line = "-" + channel_vec[i].get_name() + "\n";
 		send(c_client.get_client_fd(), ch_line.c_str(), ch_line.size(), 0);
 		for (size_t j = 0; j < channel_vec[i].client_list.size(); j++)
 		{

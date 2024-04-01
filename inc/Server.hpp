@@ -46,6 +46,7 @@ class Server {
 		void	list(std::string buffer, Client c_client);
 		void	join(std::string buffer, Client c_client);
 		void    msg(std::string buffer, Client c_client);
+		void	msg_channel(std::string args[3], Client c_client);
 		
 		//netcat
 		int     is_command(char *buffer, Client c_client); //parsing command
