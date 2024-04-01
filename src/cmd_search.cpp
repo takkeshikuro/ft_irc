@@ -111,34 +111,34 @@ int Server::is_command(char *buffer, Client c_client)
 			std::string cmd_arg = cmd_string.substr(0, index_space);
 			switch (search_cmd(cmd_arg, 1))
 			{
-				case 0 : PRIVMSG(buf, c_client); break;
-				case 1 : WHOIS(buf, c_client); break;
-				case 2 : CREATE(buf, c_client); break; 
-				case 3 : NICK(buf, c_client); break;
-				case 4 : JOIN(buf, c_client); break;
-				case 5 : MODE(buf, c_client); break; 
-				case 6 : TOPIC(buf, c_client, 1); break ;
-				case 7 : INVITE(buf, c_client); break ;
-                case 8 : KICK(buf, c_client); break ;
-				case -1 : command_unknow(c_client, cmd_arg); break ;		
+				case 0 : PRIVMSG(buf, c_client);  return 1;
+				case 1 : WHOIS(buf, c_client);  return 1;
+				case 2 : CREATE(buf, c_client);  return 1; 
+				case 3 : NICK(buf, c_client);  return 1;
+				case 4 : JOIN(buf, c_client);  return 1;
+				case 5 : MODE(buf, c_client);  return 1; 
+				case 6 : TOPIC(buf, c_client, 1);  return 1 ;
+				case 7 : INVITE(buf, c_client);  return 1 ;
+                case 8 : KICK(buf, c_client);  return 1 ;
+				case -1 : command_unknow(c_client, cmd_arg); return 0 ;
 			}
 		}
 		else		//command without argument
 		{
 			switch (search_cmd(cmd_string, 0))
 			{
-				case 0 : HELP(buf, c_client); break;
-				case 1 : LIST_CH(buf, c_client); break;
-				case 2 : LIST_CL(buf, c_client); break; 
-				case 3 : TOPIC(buf, c_client, 0); break;
-				case 4 : LEAVE(buf, c_client); break;
-				case 5 : SECRET_ROOT(buf, c_client); break;
-				case 6 : HELP_OPERATOR(buf, c_client); break; 
-				case -1 : command_unknow(c_client, cmd_string); break ;		
+				case 0 : HELP(buf, c_client);  return 1;
+				case 1 : LIST_CH(buf, c_client);  return 1;
+				case 2 : LIST_CL(buf, c_client);  return 1; 
+				case 3 : TOPIC(buf, c_client, 0);  return 1;
+				case 4 : LEAVE(buf, c_client);  return 1;
+				case 5 : SECRET_ROOT(buf, c_client);  return 1;
+				case 6 : HELP_OPERATOR(buf, c_client);  return 1; 
+				case -1 : command_unknow(c_client, cmd_string); return 1;		
 			}
 		}
 	}
-	return 1;
+	return 0;
 }
 
 void	Server::command_unknow(Client c_client, std::string cmd)

@@ -61,7 +61,7 @@ void    Server::MODE_limit(Channel &chan, std::string args[3], Client c_client)
 		chan.set_limit(-1);
 		std::string tosend = YEL + c_client.getNickname() 
 			+ GRE + " has unset users limit in " + BLU + "#" + chan.get_name() + RESET + "\n";
-		chan.send_string(tosend);
+		chan.send_string(tosend, "    ");
 		std::cout << tosend;
 	}
 	else
@@ -77,7 +77,7 @@ void    Server::MODE_limit(Channel &chan, std::string args[3], Client c_client)
 			chan.set_limit(std::atoi(args[2].c_str()));
 			std::string success = GRE + chan.get_name() 
 				+ " channel now have a limit of " + args[2] + " users\n" + RESET;
-			chan.send_string(success);
+			chan.send_string(success, "    ");
 		}
 	}
 }

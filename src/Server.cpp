@@ -178,7 +178,6 @@ void	Server::manage_new_data(int fd)
 				if (channel_vec[j].get_name() == current_client.get_current_chan())
 					break ;
 			}
-			std::cout << "current_client.get_current_chan()";
 			channel_vec[j].send_to_all(buffer, current_client);
 		}
 		else

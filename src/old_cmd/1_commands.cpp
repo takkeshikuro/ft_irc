@@ -187,5 +187,5 @@ void    Server::KICK(std::string buffer, Client c_client)
     std::string to_send = YEL + c_client.getNickname() 
                 + "\e[1;31m has kicked " + YEL + args[2] 
                 + "\e[1;31m from \e[1;34m#" + args[1] + RESET + ".\n";
-    channel_vec[i].send_string(to_send);
+    channel_vec[i].send_string(to_send, "    ");
 }

@@ -152,8 +152,8 @@ void		send_infos(Channel &channel, std::string channel_name, Client &client)
 		size_t size_0 = RPL_JOIN(user_id(nick, username), channel_name).size();
 		send(channel.client_list[i].get_client_fd(), RPL_JOIN(user_id(nick, username), channel_name).c_str(), size_0, 0);
 		
-		size_t size_1 = RPL_TOPIC(nick, channel_name, channel.get_description()).size();
-		send(channel.client_list[i].get_client_fd(), RPL_TOPIC(nick, channel_name, channel.get_description()).c_str(), size_1, 0);
+		//size_t size_1 = RPL_TOPIC(nick, channel_name, channel.get_description()).size();
+		//send(channel.client_list[i].get_client_fd(), RPL_TOPIC(nick, channel_name, channel.get_description()).c_str(), size_1, 0);
 		
 		std::string	list_of_members = client_list_to_str(channel.client_list);
 		
