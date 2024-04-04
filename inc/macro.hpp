@@ -22,6 +22,7 @@
 # define ERR_NOSUCHNICK(nick) (":localhost 401 " + nick + " :No such nick.\r\n")
 # define ERR_NOSUCHCHANNEL(chan_name) (":localhost 403 " + chan_name + " :No such channel\r\n")
 # define RPL_PRIVMSG(nick, username, target, message) (":" + nick + "!" + username + "@localhost PRIVMSG " + target + " " + message + "\r\n")
+
 //nick
 # define ERR_NONICKNAMEGIVEN(client) (":localhost 431 " + client + " :There is no nickname.\r\n")
 # define ERR_ERRONEUSNICKNAME(client, nickname) (":localhost 432 " + client + " " + nickname + " :Erroneus nickname\r\n")
@@ -43,6 +44,13 @@
 // TOPIC
 # define RPL_TOPIC(client, channel, topic) (":localhost 332 " + client + " " + channel + " " + topic + "\r\n")
 # define RPL_NOTOPIC(client, channel) (":localhost 331 " + client + " " + channel + " :No topic is set\r\n")
+//# define ERR_NOSUCHCHANNEL(client, channel) (":localhost 403 " + client + " " + channel + " :No such channel\r\n")
+# define ERR_NOTONCHANNEL(client, channel) (":localhost 442 " + client + " " + channel + " :The user is not on this channel.\r\n")
+
+//mode
+#define ERR_CHANOPRIVSNEEDED(client, channel) (":localhost 482 " + client + " " + channel + " :You're not channel operator\r\n")
+
+
 //pong
 # define RPL_PONG(client, token) ("PONG reply to " + client + " " + token + "\r\n")
 

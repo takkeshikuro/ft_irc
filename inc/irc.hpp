@@ -15,6 +15,8 @@
 #include <sstream>
 #include <list>
 #include <algorithm>
+#include <fstream>
+#include <ios>
 
 #include "macro.hpp"
 

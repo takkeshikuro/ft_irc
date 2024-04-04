@@ -50,9 +50,6 @@ void	Server::list(std::string buffer, Client c_client)
 		for (size_t i = 0; i < channel_vec.size(); i++) 
 		{
 			RPL_LIST.clear();
-		//  if (get_mode() == 's')				
-		//	if (it->second.getMode().find('s') == std::string::npos 
-		//		|| (it->second.getMode().find('s') != std::string::npos && it->second.doesClientExist(client.getNickname()) == true))
 			RPL_LIST = get_rpl_list(client_nick, channel_vec[i]);
 			send(c_client.get_client_fd(), RPL_LIST.c_str(), RPL_LIST.size(), 0);
 		}

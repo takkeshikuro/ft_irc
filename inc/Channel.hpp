@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:45:49 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/28 09:24:29 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/04/04 02:57:19 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ class Channel {
 
 		void	    rm_backslash_n(std::string &s);
 		std::string &get_name();
-		std::string &get_description();
+		std::string get_description();
 		void	    set_description(std::string &s);
         void        send_to_all(std::string buffer, Client c_client);
         void        send_string(std::string tosend, std::string nick);

@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 02:23:18 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/28 09:24:59 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/04/04 03:20:44 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ Channel::Channel(std::string name) {
 	this->limit = -1;
 	keypass_set = false;
 	invite_mode = false;
+	description.empty();
 	//	
 }
 
@@ -76,7 +77,7 @@ Channel::~Channel() {}
 
 //------> GETTER
 std::string&	Channel::get_name() { return channel_name; }
-std::string&	Channel::get_description() { return description; }
+std::string		Channel::get_description() { return description; }
 std::string		Channel::get_keypass() { return this->channel_keypass; }
 int				Channel::get_limit() { return limit; }
 int				Channel::get_size() { return client_list.size(); }

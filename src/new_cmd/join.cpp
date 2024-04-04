@@ -89,12 +89,6 @@ void    Server::join(std::string buffer, Client c_client)
 					send(c_client.get_client_fd(), ERR_CHANNELISFULL(client_nickname, channel_name).c_str(), size, 0);
 					continue ;
 				}
-				// vérifier si le client est banned avant de le join au channel
-			//	if (channel_vec[i].getMode() == 'b' && channel_vec[i].isBanned(client_nickname) == true)
-		//		{
-		//			size_t size = ERR_BANNEDFROMCHAN(client_nickname, channel_name).size();
-		//			send(c_client.get_client_fd(), ERR_BANNEDFROMCHAN(client_nickname, channel_name).c_str(), size, 0);
-		//		} 
 				else 
 				{
 					int check_1 = 0;
@@ -171,14 +165,11 @@ bool		is_alpha_in(std::string str)
 		str.erase(0, 1);
 	if (str.find(" ") != str.npos)
 		str = str.substr(0, str.find(" "));
-  //  std::cout << "["<<str<< "]\n";
-	for (size_t i = 0; i < str.size(); i++)
-	{
-
+	for (size_t i = 0; i < str.size(); i++) {
 		if (isalpha(str[i]))
-			return (true);
+			return true;
 	}
-	return (false);
+	return false;
 }
 
 std::string get_channel_name(std::string arg)
