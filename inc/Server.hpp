@@ -48,6 +48,7 @@ class Server {
 		void    msg(std::string buffer, Client c_client);
 		void	msg_channel(std::string args[3], Client c_client);
 		void    topic(std::string buffer, Client c_client);
+		void    user(std::string buffer, Client c_client);
 
 		
 		//netcat

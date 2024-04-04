@@ -79,19 +79,7 @@ static std::string	findAnyChannel(std::string buffer)
 static std::string	get_rpl_list(std::string client_nick, Channel &chan)
 {
 	std::stringstream concat;
-	
-	// if (channel->second.getMode().find("p") != std::string::npos 
-	// 	&& channel->second.doesClientExist(client_nick) == false) // do not display topic if private chan and user not in it
-	// {
-	// 	concat << "322 " << client_nick << " #" << channel->second.getName() << " " 
-	// 	<< channel->second.getClientList().size() << " " 
-	// 	<< ":The topic of this channel is private." 
-	// 	<< "\r\n";
-	// } 
-	// faire private mode
-	//else {
 	concat << "322 " << client_nick << " #" << chan.get_name() << " [nb of users = " << chan.get_size() << "] "\
 	<< (chan.get_description()) << "\r\n";
-	//}
 	return concat.str();			
 }
