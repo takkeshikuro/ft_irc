@@ -120,6 +120,7 @@ void    Server::join(std::string buffer, Client c_client)
 			new_channel.add_user(c_client);
 			new_channel.add_operator(c_client);
 			channel_vec.push_back(new_channel);
+			send_infos(new_channel, channel_name, c_client);
 			std::cout << "-creation of new chan named [" <<channel_name<< "]\n";
 		}	
 	}
@@ -128,11 +129,14 @@ void    Server::join(std::string buffer, Client c_client)
 std::string client_list_to_str(std::vector<Client> c_list)
 {
 	std::string list_str;
-	list_str = "users list :\n-";
+	list_str = "[users list] = <";
 	for (size_t i = 0; i < c_list.size(); i++) {
 		list_str += c_list[i].getNickname();
-		list_str += "\n-";
+		if (i + 1 == c_list.size())
+			break ;
+		list_str += "> <";
 	}
+	list_str += ">";
 	return list_str;
 }
 
@@ -140,23 +144,18 @@ void		send_infos(Channel &channel, std::string channel_name, Client &client)
 {
 	std::string	nick		= client.getNickname();
 	std::string username	= client.getUsername();
- 	
-	for (size_t i = 0; i < channel.client_list.size(); i++) 
-	{
-		size_t size_0 = RPL_JOIN(user_id(nick, username), channel_name).size();
-		send(channel.client_list[i].get_client_fd(), RPL_JOIN(user_id(nick, username), channel_name).c_str(), size_0, 0);
+
+	std::string	list_of_members = client_list_to_str(channel.client_list);
+	channel.send_string_all(RPL_JOIN(user_id(nick, username), channel_name));
+	channel.send_string_all(RPL_PRIVMSG(nick, username, channel.get_name(), list_of_members));
+	if (!channel.get_description().empty()) 
+		channel.send_string_all(RPL_TOPIC(client.getNickname(), channel_name, channel.get_description()));
+	else
+		channel.send_string_all(RPL_NOTOPIC(client.getNickname(), channel_name));
 		
-		//size_t size_1 = RPL_TOPIC(nick, channel_name, channel.get_description()).size();
-		//send(channel.client_list[i].get_client_fd(), RPL_TOPIC(nick, channel_name, channel.get_description()).c_str(), size_1, 0);
-		
-		std::string	list_of_members = client_list_to_str(channel.client_list);
-		
-		size_t size_2 = RPL_NAMREPLY(username, channel_name, list_of_members).size();
-		send(channel.client_list[i].get_client_fd(), RPL_NAMREPLY(username, channel_name, list_of_members).c_str(), size_2, 0);
-		
-		size_t size_3 = RPL_ENDOFNAMES(username, channel_name).size();
-		send(channel.client_list[i].get_client_fd(), RPL_ENDOFNAMES(username, channel_name).c_str(), size_3, 0);
-	}
+	// channel.send_string_all(RPL_NAMREPLY(username, channel_name, list_of_members));
+	// channel.send_string_all(RPL_ENDOFNAMES(username, channel_name));
+	//marche pas
 }
 
 bool		is_alpha_in(std::string str)

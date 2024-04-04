@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 02:23:18 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/04/04 03:20:44 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/04/04 05:59:40 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,14 @@ void    Channel::send_string(std::string to_send, std::string nick)
 	{
 		if (client_list[i].getNickname() != nick)
 			send(client_list[i].get_client_fd(), to_send.c_str(), to_send.size(), 0);
+	}
+}
+
+void    Channel::send_string_all(std::string to_send)
+{
+	for (size_t i = 0; i < client_list.size(); i++)
+	{
+		send(client_list[i].get_client_fd(), to_send.c_str(), to_send.size(), 0);
 	}
 }
 
