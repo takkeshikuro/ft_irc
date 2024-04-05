@@ -1,7 +1,7 @@
 #include "../../inc/Server.hpp"
 
 bool		is_alpha_in(std::string str);
-std::string get_channel_name(std::string arg);
+std::string get_channel_name(const std::string& arg);
 
 void		send_infos(Channel &channel, std::string channel_name, Client &client);
 
@@ -74,10 +74,10 @@ void    Server::join(std::string buffer, Client c_client)
 		// erase de la string le channel = "#foo,#bar" devient "#,#bar"
 		total_arg.erase(total_arg.find(channel_name), channel_name.length()); 
 
-		// Récupérer le bon channel grâce au channel name
 		int check = 0;
 		for (size_t i = 0; i < channel_vec.size(); i++) 
 		{
+			//check si channel existe		
 			if (channel_vec[i].get_name() == channel_name) 
 			{
 				check = 1;
@@ -95,7 +95,6 @@ void    Server::join(std::string buffer, Client c_client)
 				// vérifier si le channel est full
 				if (channel_vec[i].client_list.size() + 1 > channel_vec[i].get_user_max())
 				{
-					std::cout <<"tester tester\n";
 					size_t size = ERR_CHANNELISFULL(client_nickname, channel_name).size();
 					send(c_client.get_client_fd(), ERR_CHANNELISFULL(client_nickname, channel_name).c_str(), size, 0);
 					continue ;
@@ -119,8 +118,6 @@ void    Server::join(std::string buffer, Client c_client)
 						client_vec[j].in_channel += 1;
 						client_vec[j].set_current_channel(channel_vec[i].get_name());
 					}
-//					if (channel_vec[i].op_clients.empty())
-//						channel_vec[i].addFirstOperator(client.getNickname());
 					send_infos(channel_vec[i], channel_name, c_client);
 				}
 			}
@@ -183,17 +180,38 @@ bool		is_alpha_in(std::string str)
 	return false;
 }
 
-std::string get_channel_name(std::string arg)
+/*	Channel names are strings (beginning with specified prefix characters). Apart from the requirement 
+	of the first character being a valid channel type prefix character; the only restriction on a channel 
+	name is that it may not contain any spaces (' ', 0x20), a control G / BELL ('^G', 0x07), 
+	or a comma (',', 0x2C) (which is used as a list item separator by the protocol).
+*/
+std::string get_channel_name(const std::string& arg) 
 {
-	std::string channel;
-	for (size_t i = 0; i < arg.size(); i++) {
-		while (!isalpha(arg[i]))
-			i++;
-		while (isalpha(arg[i]))
-			channel += arg[i++];
+	std::string channel_name;
+	bool name_find = false;
+	for (std::size_t i = 0; i < arg.length(); ++i) 
+	{
+		char c = arg[i];
+		if (!name_find) 
+		{
+			if (!std::isspace(c) && c != ' ' && c != '\a' && c != ',' && c != '#') {
+				channel_name += c;
+				name_find = true;
+			}
+		} 
+		else 
+		{
+			if (c == ' ' || c == '\a' || c == ',')
+				break;
+			else if (!std::isprint(c))
+				break;
+			else
+				channel_name += c;
+		}
 	}
-	return channel;
+	return channel_name;
 }
+
 
 /*
 std::string	retrieveKey(std::string msg_to_parse)
