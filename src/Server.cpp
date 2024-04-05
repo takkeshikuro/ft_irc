@@ -172,13 +172,9 @@ void	Server::manage_new_data(int fd)
 		}
 		if (current_client.in_channel)
 		{
-			size_t j;
-			for (j = 0; j < channel_vec.size(); j++)
-			{
-				if (channel_vec[j].get_name() == current_client.get_current_chan())
-					break ;
-			}
-			channel_vec[j].send_to_all(buffer, current_client);
+			std::string buf(buffer);
+			buf  = "PRIVMSG " + current_client.get_current_chan() + " :" + buffer;
+			msg(buf, current_client);
 		}
 		else
 			std::cout << YEL << current_client.getNickname() << ": " << WHI << buffer;

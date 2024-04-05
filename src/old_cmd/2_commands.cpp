@@ -16,6 +16,8 @@
 // 2 - join
 // 3 - leave
 
+void		send_infos(Channel &channel, std::string channel_name, Client &client);
+
 void    Server::CREATE(std::string buffer, Client c_client)
 {
 	//check arg()
@@ -149,6 +151,7 @@ void    Server::JOIN(std::string buffer, Client c_client)
 			std::string line = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
 			send(c_client.get_client_fd(), line.c_str(), line.size(), 0);
 			send(c_client.get_client_fd(), line.c_str(), line.size(), 0);
+			send_infos(channel_vec[j], channel_vec[j].get_name(), c_client);
 			std::string welcome_channel = "\n# Welcome to " + channel_name + " channel !\n";
 			send(c_client.get_client_fd(), welcome_channel.c_str(), welcome_channel.size(), 0);
 

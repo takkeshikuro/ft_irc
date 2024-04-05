@@ -116,7 +116,7 @@ int Server::is_command(char *buffer, Client c_client)
 				case 1 : WHOIS(buf, c_client);  return 1;
 				case 2 : CREATE(buf, c_client);  return 1; 
 				case 3 : NICK(buf, c_client);  return 1;
-				case 4 : JOIN(buf, c_client);  return 1;
+				case 4 : join(buf, c_client);  return 1;
 				case 5 : MODE(buf, c_client);  return 1; 
 				case 6 : TOPIC(buf, c_client, 1);  return 1 ;
 				case 7 : INVITE(buf, c_client);  return 1 ;

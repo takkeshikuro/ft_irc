@@ -28,7 +28,7 @@ class Channel {
 		std::string get_description();
 		void	    set_description(std::string &s);
         void        send_to_all(std::string buffer, Client c_client);
-        void        send_string(std::string tosend, std::string nick);
+        void        send_string(std::string tosend, std::string nick, std::string target, std::string msg);
 		void    	send_string_all(std::string to_send);
 
         

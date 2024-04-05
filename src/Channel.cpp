@@ -21,15 +21,16 @@ Channel::Channel(std::string name) {
 		this->channel_name = "#" + name;
 	this->creator_fd = 0;
 	this->user_max = 10;
-	this->limit = -1;
+	this->limit = 10;
 	keypass_set = false;
 	invite_mode = false;
 	description.empty();
 	//	
 }
 
-Channel::Channel(std::string name, int fd) : creator_fd(fd), limit(-1)
+Channel::Channel(std::string name, int fd) : creator_fd(fd), limit(10)
 {
+	user_max = 10;
 	green = "\e[1;32m";
 	white = "\e[0;37m";
 	red = "\e[1;31m";
@@ -82,7 +83,7 @@ std::string		Channel::get_keypass() { return this->channel_keypass; }
 int				Channel::get_limit() { return limit; }
 int				Channel::get_size() { return client_list.size(); }
 bool			Channel::get_invite_set() { return this->invite_mode; }
-size_t				Channel::get_user_max() { return this->user_max; }
+size_t				Channel::get_user_max() { std::cout << GRE <<this->user_max<< RESET; return this->user_max; }
 
 //-------> SETTER
 void	Channel::set_description(std::string &s) { this->description = s; }
@@ -108,12 +109,20 @@ void	Channel::set_invite_set() {
 		this->invite_mode = false;
 }
 
-void    Channel::send_string(std::string to_send, std::string nick)
+void    Channel::send_string(std::string to_send, std::string nick, std::string target, std::string msg)
 {
 	for (size_t i = 0; i < client_list.size(); i++)
 	{
 		if (client_list[i].getNickname() != nick)
-			send(client_list[i].get_client_fd(), to_send.c_str(), to_send.size(), 0);
+		{
+			if (client_list[i].get_is_irssi() == true)
+				send(client_list[i].get_client_fd(), to_send.c_str(), to_send.size(), 0);
+			else
+			{
+				to_send = "[" + target + "] " + nick + " " + msg;
+				send(client_list[i].get_client_fd(), to_send.c_str(), to_send.size(), 0);
+			}
+		}
 	}
 }
 

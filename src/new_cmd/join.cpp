@@ -44,7 +44,17 @@ void    Server::join(std::string buffer, Client c_client)
 	std::string client_nickname = c_client.getNickname();
 	std::string	channel_name;
 	std::string total_arg;
-
+	if (c_client.get_is_irssi() == false)
+	{
+		std::stringstream sbuf(buffer);
+		std::string arg[2];
+		std::getline(sbuf, arg[0], ' ');
+		std::getline(sbuf, arg[1], '\n');
+		buffer = "JOIN #" + arg[1] + "\r\n";
+	}
+	else
+		std::cout << RED << buffer << RESET;
+		
 	if (buffer[buffer.length() - 1] == '\n')
 		buffer.erase(buffer.length() - 2);
 	std::size_t pos = buffer.find(' ');
@@ -63,7 +73,7 @@ void    Server::join(std::string buffer, Client c_client)
 			channel_name = "#" + channel_name;
 		// erase de la string le channel = "#foo,#bar" devient "#,#bar"
 		total_arg.erase(total_arg.find(channel_name), channel_name.length()); 
-		
+
 		// Récupérer le bon channel grâce au channel name
 		int check = 0;
 		for (size_t i = 0; i < channel_vec.size(); i++) 
@@ -85,6 +95,7 @@ void    Server::join(std::string buffer, Client c_client)
 				// vérifier si le channel est full
 				if (channel_vec[i].client_list.size() + 1 > channel_vec[i].get_user_max())
 				{
+					std::cout <<"tester tester\n";
 					size_t size = ERR_CHANNELISFULL(client_nickname, channel_name).size();
 					send(c_client.get_client_fd(), ERR_CHANNELISFULL(client_nickname, channel_name).c_str(), size, 0);
 					continue ;
@@ -106,6 +117,7 @@ void    Server::join(std::string buffer, Client c_client)
 						}
 						channel_vec[i].add_user(client_vec[j]);
 						client_vec[j].in_channel += 1;
+						client_vec[j].set_current_channel(channel_vec[i].get_name());
 					}
 //					if (channel_vec[i].op_clients.empty())
 //						channel_vec[i].addFirstOperator(client.getNickname());

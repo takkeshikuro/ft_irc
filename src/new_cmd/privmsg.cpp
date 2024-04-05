@@ -52,20 +52,13 @@ void	Server::msg_channel(std::string args[3], Client c_client)
 		return ;
 	}
 	std::ostringstream oss;
-	// oss << ":" << c_client.getNickname() << "!" << c_client.getUsername() << "@localhost ";
-	// oss << "PRIVMSG ";
-	// oss << args[1] << args[2];
 	oss << "[" << channel_vec[i].get_name() << "]" << c_client.getNickname() << " " << args[2]; 
 	index = index_channel(c_client, channel_vec[i]); // check if cclient is in the channel
-	
 	if (index == -1)
 		return ;
-	// channel_vec[i].send_string(oss.str());
 	std::string nick = c_client.getNickname();
 	std::string userna = c_client.getUsername();
 	std::string target = channel_vec[i].get_name();
 	std::string msg = args[2];
-	std::string tosend = "[" + target + "] " + nick + ": " + msg;
-	// std::cout <<RPL_PRIVMSG(nick, userna, target, msg);
-	channel_vec[i].send_string(RPL_PRIVMSG(nick, userna, target, msg), nick);
+	channel_vec[i].send_string(RPL_PRIVMSG(nick, userna, target, msg), nick, target, msg);
 }
