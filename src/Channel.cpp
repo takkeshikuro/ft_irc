@@ -83,7 +83,7 @@ std::string		Channel::get_keypass() { return this->channel_keypass; }
 int				Channel::get_limit() { return limit; }
 int				Channel::get_size() { return client_list.size(); }
 bool			Channel::get_invite_set() { return this->invite_mode; }
-size_t				Channel::get_user_max() { std::cout << GRE <<this->user_max<< RESET; return this->user_max; }
+size_t				Channel::get_user_max() { return this->user_max; }
 
 //-------> SETTER
 void	Channel::set_description(std::string &s) { this->description = s; }
@@ -111,6 +111,9 @@ void	Channel::set_invite_set() {
 
 void    Channel::send_string(std::string to_send, std::string nick, std::string target, std::string msg)
 {
+	
+	std::string to_send_nc = "\e[1;34m[" + target + "] " + nick + " \e[0m" + msg;
+
 	for (size_t i = 0; i < client_list.size(); i++)
 	{
 		if (client_list[i].getNickname() != nick)
@@ -118,10 +121,7 @@ void    Channel::send_string(std::string to_send, std::string nick, std::string 
 			if (client_list[i].get_is_irssi() == true)
 				send(client_list[i].get_client_fd(), to_send.c_str(), to_send.size(), 0);
 			else
-			{
-				to_send = "[" + target + "] " + nick + " " + msg;
-				send(client_list[i].get_client_fd(), to_send.c_str(), to_send.size(), 0);
-			}
+				send(client_list[i].get_client_fd(), to_send_nc.c_str(), to_send_nc.size(), 0);
 		}
 	}
 }

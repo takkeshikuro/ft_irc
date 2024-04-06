@@ -174,6 +174,12 @@ void	Server::manage_new_data(int fd)
 		{
 			std::string buf(buffer);
 			buf  = "PRIVMSG " + current_client.get_current_chan() + " :" + buffer;
+			for(size_t k = 0; k < buf.size(); k++)
+			{
+				if (buf[k] == '\n')
+					buf[k] = '\r';
+			}
+			buf = buf + '\n';
 			msg(buf, current_client);
 		}
 		else

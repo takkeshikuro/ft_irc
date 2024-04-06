@@ -51,10 +51,7 @@ void    Server::join(std::string buffer, Client c_client)
 		std::getline(sbuf, arg[0], ' ');
 		std::getline(sbuf, arg[1], '\n');
 		buffer = "JOIN #" + arg[1] + "\r\n";
-	}
-	else
-		std::cout << RED << buffer << RESET;
-		
+	}	
 	if (buffer[buffer.length() - 1] == '\n')
 		buffer.erase(buffer.length() - 2);
 	std::size_t pos = buffer.find(' ');
@@ -105,7 +102,6 @@ void    Server::join(std::string buffer, Client c_client)
 					for (size_t j = 0; j < channel_vec[i].client_list.size(); j++) {
 						if (channel_vec[i].client_list[j].getNickname() == client_nickname)
 							check_1 = 1;	
-						//std::cout << YELLOW << client.getNickname() << "already here\n" << RESET;
 					}	
 					if (!check_1)
 					{
@@ -119,6 +115,7 @@ void    Server::join(std::string buffer, Client c_client)
 						client_vec[j].set_current_channel(channel_vec[i].get_name());
 					}
 					send_infos(channel_vec[i], channel_name, c_client);
+					// send_infos(channel_vec[i], channel_name, channel_vec[i].client_list[0]);
 				}
 			}
 		}
@@ -129,6 +126,14 @@ void    Server::join(std::string buffer, Client c_client)
 			new_channel.add_user(c_client);
 			new_channel.add_operator(c_client);
 			channel_vec.push_back(new_channel);
+			for (size_t j = 0; j < client_vec.size(); j++) {
+				if (client_vec[j].getNickname() == client_nickname)
+				{
+					client_vec[j].set_current_channel(new_channel.get_name());
+					client_vec[j].in_channel += 1;
+					break ;
+				}  
+			}
 			send_infos(new_channel, channel_name, c_client);
 			std::cout << "-creation of new chan named [" <<channel_name<< "]\n";
 		}	
