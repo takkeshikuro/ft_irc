@@ -49,8 +49,9 @@ class Server {
 		void	msg_channel(std::string args[3], Client c_client);
 		void    topic(std::string buffer, Client c_client);
 		void    user(std::string buffer, Client c_client);
+		void    mode(std::string buffer, Client c_client);
+		void    mode_parse(std::string args[4], Client c_client);
 
-		
 		//netcat
 		int     is_command(char *buffer, Client c_client); //parsing command
 		void    PRIVMSG(std::string buffer, Client c_client);

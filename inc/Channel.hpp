@@ -61,7 +61,7 @@ class Channel {
 		std::string channel_name;
 		int         creator_fd;
 		std::string description;
-		size_t			user_max;	
+		size_t		user_max;	
         int         limit;
 		bool		keypass_set;
 		std::string channel_keypass;

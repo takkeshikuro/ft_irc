@@ -50,8 +50,8 @@ int	search_irssi_cmd(std::string &cmd, int arg)
 		}
 	}
 	else {
-		std::string commands[7] = {"PING", "NICK", "LIST", "JOIN", "PRIVMSG", "TOPIC", "USER"};
-		for (int i = 0; i < 7; i++) {
+		std::string commands[8] = {"PING", "NICK", "LIST", "JOIN", "PRIVMSG", "TOPIC", "USER", "MODE"};
+		for (int i = 0; i < 8; i++) {
 			if (cmd == commands[i])
 				return (i);
 		}
@@ -80,6 +80,7 @@ int Server::is_irssi_command(char *buffer, Client c_client)
 			case 4 : msg(buffer, c_client); break;
 			case 5 : topic(buffer, c_client); break;
 			case 6 : user(buffer, c_client); break;
+			case 7 : mode(buffer, c_client); break;
 			case -1 : command_unknow(c_client, cmd_arg); break ;		
 		}
 	}

@@ -47,10 +47,9 @@
 //# define ERR_NOSUCHCHANNEL(client, channel) (":localhost 403 " + client + " " + channel + " :No such channel\r\n")
 # define ERR_NOTONCHANNEL(client, channel) (":localhost 442 " + client + " " + channel + " :The user is not on this channel.\r\n")
 
-//mode
+//MODE
 #define ERR_CHANOPRIVSNEEDED(client, channel) (":localhost 482 " + client + " " + channel + " :You're not channel operator\r\n")
-
-
+#define ERR_UNKNOWNMODE(character) (":localhost 472 " + character + " :is unknown mode char to me.\r\n")
 //pong
 # define RPL_PONG(client, token) ("PONG reply to " + client + " " + token + "\r\n")
 
