@@ -18,7 +18,12 @@ int main(int ac, char **av)
 		try 
 		{
 			check_entrance(av);
-			Server Server(av[2]);
+			time_t rawtime;
+			struct tm * timeinfo;
+			time (&rawtime);
+			timeinfo = localtime(&rawtime);
+			
+			Server Server(av[2], timeinfo);
 			signal(SIGINT, Server::SignalHandler); //-> catch the signal (ctrl + c)
   			signal(SIGQUIT, Server::SignalHandler); //-> catch the signal (ctrl + \)
 			Server.configuration();

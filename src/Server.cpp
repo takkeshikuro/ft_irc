@@ -16,7 +16,9 @@ bool Server::signal = false;
 
 Server::Server() : port(6667), password("default") {}
 
-Server::Server(std::string passwd) : port(6667), password(passwd) {
+Server::Server(std::string passwd, struct tm *timeinfo) : port(6667), password(passwd) 
+{
+	this->setDatetime(timeinfo);
 	green = "\e[1;32m";
 	white = "\e[0;37m";
 	red = "\e[1;31m";
@@ -106,7 +108,7 @@ int Server::tooManyClients(int client_socket)
 
 int	Server::manage_new_client() 
 {
-	Client				new_client(password);
+	Client				new_client(password, datetime);
 	struct sockaddr_in	ClientAddr;
 	struct pollfd		NewPoll;
 	socklen_t			len = sizeof(ClientAddr);
@@ -234,6 +236,16 @@ void Server::close_fds()
 		std::cout << RED << "Server <" << serverSocket << "> Disconnected" << WHI << std::endl;
 		close(serverSocket);
  	}
+}
+
+void	Server::setDatetime(struct tm *timeinfo)
+{
+	char buffer[80];
+
+	strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
+  	std::string str(buffer);
+
+	datetime = str;
 }
 
 void	Server::default_channel_creation()

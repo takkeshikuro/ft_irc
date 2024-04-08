@@ -24,7 +24,7 @@ class Client;
 class Server {
 	public :
 		Server();
-		Server(std::string passwd);
+		Server(std::string passwd, struct tm *timeinfo);
 		~Server();
 
 		void	configuration();
@@ -38,6 +38,7 @@ class Server {
 		void 		close_fds(); // close file descriptors
  		void 		clear_clients(int fd); // clear clients
 		int			check_irssi_entrance(int fd);
+		void		setDatetime(struct tm *timeinfo);
 		int			index_client(std::string nick);
 		//irssi
 		int		is_irssi_command(char *buffer, Client c_client);
@@ -87,6 +88,7 @@ class Server {
 		struct pollfd NewPoll;
 		int serverSocket;
 		int port;
+		std::string	datetime;
 		std::string password;
 		static bool signal;
 		std::vector<Client> client_vec; //-> vector of clients/users

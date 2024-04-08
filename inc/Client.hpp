@@ -18,7 +18,7 @@
 class Client {
 	public :
 		Client();
-		Client(std::string pw);
+		Client(std::string pw, std::string dt);
 		~Client();
 		
 		void	client_starting_point_irssi(std::string &irssi_base);
@@ -61,7 +61,7 @@ class Client {
 		int			client_fd;
  		bool		is_admin;
 		int			invite_access;
-
+		std::string datetime;
 		
 		
 		std::string nickname;

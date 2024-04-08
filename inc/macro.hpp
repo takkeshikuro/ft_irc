@@ -14,9 +14,9 @@
 //welcome
 # define RPL_WELCOME(client, IPadd) (":localhost 001 " + client + " :Welcome to the Internet Relay Network, " + client +":"+ IPadd + "\r\n")
 # define RPL_YOURHOST(client, serv_name) (":localhost 002 " + client + " :Your host is " + serv_name + " (localhost), running version 1.0.1\r\n")
-# define RPL_CREATED(client) (":localhost 003 " + client + " :This server was created <include date_time>\r\n")
+# define RPL_CREATED(client, datetime) (":localhost 003 " + client + " :This server was created " + datetime + "\r\n")
 # define RPL_MYINFO(client, serv_name) (":localhost 004 " + client + " :" + serv_name + " 1.0.1 io kost k\r\n")
-# define RPL_ISUPPORT(client) (":localhost 005 " + client+ " :CHANNELLEN=32 NICKLEN=9 TOPICLEN=307 : are supported by this server\r\nEnjoy!!\r\n")
+# define RPL_ISUPPORT(client) (":localhost 005 " + client+ " :CHANNELLEN=32 NICKLEN=9 TOPICLEN=307 : are supported by this server\r\n")
 
 //privmsg
 # define ERR_NOSUCHNICK(nick) (":localhost 401 " + nick + " :No such nick.\r\n")
