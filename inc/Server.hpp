@@ -51,6 +51,7 @@ class Server {
 		void    user(std::string buffer, Client c_client);
 		void    mode(std::string buffer, Client c_client);
 		int	    mode_verif(std::vector<std::string> args, Client c_client);
+		void    part(std::string buffer, Client c_client);
 
 		//netcat
 		int     is_command(char *buffer, Client c_client); //parsing command

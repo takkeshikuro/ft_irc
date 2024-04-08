@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 02:23:18 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/04/04 05:59:40 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/04/08 22:51:49 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,7 @@ Channel::Channel(std::string name, int fd) : creator_fd(fd), limit(10)
 	keypass_set = false;
 // +ask for max user
 
-	std::cout << "creation of new channel named " << name << std::endl;
-	std::string bio_msg = "You just created a new channel. please give a small description of it : \n";
-	send(creator_fd, bio_msg.c_str(), bio_msg.size(), 0);
-	
+	std::cout <<yellow << "creation of new channel named " << name << std::endl << white;
 	// while (1) 
 	// {
 	// 	char buffer[1024];
@@ -250,7 +247,7 @@ void	Channel::rm_user(Client to_rm)
 	for (size_t i = 0; i < client_list.size(); ++i)  {		
 		if (client_list[i].get_client_fd() == to_rm.get_client_fd()) {
 			client_list.erase(client_list.begin() + i);
-			std::cout << YEL << to_rm.getNickname() << GRE << " left the channel " << get_name() << "\n" << RESET; 
+			std::cout << YEL << to_rm.getNickname() << RED << " was removed from channel client_list " << get_name() << "\n" << RESET; 
 			break;
 		}
 	}

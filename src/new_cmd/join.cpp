@@ -66,11 +66,12 @@ void    Server::join(std::string buffer, Client c_client)
 	{
 		channel_name.clear();
 		channel_name = get_channel_name(total_arg);
-		if (channel_name[0] != '#')
-			channel_name = "#" + channel_name;
+		
 		// erase de la string le channel = "#foo,#bar" devient "#,#bar"
 		total_arg.erase(total_arg.find(channel_name), channel_name.length()); 
-
+		
+		if (channel_name[0] != '#')
+			channel_name = "#" + channel_name;
 		int check = 0;
 		for (size_t i = 0; i < channel_vec.size(); i++) 
 		{

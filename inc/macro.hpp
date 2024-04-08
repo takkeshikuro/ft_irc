@@ -53,6 +53,10 @@
 //pong
 # define RPL_PONG(client, token) ("PONG reply to " + client + " " + token + "\r\n")
 
+//part
+# define RPL_PART(nickname, username, channel, reason) (":" + nickname + "!" + username + "@localhost PART " + channel + " " + (reason.empty() ? "." : reason ) + "\r\n")
+
+
 ///utils
 # define ERR_FULL_SERV "[Server] You cannot join, the server is already full"
 # define ERR_UNKNOWNCOMMAND(client, command) (":localhost 421 " + client + " " + command + " :Unknown command\r\n")

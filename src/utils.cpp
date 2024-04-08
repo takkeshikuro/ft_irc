@@ -60,6 +60,16 @@ int index_operator_nick(std::string nick, Channel &chan)
 	return -1;
 }
 
+int index_client_vec(std::string nick, std::vector<Client> vec)
+{
+	for (size_t i = 0; i < vec.size(); i++)
+	{
+		if (vec[i].getNickname() == nick)
+			return i;
+	}
+	return -1;
+}
+
 int index_channel_name(std::string name, std::vector<Channel> vector)
 {
 	for (size_t i = 0; i < vector.size(); i++)
