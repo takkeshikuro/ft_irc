@@ -292,3 +292,8 @@ void    Channel::rm_operator(Client to_rm)
 }
 
 
+void		Channel::set_user_max(size_t max)
+{
+	user_max = max;
+	limit = max;
+}

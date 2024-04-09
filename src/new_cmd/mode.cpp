@@ -3,6 +3,13 @@
 /*
 Paramètres : <nom du chan> <+|-|o|p|s|i|t|n|b|v|m>+ <autres paramètres>
 
+flags a faire :
+k
+l	done
+o
+t
+i
+
 Réponses possibles :
 ERR_CHANOPRIVSNEEDED (482), done
 ERR_NOSUCHCHANNEL (403),    done
@@ -15,147 +22,181 @@ RPL_CHANNELMODEIS (324),
 */
 
 std::vector<std::string> ft_split(const std::string& str, const std::string& delimiters) {
-    std::vector<std::string> parts;
-    std::string token;
-    std::istringstream iss(str);
-    
-    while (getline(iss, token)) {
-        size_t pos = 0;
-        while ((pos = token.find_first_of(delimiters, pos)) != std::string::npos) {
-            token.replace(pos, 1, " ");
-            pos++;
-        }
-        std::istringstream tokenStream(token);
-        std::string part;
-        while (tokenStream >> part) {
-            parts.push_back(part);
-        }
-    }
-    // for (size_t i = 0; i < parts.size(); i++){
-    //     std::cout << parts[i] << std::endl;
-    // }
-    return parts;
+	std::vector<std::string> parts;
+	std::string token;
+	std::istringstream iss(str);
+	
+	while (getline(iss, token)) {
+		size_t pos = 0;
+		while ((pos = token.find_first_of(delimiters, pos)) != std::string::npos) {
+			token.replace(pos, 1, " ");
+			pos++;
+		}
+		std::istringstream tokenStream(token);
+		std::string part;
+		while (tokenStream >> part) {
+			parts.push_back(part);
+		}
+	}
+	// for (size_t i = 0; i < parts.size(); i++){
+	//     std::cout << parts[i] << std::endl;
+	// }
+	return parts;
 }
 
 // void    Server::mode_o()
 // void    Server::mode_k()
 // void    Server::mode_i()
-// void    Server::mode_l()
 // void    Server::mode_topic()
 
 void    Server::mode(std::string buffer, Client c_client)
 {
-    std::cout << RED << "mode command called by " << YEL << c_client.getNickname() << RESET << " with " << buffer << RESET;
-    
-    std::string delimiters = " \r\n";
-    std::vector<std::string>    args;
-    char                        sign;
-    size_t                         j = 3;
+	std::cout << RED << "mode command called by " << YEL << c_client.getNickname() << RESET << " with " << buffer << RESET;
+	
+	std::string 				delimiters = " \r\n";
+	std::vector<std::string>	args;
+	char						sign;
+	size_t						j = 3;
+	
+	args = ft_split(buffer, delimiters);
+	if (args[1][0] != '#')
+		return ;
 
-    args = ft_split(buffer, delimiters);
-    if (args[1][0] != '#')
-        return ;
-    if (mode_verif(args, c_client))
-        return ;
-    if (args.size() <= j)
-        j--;
-    for (size_t i = 0; i < args[2].size(); i++)
-    {
-        if (args.size() <= j)
-            j--;
-        if (args[2][i] == '+' || args[2][i] == '-')
-            sign = args[2][i];
+	int	chan_idx = index_channel_name(args[1], channel_vec);
+	if (mode_verif(args, c_client))
+		return ;
+	if (args.size() <= j)
+		j--;
+	for (size_t i = 0; i < args[2].size(); i++)
+	{
+		if (args.size() <= j)
+			j--;
+		if (args[2][i] == '+' || args[2][i] == '-')
+			sign = args[2][i];
 
-        if (args[2][i] != '+' && args[2][i] != '-')
-            std::cout << "flag : " << sign << args[2][i] << "\n" << "args : " << args[j] << "\n\n";
-
-        if (args[2][i] == 'o')
-        {
-            // mode_o();
-            j++;
-        }
-        else if (args[2][i] == 'k')
-        {
-            // mode_k();
-            if (sign == '+')
-                j++;
-        }
-        // else if (args[2][i] == 'i')
-        //     mode_i(c_client, sign);
-        else if (args[2][i] == 'l')
-        {
-            // mode_l();
-            if (sign == '+')
-                j++;
-        }
-        // else if (args[2][i] == 't')
-        //     mode_topic();
-    }
-    std::cout << "mode fini\n";
-    return;
+		if (args[2][i] != '+' && args[2][i] != '-')
+			std::cout << "flag : " << sign << args[2][i] << "\n" << "args : " << args[j] << "\n\n";
+		if (args[2][i] == 'o')
+		{
+			// mode_o();
+			j++;
+		}
+		else if (args[2][i] == 'k')
+		{
+			// mode_k();
+			if (sign == '+')
+				j++;
+		}
+		// else if (args[2][i] == 'i')
+		//     mode_i(c_client, sign);
+		else if (args[2][i] == 'l')
+		{
+			mode_l(channel_vec[chan_idx], c_client, args[j], sign);
+			if (sign == '+')
+				j++;
+		}
+		// else if (args[2][i] == 't')
+		//     mode_topic();
+	}
+	std::cout << "mode fini\n";
+	return;
 }
 
+void    Server::mode_l(Channel &chan, Client c_client, std::string lim_str, char sign)
+{
+	int lim = std::atoi(lim_str.c_str());
+
+	for (size_t i = 0; i < lim_str.size(); i++)
+	{
+		if ((!isdigit(lim_str[i]) && lim_str[i] != '\n' && lim_str[i] != ' ') || lim <= 0)
+		{
+			std::string invalid = "\e[1;31mError: Invalid limit value (" + lim_str + ")\n" + RESET;
+			std::cout << YEL << c_client.getNickname() << RED 
+			<< " Error: Invalid limit value (" + lim_str + ")\n" + RESET;
+			
+			send(c_client.get_client_fd(), invalid.c_str(), invalid.size(), 0);
+			return ;
+		}
+	}
+
+	if (sign == '-')
+	{
+		chan.set_limit(1000);
+		std::string tosend = YEL + c_client.getNickname() 
+			+ GRE + " has unset users limit in " + BLU + chan.get_name() + RESET + "\n";
+		std::cout << tosend;
+	}
+	else if (sign == '+')
+	{
+		if (chan.get_size() > lim)
+			return ;
+		else
+			chan.set_user_max(lim);
+	}
+	std::cout << "limit is : " << chan.get_limit() << "\n";
+	return ;
+}
 int Server::mode_verif(std::vector<std::string> args, Client c_client)
 {
-    size_t  i;
-    size_t  j;
-    int     size;
-    // int     flags = 0;
-    // int     args_count = 0;
-    //check if channel exists
-    for (i = 0; i < channel_vec.size(); i++)
-    {
-        if (args[1] == channel_vec[i].get_name())
-            break ;
-    }
-    if (i == channel_vec.size()){
-        size = ERR_NOSUCHCHANNEL(args[1]).size();
+	size_t  i;
+	size_t  j;
+	int     size;
+	// int     flags = 0;
+	// int     args_count = 0;
+	//check if channel exists
+	for (i = 0; i < channel_vec.size(); i++)
+	{
+		if (args[1] == channel_vec[i].get_name())
+			break ;
+	}
+	if (i == channel_vec.size()){
+		size = ERR_NOSUCHCHANNEL(args[1]).size();
 		send(c_client.get_client_fd(), ERR_NOSUCHCHANNEL(args[1]).c_str(), size, 0);
-        return 1;
-    }
+		return 1;
+	}
 
-    //check if is on channel
-    for (j = 0; j < channel_vec[i].client_list.size(); j++){
-        if (c_client.getNickname() == channel_vec[i].client_list[j].getNickname())
-            break ;
-    }
-    if (j == channel_vec[i].client_list.size()){
-        size = ERR_NOTONCHANNEL(c_client.getNickname(), args[1]).size();
+	//check if is on channel
+	for (j = 0; j < channel_vec[i].client_list.size(); j++){
+		if (c_client.getNickname() == channel_vec[i].client_list[j].getNickname())
+			break ;
+	}
+	if (j == channel_vec[i].client_list.size()){
+		size = ERR_NOTONCHANNEL(c_client.getNickname(), args[1]).size();
 		send(c_client.get_client_fd(), ERR_NOTONCHANNEL(c_client.getNickname(), args[1]).c_str(), size, 0);
-        return 1;
-    }
+		return 1;
+	}
 
-    //check if is op on channel
-    for (j = 0; j < channel_vec[i].op_clients.size(); j++){
-        if (c_client.getNickname() == channel_vec[i].op_clients[j].getNickname())
-            break ;
-    }
-    if (j == channel_vec[i].client_list.size()){
-        size = ERR_CHANOPRIVSNEEDED(c_client.getNickname(), args[1]).size();
+	//check if is op on channel
+	for (j = 0; j < channel_vec[i].op_clients.size(); j++){
+		if (c_client.getNickname() == channel_vec[i].op_clients[j].getNickname())
+			break ;
+	}
+	if (j == channel_vec[i].client_list.size()){
+		size = ERR_CHANOPRIVSNEEDED(c_client.getNickname(), args[1]).size();
 		send(c_client.get_client_fd(), ERR_CHANOPRIVSNEEDED(c_client.getNickname(), args[1]).c_str(), size, 0);
-        return 1;
-    }
-    //check valid flags (i t k o l)
-    int checkin = 0;
-    size_t z;
-    for (z = 0; args[2][z]; z++){
+		return 1;
+	}
+	//check valid flags (i t k o l)
+	int checkin = 0;
+	size_t z;
+	for (z = 0; args[2][z]; z++){
 
-        if ((args[2][z] == '+' || args[2][z] == '-') && (args[2][z + 1] == '+' || args[2][z + 1] == '-')){
-            checkin = 1;
-            break ;
-        }
-        if (args[2][z] != 'i' && args[2][z] != 't' && args[2][z] != 'k' && args[2][z] != 'o' 
-                && args[2][z] != 'l' && args[2][z] != '-' && args[2][z] != '+'){
-            checkin = 1;
-            break ;
-        }
-    }
-    if (checkin){
-        std::string character;
-        character.push_back(args[2][z]);
-        size = ERR_UNKNOWNMODE(character).size();
-	    send(c_client.get_client_fd(),ERR_UNKNOWNMODE(character).c_str(), size, 0);
-        return 1; 
-    }
-    return 0;
+		if ((args[2][z] == '+' || args[2][z] == '-') && (args[2][z + 1] == '+' || args[2][z + 1] == '-')){
+			checkin = 1;
+			break ;
+		}
+		if (args[2][z] != 'i' && args[2][z] != 't' && args[2][z] != 'k' && args[2][z] != 'o' 
+				&& args[2][z] != 'l' && args[2][z] != '-' && args[2][z] != '+'){
+			checkin = 1;
+			break ;
+		}
+	}
+	if (checkin){
+		std::string character;
+		character.push_back(args[2][z]);
+		size = ERR_UNKNOWNMODE(character).size();
+		send(c_client.get_client_fd(),ERR_UNKNOWNMODE(character).c_str(), size, 0);
+		return 1; 
+	}
+	return 0;
 }

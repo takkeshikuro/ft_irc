@@ -37,6 +37,7 @@ class Channel {
         void        add_operator(Client to_set);
         void        rm_operator(Client to_set);
 		size_t			get_user_max();
+		void		set_user_max(size_t max);
         int         get_size(void);
         void        get_clients();
 		

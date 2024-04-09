@@ -50,8 +50,11 @@ class Server {
 		void	msg_channel(std::string args[3], Client c_client);
 		void    topic(std::string buffer, Client c_client);
 		void    user(std::string buffer, Client c_client);
+
 		void    mode(std::string buffer, Client c_client);
 		int	    mode_verif(std::vector<std::string> args, Client c_client);
+		void    mode_l(Channel &chan, Client c_client, std::string lim_str, char sign);
+		
 		void    part(std::string buffer, Client c_client);
 		void    kick(std::string buffer, Client c_client);
 

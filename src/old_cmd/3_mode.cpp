@@ -60,7 +60,7 @@ void    Server::MODE_limit(Channel &chan, std::string args[3], Client c_client)
 	{
 		chan.set_limit(-1);
 		std::string tosend = YEL + c_client.getNickname() 
-			+ GRE + " has unset users limit in " + BLU + "#" + chan.get_name() + RESET + "\n";
+			+ GRE + " has unset users limit in " + BLU + chan.get_name() + RESET + "\n";
 		chan.send_string_all(tosend);
 		std::cout << tosend;
 	}

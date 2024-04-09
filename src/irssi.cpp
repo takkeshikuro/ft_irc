@@ -118,6 +118,7 @@ int cmp(std::string s1)
 int Server::check_irssi_entrance(int fd)
 {
 	char buff[1024];
+	sleep(1);
 	int byte = read(fd, buff, sizeof(buff));
 	if (byte > 0) 
 	{
