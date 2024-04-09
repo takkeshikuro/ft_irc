@@ -8,8 +8,9 @@ SRCS		= main.cpp Server.cpp Client.cpp cmd_search.cpp Channel.cpp irssi.cpp util
 			new_cmd/ping.cpp new_cmd/nick.cpp \
 			new_cmd/list.cpp new_cmd/join.cpp \
 			new_cmd/privmsg.cpp new_cmd/topic.cpp \
-			new_cmd/user.cpp new_cmd/mode.cpp new_cmd/part.cpp \
-			new_cmd/kick.cpp
+			new_cmd/user.cpp new_cmd/part.cpp new_cmd/kick.cpp \
+			new_cmd/mode/mode.cpp new_cmd/mode/mode_l.cpp \
+			new_cmd/mode/mode_utils.cpp new_cmd/mode/mode_o.cpp
 
 DIR_SRCS	= src/
 DIR_OBJS	= .objs/

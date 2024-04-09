@@ -54,6 +54,7 @@ class Server {
 		void    mode(std::string buffer, Client c_client);
 		int	    mode_verif(std::vector<std::string> args, Client c_client);
 		void    mode_l(Channel &chan, Client c_client, std::string lim_str, char sign);
+		void	mode_o(Channel &chan, Client c_client, std::string target, char sign);
 		
 		void    part(std::string buffer, Client c_client);
 		void    kick(std::string buffer, Client c_client);

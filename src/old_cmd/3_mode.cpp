@@ -25,7 +25,7 @@ void    Server::MODE_oprt(Channel &chan, std::string args[3], Client c_client)
 	(void)c_client;
 	for (j = 0; j < client_vec.size(); j++)
 	{
-		if (client_vec[j].getUsername() == args[2])
+		if (client_vec[j].getNickname() == args[2])
 			break ;
 	}
 	for (i = 0; i < chan.op_clients.size(); i++)
@@ -33,11 +33,11 @@ void    Server::MODE_oprt(Channel &chan, std::string args[3], Client c_client)
 		if (chan.client_list[i].getNickname() == args[2])
 			break ;
 	}
-	if (i == chan.op_clients.size())
+	if (j == chan.op_clients.size())
 	{
 		std::string err = "Error: " + args[2] + " is not in channel " + args[0];
 	}
-	if (args[1] == "+o")
+	if (args[1] == "+o" && i > 0)
 		chan.add_operator(client_vec[j]);
 	if (args[1] == "-o")
 		chan.rm_operator(client_vec[j]);
@@ -58,7 +58,7 @@ void    Server::MODE_limit(Channel &chan, std::string args[3], Client c_client)
 
 	if (args[1] == "-l" || args[1] == "-l\n")
 	{
-		chan.set_limit(-1);
+		chan.set_user_max(1000);
 		std::string tosend = YEL + c_client.getNickname() 
 			+ GRE + " has unset users limit in " + BLU + chan.get_name() + RESET + "\n";
 		chan.send_string_all(tosend);
@@ -74,7 +74,7 @@ void    Server::MODE_limit(Channel &chan, std::string args[3], Client c_client)
 		}
 		else
 		{
-			chan.set_limit(std::atoi(args[2].c_str()));
+			chan.set_user_max(std::atoi(args[2].c_str()));
 			std::string success = GRE + chan.get_name() 
 				+ " channel now have a limit of " + args[2] + " users\n" + RESET;
 			chan.send_string_all(success);
