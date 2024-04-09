@@ -40,6 +40,10 @@
 # define RPL_NAMREPLY(client, channel, list_of_nicks) (":localhost 353 " + client + " " + channel + " :" + list_of_nicks + "\r\n")
 # define RPL_ENDOFNAMES(client, channel) (":localhost 366 " + client + " " + channel + " :End of /NAMES list.\r\n")
 
+//kick
+# define ERR_USERNOTINCHANNEL(client, nickname, channel) ("441 " + client + " " + nickname + " " + channel + " :They aren't on that channel\r\n")
+// # define ERR_CHANOPRIVSNEEDED(client, channel) ("482 " + client + " #" +  channel + " :You're not channel operator\r\n")
+# define RPL_KICK(nickname, username, channel, kicked, reason) (":" + nickname + "!" + username + "@localhost" + " KICK " + channel + " " + kicked + " " + reason + "\r\n")
 
 // TOPIC
 # define RPL_TOPIC(client, channel, topic) (":localhost 332 " + client + " " + channel + " " + topic + "\r\n")

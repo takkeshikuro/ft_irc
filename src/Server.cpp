@@ -132,6 +132,15 @@ int	Server::manage_new_client()
 	fds.push_back(NewPoll); //-> add the client socket to the pollfd
 	
 	std::cout << GRE << "\nNouvelle connexion acceptée\n" << "+Client <" << incoming_fd << "> Connected\n" << RESET;
+	
+		// char buff[1024];
+	// int byte = read(fd, buff, sizeof(buff));
+	// if (byte > 0) 
+	// {
+	// 	buff[byte] = '\0';
+	// 	std::string answer(buff);
+	// 	this->irssi_base = answer;
+	// }
 	if (check_irssi_entrance(incoming_fd)) 
 	{
 		client_vec.back().set_is_irssi();

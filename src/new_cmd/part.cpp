@@ -45,11 +45,8 @@ void    Server::part(std::string buffer, Client c_client)
 		send(c_client.get_client_fd(), ERR_NEEDMOREPARAMS(client_nickname, "/part").c_str(), size, 0);
 	}
 	std::size_t pos_reason = total_arg.find(':');
-	if (pos_reason != std::string::npos) {
-		std::string reason_find = total_arg.substr(pos_reason + 1);
-		pos_reason = reason_find.find(':');
-		reason = reason_find.substr(pos_reason + 1);
-	}
+	if (pos_reason != std::string::npos)
+		reason = total_arg.substr(pos_reason + 1);
 	while (is_alpha_in_part(total_arg) == true)
 	{
 		channel_name.clear();
