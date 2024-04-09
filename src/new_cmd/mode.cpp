@@ -31,23 +31,67 @@ std::vector<std::string> ft_split(const std::string& str, const std::string& del
             parts.push_back(part);
         }
     }
-    for (size_t i = 0; i < parts.size(); i++){
-        std::cout << parts[i] << std::endl;
-    }
+    // for (size_t i = 0; i < parts.size(); i++){
+    //     std::cout << parts[i] << std::endl;
+    // }
     return parts;
 }
 
+// void    Server::mode_o()
+// void    Server::mode_k()
+// void    Server::mode_i()
+// void    Server::mode_l()
+// void    Server::mode_topic()
+
 void    Server::mode(std::string buffer, Client c_client)
 {
-    std::cout << RED << "mode command called by " << YEL << c_client.getNickname() << "\n" << RESET;
+    std::cout << RED << "mode command called by " << YEL << c_client.getNickname() << RESET << " with " << buffer << RESET;
     
     std::string delimiters = " \r\n";
     std::vector<std::string>    args;
-    // int                         j = 3;
+    char                        sign;
+    size_t                         j = 3;
+
     args = ft_split(buffer, delimiters);
+    if (args[1][0] != '#')
+        return ;
     if (mode_verif(args, c_client))
         return ;
+    if (args.size() <= j)
+        j--;
     for (size_t i = 0; i < args[2].size(); i++)
+    {
+        if (args.size() <= j)
+            j--;
+        if (args[2][i] == '+' || args[2][i] == '-')
+            sign = args[2][i];
+
+        if (args[2][i] != '+' && args[2][i] != '-')
+            std::cout << "flag : " << sign << args[2][i] << "\n" << "args : " << args[j] << "\n\n";
+
+        if (args[2][i] == 'o')
+        {
+            // mode_o();
+            j++;
+        }
+        else if (args[2][i] == 'k')
+        {
+            // mode_k();
+            if (sign == '+')
+                j++;
+        }
+        // else if (args[2][i] == 'i')
+        //     mode_i(c_client, sign);
+        else if (args[2][i] == 'l')
+        {
+            // mode_l();
+            if (sign == '+')
+                j++;
+        }
+        // else if (args[2][i] == 't')
+        //     mode_topic();
+    }
+    std::cout << "mode fini\n";
     return;
 }
 
