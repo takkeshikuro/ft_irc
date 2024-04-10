@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 05:00:55 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/04/10 06:02:25 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/04/10 06:30:25 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,10 @@ int	Client::set_user_data(std::string &s_data, Server& server)
 	}
 }
 
-void	Client::client_starting_point_irssi(std::string &irssi_base, Server& server) 
+int	Client::client_starting_point_irssi(std::string &irssi_base, Server& server) 
 {
 	if (set_user_data(irssi_base, server) == FAILURE)
-		return ;
+		return FAILURE;
 	std::cout << YELLOW << "[checking nickname = "<< getNickname() << "]\n";
 	std::cout << "[checking username = "<< getUsername() << "]\n";
 	std::cout << " checking realname = "<< getRealname() << "[\n";
@@ -78,10 +78,10 @@ void	Client::client_starting_point_irssi(std::string &irssi_base, Server& server
 	send(client_fd, s7.c_str(), s7.size(), 0);
 	send(client_fd, s8.c_str(), s8.size(), 0);
 	send(client_fd, s9.c_str(), s9.size(), 0);
-
 	send(client_fd, s10.c_str(), s10.size(), 0);
 
 	std::cout <<"starting point irssi over\n\n";
+	return SUCCESS;
 }
 
 int cmp(std::string s1) 
@@ -105,12 +105,12 @@ int Server::check_irssi_entrance(int fd)
 		buff[byte] = '\0';
 		std::string answer(buff);
 		if (cmp(answer) == 0) {
-			std::cerr << "!irssi connexion!\n";
+			std::cerr << "!irssi connexion!\n\n";
 			this->irssi_base = answer;
 			return 1;
 		}
 	}
 	else
-		std::cerr << "check irssi entrance failed\n";
+		std::cerr << "!netcat connexion!\n\n";
 	return 0;
 }

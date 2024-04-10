@@ -132,22 +132,21 @@ int	Server::manage_new_client()
 	fds.push_back(NewPoll); //-> add the client socket to the pollfd
 	
 	std::cout << GRE << "\nNouvelle connexion acceptée\n" << "+Client <" << incoming_fd << "> Connected\n" << RESET;
-	
-		// char buff[1024];
-	// int byte = read(fd, buff, sizeof(buff));
-	// if (byte > 0) 
-	// {
-	// 	buff[byte] = '\0';
-	// 	std::string answer(buff);
-	// 	this->irssi_base = answer;
-	// }
-	if (check_irssi_entrance(incoming_fd)) 
-	{
+	if (check_irssi_entrance(incoming_fd)) {
 		client_vec.back().set_is_irssi();
-		client_vec.back().client_starting_point_irssi(this->irssi_base, *this);
+		if (client_vec.back().client_starting_point_irssi(this->irssi_base, *this) == FAILURE) {
+			std::cout << "clear_clients() process\n";
+			clear_clients(incoming_fd);
+			return FAILURE;
+		}
 	}
-	else
-		client_vec.back().client_starting_point();
+	else {
+		if (client_vec.back().client_starting_point() == FAILURE) {
+			std::cout << "clear_clients() process\n";
+			clear_clients(incoming_fd);
+			return FAILURE;	
+		}
+	}
 	return SUCCESS;
 }
 
@@ -231,6 +230,7 @@ void Server::clear_clients(int fd)
         if (index != -1)
             channel_vec[i].op_clients.erase(channel_vec[i].op_clients.begin() + index);
     }
+	std::cout << GREEN << "[info] client cleared.\n" << RESET;
 }
 
 void Server::close_fds()

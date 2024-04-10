@@ -93,10 +93,11 @@ void	rm_backslash_n(std::string &s)
 	}	
 }
 
-void	Client::starting_point_data_set()
+int	Client::starting_point_data_set()
 {
 	std::string Account_welcome = yellow + "\n!Account creation!\n(you will can change information later)\nNew username : ";
 	send(client_fd, Account_welcome.c_str(), Account_welcome.length(), 0);
+	std::cout << "waiting for username...\n";
 	while (1) 
 	{
 		char buffer[1024];
@@ -110,18 +111,19 @@ void	Client::starting_point_data_set()
 				send(client_fd, null_buffer.c_str(), null_buffer.length(), 0);
 			}
 			else {
-				std::cout << "[client_username given by user : " << client_username << "]\n";
+				std::cout << YELLOW << "[client_username given by user : " << client_username << "]\n" << RESET;
 				this->username = client_username;
 				break ;
 			}
 		}
 		else if (bytes_lus == 0) {
-			std::cerr << "Connexion fermée par le client" << std::endl;
-			break ;
+			std::cerr << RED << "Connexion closed by user" << std::endl << RESET;
+			return FAILURE;
 		}
 	}
 	std::string new_nick = "\nNew nickname : ";
 	send(client_fd, new_nick.c_str(), new_nick.length(), 0);
+	std::cout << "waiting for nickname...\n";
 	while (1)
 	{
 		char buffer[1024];
@@ -135,24 +137,24 @@ void	Client::starting_point_data_set()
 				send(client_fd, null_buffer.c_str(), null_buffer.length(), 0);
 			}
 			else {
-				std::cout << "[client_nickname given by user : " << client_nickname << "]\n";
+				std::cout << YELLOW << "[client_nickname given by user : " << client_nickname << "]\n" << RESET;
 				this->nickname = client_nickname;
 				break ;
 			}
 		}
 		else if (bytes_lus == 0) {
-			std::cerr << "Connexion fermée par le client" << std::endl;
-			break ;
+			std::cerr << RED << "Connexion closed by user" << std::endl << RESET;
+			return FAILURE;
 		}
 	}
 	std::string data_save = green + "\nNew data saved.\nWelcome!\n";
 	std::string helper = "[press /help to get all the possible commands]\n" + white;
 	send(client_fd, data_save.c_str(), data_save.length(), 0);
 	send(client_fd, helper.c_str(), helper.length(), 0);
-
+	return SUCCESS;
 }
 
-void	Client::client_starting_point() 
+int	Client::client_starting_point() 
 {
 	std::string message001 = "!Bienvenue sur le serveur IRC irc.server.com!\r\n";
 	send(client_fd, message001.c_str(), message001.length(), 0);
@@ -168,14 +170,16 @@ void	Client::client_starting_point()
 			buffer[bytes_lus] = '\0';
 			std::string client_pw(buffer);
 			rm_backslash_n(client_pw);
-			std::cout << "[password given by user : " << client_pw << "]\n";
-			if (check_password(client_pw) == true) {
+			std::cout << YELLOW << "[password given : " << client_pw << "] : " << RESET;
+			if (check_password(client_pw) == true) 
+			{
+				std::cout << GRE << "[password match]\n" << RESET;
 				std::string auth_ok = green + "Authentification ok.\n" + white ;
 				send(client_fd, auth_ok.c_str(), auth_ok.length(), 0);
 				break;
 			}
 			else {
-				std::cout << "[user authentification failed]\n";
+				std::cout << RED << "[password mismatch]\n" << RESET;
 				std::string auth_ko = red + "Authentification failed, pls try again.\n";
 				send(client_fd, auth_ko.c_str(), auth_ko.length(), 0);
 				std::string needpw = white + "\nPassword required for authentication : ";
@@ -183,12 +187,16 @@ void	Client::client_starting_point()
 			}			
 		}
 		else if (bytes_lus == 0) {
-			std::cerr << "Connexion fermée par le client" << std::endl;
-			break ;
+			std::cerr << RED << "Connexion closed by user" << std::endl << RESET;
+			return FAILURE;
 		}
 	}
-	starting_point_data_set();
-	this->is_registred = true;
-	std::cout << "starting point over\n";
+	if (starting_point_data_set() == SUCCESS) 
+	{
+		this->is_registred = true;
+		std::cout << GRE << "Authentification ok : starting point over\n" << RESET;
+		return SUCCESS;
+	}
+	return FAILURE;
 }
 

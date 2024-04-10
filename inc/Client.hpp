@@ -22,9 +22,9 @@ class Client {
 		Client(std::string pw, std::string dt);
 		~Client();
 		
-		void	client_starting_point_irssi(std::string &irssi_base, Server& server);
-		void	client_starting_point();
-		void	starting_point_data_set();
+		int		client_starting_point_irssi(std::string &irssi_base, Server& server);
+		int		client_starting_point();
+		int		starting_point_data_set();
 		bool	check_password(std::string pw_to_check);
 		
 		int	set_user_data(std::string &s_data, Server& server);
