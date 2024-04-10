@@ -144,7 +144,7 @@ int	Server::manage_new_client()
 	if (check_irssi_entrance(incoming_fd)) 
 	{
 		client_vec.back().set_is_irssi();
-		client_vec.back().client_starting_point_irssi(this->irssi_base);
+		client_vec.back().client_starting_point_irssi(this->irssi_base, *this);
 	}
 	else
 		client_vec.back().client_starting_point();

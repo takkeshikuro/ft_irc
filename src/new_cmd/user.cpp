@@ -28,6 +28,7 @@ std::string	find_realname(std::string total_arg);
 
 void    Server::user(std::string buffer, Client c_client)
 {
+	std::cout << "COUCOU {user.cpp}\n";
     std::string total_arg;
     if (buffer[buffer.length() - 1] == '\n')
 		buffer.erase(buffer.length() - 2);
@@ -38,8 +39,8 @@ void    Server::user(std::string buffer, Client c_client)
     
     if (username.empty() || realname.empty())
 		send(c_client.get_client_fd(), ERR_NEEDMOREPARAMS(c_client.getNickname(), "/user").c_str(), ERR_NEEDMOREPARAMS(c_client.getNickname(), "/user").size(), 0);
-//	else if (check if username/realname already exist)
-//		send (ERR_ALREADYREGISTERED(client.getNickname()));
+	else if (c_client.is_registred == true)
+		send (c_client.get_client_fd(), ERR_ALREADYREGISTERED(c_client.getNickname()).c_str(), ERR_ALREADYREGISTERED(c_client.getNickname()).size(), 0);
 	else
 	{
         std::cout << username << "/"<< realname << std::endl;

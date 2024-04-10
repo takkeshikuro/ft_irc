@@ -58,6 +58,7 @@ class Server {
 		
 		void    part(std::string buffer, Client c_client);
 		void    kick(std::string buffer, Client c_client);
+		int		pass(std::string buffer, Client c_client);
 
 		//netcat
 		int     is_command(char *buffer, Client c_client); //parsing command

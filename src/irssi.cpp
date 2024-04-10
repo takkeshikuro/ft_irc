@@ -6,40 +6,53 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 05:00:55 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/04/09 00:03:28 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/04/10 06:02:25 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/Server.hpp"
 
-void	Client::set_user_data(std::string &s_data)
+int	Client::set_user_data(std::string &s_data, Server& server)
 {
-	std::string nickname_i;
-	std::size_t nick_start = (s_data.find(' ', 8) + 1);
-	std::size_t nick_end = (s_data.find('\n', nick_start) - 1);
-	nickname_i = s_data.substr(nick_start, (nick_end - nick_start));	
-	this->setNickname(nickname_i);
-	
-	
-	std::string username_i;
-	std::size_t start = s_data.find("USER");
-	std::size_t user_start = (s_data.find(' ', start) + 1);
-	std::size_t user_end = s_data.find(' ', user_start);
-	username_i = s_data.substr(user_start, (user_end - user_start));
-	this->setUsername(username_i);
+	if (server.pass(s_data, *this) == FAILURE)
+		return FAILURE;
+	else
+	{
+		std::string nickname_i;
+		std::size_t pos_nick = s_data.find("NICK");
+		std::size_t nick_start = (s_data.find(' ', pos_nick) + 1);
+		std::size_t nick_end = (s_data.find('\n', nick_start) - 1);
+		nickname_i = s_data.substr(nick_start, (nick_end - nick_start));
+		this->setNickname(nickname_i);
 
-	std::string realname_i;
-	start = s_data.find("127.0.0.1");
-	std::size_t real_start = (s_data.find(' ', start) + 2);
-	std::size_t real_end = s_data.find('\n', real_start);
-	realname_i = s_data.substr(real_start, (real_end - real_start));
-	this->setRealname(realname_i);
-	return ;
+		std::string username_i;
+		std::size_t start = s_data.find("USER");
+		std::size_t user_start = (s_data.find(' ', start) + 1);
+		std::size_t user_end = s_data.find(' ', user_start);
+		username_i = s_data.substr(user_start, (user_end - user_start));
+		this->setUsername(username_i);
+
+		std::string realname_i;
+		start = s_data.find("127.0.0.1");
+		std::size_t real_start = (s_data.find(' ', start) + 2);
+		std::size_t real_end = s_data.find('\n', real_start);
+		realname_i = s_data.substr(real_start, (real_end - real_start));
+		this->setRealname(realname_i);
+		std::cout << GRE << "[authentification ok]\n"<< RESET;
+		return SUCCESS;
+	}
 }
 
-void	Client::client_starting_point_irssi(std::string &irssi_base) 
+void	Client::client_starting_point_irssi(std::string &irssi_base, Server& server) 
 {
-	set_user_data(irssi_base);
+	if (set_user_data(irssi_base, server) == FAILURE)
+		return ;
+	std::cout << YELLOW << "[checking nickname = "<< getNickname() << "]\n";
+	std::cout << "[checking username = "<< getUsername() << "]\n";
+	std::cout << " checking realname = "<< getRealname() << "[\n";
+	std::cout << RESET;
+
+
 	std::string s1 = yellow + "	 /$$$$$$$$ /$$$$$$$$     /$$$$$$ /$$$$$$$   /$$$$$$ \r\n" + white;
 	std::string s2 = yellow + "| $$_____/|__  $$__/    |_  $$_/| $$__  $$ /$$__  $$\r\n" + white;
 	std::string s3 = yellow + "| $$         | $$         | $$  | $$  \\ $$| $$  \\__/\r\n" + white;
@@ -68,40 +81,7 @@ void	Client::client_starting_point_irssi(std::string &irssi_base)
 
 	send(client_fd, s10.c_str(), s10.size(), 0);
 
-	// std::string needpw = "\nPassword required for authentication : ";
-	// send(client_fd, needpw.c_str(), needpw.length(), 0);
-	// while (1) 
-	// {
-	// 	char buffer[1024];
-	// 	int bytes_lus = read(client_fd, buffer, sizeof(buffer));
-	// 	if (bytes_lus > 0) 
-	// 	{
-	// 		buffer[bytes_lus] = '\0';
-	// 		std::string client_pw(buffer);
-	// 		//rm_backslash_n(client_pw);
-	// 		std::cout << "[password given by user : " << client_pw << "]\n";
-	// 		if (check_password(client_pw) == true) {
-	// 			std::string auth_ok = green + "Authentification ok.\n" + white ;
-	// 			send(client_fd, auth_ok.c_str(), auth_ok.length(), 0);
-	// 			break;
-	// 		}
-	// 		else {
-	// 			std::cout << "[user authentification failed]\n";
-	// 			std::string auth_ko = red + "Authentification failed, pls try again.\n";
-	// 			send(client_fd, auth_ko.c_str(), auth_ko.length(), 0);
-	// 			std::string needpw = white + "\nPassword required for authentication : ";
-	// 			send(client_fd, needpw.c_str(), needpw.length(), 0);
-	// 		}			
-	// 	}
-	// 	else if (bytes_lus == 0) {
-	// 		std::cerr << "Connexion fermée par le client" << std::endl;
-	// 		break ;
-	// 	}
-	// }
-//	starting_point_data_set();
-
-	
-	std::cout <<"starting point irssi over\n";
+	std::cout <<"starting point irssi over\n\n";
 }
 
 int cmp(std::string s1) 
@@ -124,8 +104,7 @@ int Server::check_irssi_entrance(int fd)
 	{
 		buff[byte] = '\0';
 		std::string answer(buff);
-		if (cmp(answer) == 0)
-		{
+		if (cmp(answer) == 0) {
 			std::cerr << "!irssi connexion!\n";
 			this->irssi_base = answer;
 			return 1;

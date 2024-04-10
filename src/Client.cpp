@@ -14,13 +14,16 @@
 
 Client::Client() : in_channel(0) {}
 
-Client::Client(std::string pw, std::string dt) : password(pw) {
+Client::Client(std::string pw, std::string dt) : password(pw) 
+{
+	is_registred = false;	
 	in_channel = 0;
 	invite_access = 0;
 	is_admin = false;
 	is_irssi = false;
-	set_current_channel("!no_chan!");
 	datetime = dt;
+	set_current_channel("!no_chan!");
+	
 	green = "\e[1;32m";
 	white = "\e[0;37m";
 	red = "\e[1;31m";
@@ -75,8 +78,7 @@ void	Client::set_invite_access() {
 
 bool	Client::check_password(std::string pw_to_check)
 {
-	if (pw_to_check.length() == password.length())
-	{
+	if (pw_to_check.length() == password.length()) {
 		if (this->password == pw_to_check)
 			return true;
 	}
@@ -186,6 +188,7 @@ void	Client::client_starting_point()
 		}
 	}
 	starting_point_data_set();
+	this->is_registred = true;
 	std::cout << "starting point over\n";
 }
 
