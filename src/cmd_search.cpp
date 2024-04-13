@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_search.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
+/*   By: rmarecar <rmarecar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 02:11:04 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/04/09 02:31:35 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/04/13 14:01:21 by rmarecar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,9 @@ int	search_irssi_cmd(std::string &cmd, int arg)
 		}
 	}
 	else {
-		std::string commands[10] = {"PING", "NICK", "LIST", "JOIN", "PRIVMSG", \
-									"TOPIC", "USER", "MODE", "PART", "KICK"};
-		for (int i = 0; i < 10; i++) {
+		std::string commands[11] = {"PING", "NICK", "LIST", "JOIN", "PRIVMSG", \
+									"TOPIC", "USER", "MODE", "PART", "KICK", "INVITE"};
+		for (int i = 0; i < 11; i++) {
 			if (cmd == commands[i])
 				return (i);
 		}
@@ -84,6 +84,7 @@ int Server::is_irssi_command(char *buffer, Client c_client)
 			case 7 : mode(buffer, c_client); break;
 			case 8 : part(buffer, c_client); break;
 			case 9 : kick(buffer, c_client); break;
+			case 10 : invite(buffer, c_client); break;
 			case -1 : command_unknow(c_client, cmd_arg); break ;		
 		}
 	}

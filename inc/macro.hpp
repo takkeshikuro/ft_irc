@@ -70,5 +70,8 @@
 # define ERR_FULL_SERV "[Server] You cannot join, the server is already full"
 # define ERR_UNKNOWNCOMMAND(client, command) (":localhost 421 " + client + " " + command + " :Unknown command\r\n")
 
+# define MODE_USERMSG(client, mode) ":" + client + " MODE " + client + " :" + mode + "\r\n"
 
+# define ERR_INVITEONLYCHAN(channel) ":localhost 473 " + channel + " :" + channel + "\r\n"
+# define RPL_INVITING(channel, nickname) channel + " " + nickname + "\r\n"
 #endif

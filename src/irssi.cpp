@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   irssi.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
+/*   By: rmarecar <rmarecar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 05:00:55 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/04/10 06:30:25 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/04/13 13:16:23 by rmarecar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ int	Client::client_starting_point_irssi(std::string &irssi_base, Server& server)
 	std::string s7 = yellow + "| $$         | $$        /$$$$$$| $$  | $$|  $$$$$$/\r\n" + white;
 	std::string s8 = yellow + "|__/         |__//$$$$$$|______/|__/  |__/ \\______/ \r\n" + white;
 	std::string s9 = yellow + "                |______/                          \r\n" + white;
-	std::string s10 = yellow + "Enjoy!\r\n" + white;
+	std::string s10 = yellow + "Enjoy!\r\n" + RESET;
 	
 	send(client_fd, RPL_WELCOME(nickname, IPadd).c_str(), RPL_WELCOME(nickname, IPadd).size(), 0);
 	send(client_fd, RPL_YOURHOST(nickname, "[pirate server]").c_str(), RPL_YOURHOST(nickname, "pirate server").size(), 0);
@@ -79,7 +79,7 @@ int	Client::client_starting_point_irssi(std::string &irssi_base, Server& server)
 	send(client_fd, s8.c_str(), s8.size(), 0);
 	send(client_fd, s9.c_str(), s9.size(), 0);
 	send(client_fd, s10.c_str(), s10.size(), 0);
-
+	
 	std::cout <<"starting point irssi over\n\n";
 	return SUCCESS;
 }

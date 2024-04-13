@@ -97,6 +97,12 @@ void    Server::join(std::string buffer, Client c_client)
 					send(c_client.get_client_fd(), ERR_CHANNELISFULL(client_nickname, channel_name).c_str(), size, 0);
 					continue ;
 				}
+				else if (is_invited(c_client.get_client_fd(), channel_vec[i]) == false)
+				{
+					std::string inv_only = ERR_INVITEONLYCHAN(channel_name);
+					send(c_client.get_client_fd(), inv_only.c_str(), inv_only.size(), 0);
+					continue;
+				}
 				else 
 				{
 					int check_1 = 0;

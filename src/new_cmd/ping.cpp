@@ -27,6 +27,12 @@ void	Server::PING(std::string buffer, Client c_client)
     if (buffer[buffer.length() - 1] == '\n')
         buffer.erase(buffer.length() - 2);
 
-    std::string pong_back = "[" + RPL_PONG(nickname, buffer + ":(127.0.0.1)]");
-    send(c_client.get_client_fd(), pong_back.c_str(), pong_back.size(), 0);    
+    // std::string pong_back = "[" + RPL_PONG(nickname, buffer + ":(127.0.0.1)]");
+    // send(c_client.get_client_fd(), pong_back.c_str(), pong_back.size(), 0);   
+    // std::cout << RED << pong_back << "\n" << RESET; 
+
+    std::string pingu = "PONG :localhost\r\n";
+    send(c_client.get_client_fd(), pingu.c_str(), pingu.size(), 0);
+    // std::cout << RED << pingu << "\n" << RESET; 
+    std::cout << user_id(c_client.getUsername(), c_client.getNickname()) << " " << pingu;
 }

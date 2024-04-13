@@ -4,11 +4,11 @@ std::vector<std::string> ft_split(const std::string& str, const std::string& del
 Paramètres : <nom du chan> <+|-|o|p|s|i|t|n|b|v|m>+ <autres paramètres>
 
 flags a faire :
-k
+k	
 l	done
-o
-t
-i
+o	done
+t	
+i	
 
 Réponses possibles :
 ERR_CHANOPRIVSNEEDED (482), done
@@ -27,6 +27,14 @@ RPL_CHANNELMODEIS (324),
 // void    Server::mode_i()
 // void    Server::mode_topic()
 
+void    invisible_mode(Client &client){
+    std::string ret;
+
+    ret = MODE_USERMSG(client.getNickname(), "+i");
+    send(client.get_client_fd(), ret.c_str(), ret.size(), 0);
+
+}
+
 void    Server::mode(std::string buffer, Client c_client)
 {
 	std::cout << RED << "mode command called by " << YEL << c_client.getNickname() << RESET << " with " << buffer << RESET;
@@ -38,7 +46,10 @@ void    Server::mode(std::string buffer, Client c_client)
 	
 	args = ft_split(buffer, delimiters);
 	if (args[1][0] != '#')
+	{
+		invisible_mode(c_client);
 		return ;
+	}
 	int	chan_idx = index_channel_name(args[1], channel_vec);
 	if (mode_verif(args, c_client))
 		return ;
@@ -64,8 +75,8 @@ void    Server::mode(std::string buffer, Client c_client)
 			if (sign == '+')
 				j++;
 		}
-		// else if (args[2][i] == 'i')
-		//     mode_i(c_client, sign);
+		else if (args[2][i] == 'i')
+		    mode_i(channel_vec[chan_idx], c_client, sign);
 		else if (args[2][i] == 'l')
 		{
 			mode_l(channel_vec[chan_idx], c_client, args[j], sign);

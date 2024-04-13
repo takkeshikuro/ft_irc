@@ -14,3 +14,4 @@ bool	invalid_char(std::string nickname);
 bool	nickname_already_used(std::vector<Client> &client_vec, std::string name);
 int index_channel_name(std::string name, std::vector<Channel> vector);
 int index_client_vec(std::string nick, std::vector<Client> vec);
+bool is_invited(int fd, Channel &chan);

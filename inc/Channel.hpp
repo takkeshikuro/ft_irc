@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
+/*   By: rmarecar <rmarecar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:45:49 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/04/04 05:59:46 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/04/13 13:59:33 by rmarecar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ class Channel {
 	//	std::vector<Client> &Channel::getClientList();
 		std::vector<Client> client_list;
         std::vector<Client> op_clients;
-
+		std::vector<int>	invited_clients;
 	private :
 		std::string channel_name;
 		int         creator_fd;
