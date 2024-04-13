@@ -8,7 +8,7 @@ k
 l	done
 o	done
 t	
-i	
+i	done	
 
 Réponses possibles :
 ERR_CHANOPRIVSNEEDED (482), done
@@ -29,17 +29,17 @@ RPL_CHANNELMODEIS (324),
 
 void    invisible_mode(Client &client){
     std::string ret;
-
+	if (client.get_is_irssi() == false)
+		return ;
     ret = MODE_USERMSG(client.getNickname(), "+i");
     send(client.get_client_fd(), ret.c_str(), ret.size(), 0);
-
 }
 
 void    Server::mode(std::string buffer, Client c_client)
 {
 	std::cout << RED << "mode command called by " << YEL << c_client.getNickname() << RESET << " with " << buffer << RESET;
 	
-	std::string 				delimiters = " \r\n";
+	std::string 				delimiters = " \r\n/";
 	std::vector<std::string>	args;
 	char						sign;
 	size_t						j = 3;

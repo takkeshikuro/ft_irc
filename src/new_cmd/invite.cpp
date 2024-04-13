@@ -24,14 +24,20 @@ void    Server::invite(std::string buffer, Client c_client)
     int                 user_idx;
     std::vector<std::string> args = ft_split(buffer, " \r\n");
 
-    chan_idx = index_channel_name(args[2], channel_vec);
+    chan_idx = index_channel_name(args[2], channel_vec); //verify if chan exists
     if (chan_idx == -1)
     {
         std::string to_send = ERR_NOSUCHCHANNEL(args[2]);
         send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
         return ;
     }
-    user_idx = index_client_vec(args[1], client_vec);
+    if (index_channel_nick(c_client.getNickname(), channel_vec[chan_idx]))
+    {
+        std::string to_send = ERR_NOTONCHANNEL(c_client.getNickname(), args[2]);
+        send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
+        return ;
+    }
+    user_idx = index_client_vec(args[1], client_vec); //verify if user exists
     if (user_idx == -1)
     {
         std::string to_send = ERR_NOSUCHNICK(args[1]);
@@ -39,7 +45,9 @@ void    Server::invite(std::string buffer, Client c_client)
         return ;
     }
     channel_vec[chan_idx].invited_clients.push_back(client_vec[user_idx].get_client_fd());
-    std::string to_send = RPL_INVITING(args[2], args[1]);
-    send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
-
+    if (c_client.get_is_irssi() == true)
+    {
+        std::string to_send = RPL_INVITING(args[2], args[1]);
+        send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
+    }
 }

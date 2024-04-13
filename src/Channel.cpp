@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
+/*   By: rmarecar <rmarecar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 02:23:18 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/04/08 22:51:49 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/04/13 16:24:41 by rmarecar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ Channel::Channel(std::string name) {
 	this->limit = 10;
 	keypass_set = false;
 	invite_mode = false;
+	topic_opr = true;
 	description.empty();
 	//	
 }
@@ -42,6 +43,7 @@ Channel::Channel(std::string name, int fd) : creator_fd(fd), limit(10)
 	else
 		channel_name = "#" + name;
 	keypass_set = false;
+	topic_opr = false;
 // +ask for max user
 
 	std::cout <<yellow << "creation of new channel named " << name << std::endl << white;

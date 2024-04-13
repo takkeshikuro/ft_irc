@@ -6,7 +6,7 @@
 /*   By: rmarecar <rmarecar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:45:49 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/04/13 13:59:33 by rmarecar         ###   ########.fr       */
+/*   Updated: 2024/04/13 16:23:47 by rmarecar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ class Channel {
 		bool		keypass_set;
 		std::string channel_keypass;
 		bool		invite_mode;
-
+		bool		topic_opr;
 		std::string red;
 		std::string green;
 		std::string white;

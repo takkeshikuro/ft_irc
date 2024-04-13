@@ -99,8 +99,16 @@ void    Server::join(std::string buffer, Client c_client)
 				}
 				else if (is_invited(c_client.get_client_fd(), channel_vec[i]) == false)
 				{
-					std::string inv_only = ERR_INVITEONLYCHAN(channel_name);
-					send(c_client.get_client_fd(), inv_only.c_str(), inv_only.size(), 0);
+					if (c_client.get_is_irssi() == true)
+					{
+						std::string inv_only = ERR_INVITEONLYCHAN(channel_name);
+						send(c_client.get_client_fd(), inv_only.c_str(), inv_only.size(), 0);
+					}
+					else
+					{
+						std::string inv_only = "Cannot join this channel you need an invite.\n";
+						send(c_client.get_client_fd(), inv_only.c_str(), inv_only.size(), 0);
+					}
 					continue;
 				}
 				else 
