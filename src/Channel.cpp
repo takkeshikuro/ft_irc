@@ -44,6 +44,7 @@ Channel::Channel(std::string name, int fd) : creator_fd(fd), limit(10)
 		channel_name = "#" + name;
 	keypass_set = false;
 	topic_opr = true;
+	invite_mode = false;
 // +ask for max user
 
 	std::cout <<yellow << "creation of new channel named " << name << std::endl << white;
