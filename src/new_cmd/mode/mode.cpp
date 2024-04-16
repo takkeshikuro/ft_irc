@@ -83,8 +83,8 @@ void    Server::mode(std::string buffer, Client c_client)
 			if (sign == '+')
 				j++;
 		}
-		// else if (args[2][i] == 't')
-		//     mode_topic();
+		else if (args[2][i] == 't')
+		    mode_t(channel_vec[chan_idx], c_client, sign);
 	}
 	std::cout << "mode fini\n";
 	return;

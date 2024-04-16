@@ -43,7 +43,7 @@ Channel::Channel(std::string name, int fd) : creator_fd(fd), limit(10)
 	else
 		channel_name = "#" + name;
 	keypass_set = false;
-	topic_opr = false;
+	topic_opr = true;
 // +ask for max user
 
 	std::cout <<yellow << "creation of new channel named " << name << std::endl << white;
@@ -298,4 +298,12 @@ void		Channel::set_user_max(size_t max)
 {
 	user_max = max;
 	limit = max;
+}
+
+bool	Channel::get_topic_opr(){
+	return topic_opr;
+}
+
+void	Channel::set_topic_opr(bool to_set){
+	topic_opr = to_set;
 }

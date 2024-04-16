@@ -55,6 +55,8 @@ void    Server::topic(std::string buffer, Client c_client)
 			if (index_chan != -1) 
 			{
 				std::string new_topic = change_topic(channel_name, c_client, this->channel_vec, next_arg);
+				if (new_topic == "err")
+					return ;
 				channel_vec[index_chan].set_description(new_topic);
 				size_t size = RPL_TOPIC(client_nickname, channel_name, channel_vec[index_chan].get_description()).size();
 				for (size_t i = 0; i < channel_vec[index_chan].client_list.size(); i++)
@@ -108,7 +110,7 @@ std::string change_topic(std::string channel_name, Client c_client, std::vector<
 		send(c_client.get_client_fd(), ERR_NOTONCHANNEL(client_nickname, channel_name).c_str(), size, 0);	
 		return err;
 	}
-	else if (index_operator_nick(client_nickname, vec[i]) == -1) {
+	else if (index_operator_nick(client_nickname, vec[i]) == -1 && vec[i].get_topic_opr() == true) {
 		size_t size = ERR_CHANOPRIVSNEEDED(client_nickname, channel_name).size();
 		send(c_client.get_client_fd(), ERR_CHANOPRIVSNEEDED(client_nickname, channel_name).c_str(), size, 0);		
 		return err;

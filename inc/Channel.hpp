@@ -54,6 +54,9 @@ class Channel {
 		bool		get_invite_set();
 		void		set_invite_set();
 
+		bool		get_topic_opr();
+		void		set_topic_opr(bool to_set);
+		
 	//	std::vector<Client> &Channel::getClientList();
 		std::vector<Client> client_list;
         std::vector<Client> op_clients;
