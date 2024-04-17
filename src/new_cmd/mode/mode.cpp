@@ -71,7 +71,7 @@ void    Server::mode(std::string buffer, Client c_client)
 		}
 		else if (args[2][i] == 'k')
 		{
-			// mode_k();
+			mode_k(channel_vec[chan_idx], c_client, args[j], sign);
 			if (sign == '+')
 				j++;
 		}

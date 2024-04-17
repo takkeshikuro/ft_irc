@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmarecar <rmarecar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 02:23:18 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/04/13 16:24:41 by rmarecar         ###   ########.fr       */
+/*   Updated: 2024/04/17 01:43:11 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,7 @@ size_t				Channel::get_user_max() { return this->user_max; }
 //-------> SETTER
 void	Channel::set_description(std::string &s) { this->description = s; }
 void	Channel::set_limit(int lim) { limit = lim; }
+void	Channel::set_keypass_k(std::string kp) { channel_keypass = kp; }
 bool	Channel::get_key_set() {
 	if (keypass_set == true)
 		return true;

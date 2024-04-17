@@ -62,6 +62,7 @@ void    Server::join(std::string buffer, Client c_client)
 		size_t size = ERR_NEEDMOREPARAMS(client_nickname, "/join").size();
 		send(c_client.get_client_fd(), ERR_NEEDMOREPARAMS(client_nickname, "/join").c_str(), size, 0);
 	}
+	std::cout << "for join[" << total_arg<< "/\n";
 	while (is_alpha_in(total_arg) == true)
 	{
 		channel_name.clear();
@@ -76,10 +77,10 @@ void    Server::join(std::string buffer, Client c_client)
 		for (size_t i = 0; i < channel_vec.size(); i++) 
 		{
 			//check si channel existe		
-			if (channel_vec[i].get_name() == channel_name) 
+			if (channel_vec[i].get_name() == channel_name)
 			{
 				check = 1;
-				// if (channel_vec[i].get_key_set()) // Si channel en mode +k
+				// if (channel_vec[i].get_key_set() == true) // Si channel en mode +k
 				// {
 				// 	std::string key = retrieveKey(cmd_infos.message);
 				// 	total_arg.erase(cmd_infos.message.find(key), key.length()); // on erase la key de la string

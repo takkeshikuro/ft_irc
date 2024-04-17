@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmarecar <rmarecar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:45:49 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/04/13 16:23:47 by rmarecar         ###   ########.fr       */
+/*   Updated: 2024/04/17 01:44:31 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ class Channel {
 		void		set_key_set(); // to modify keypass_set
 		std::string get_keypass(); // to get the string keypass
 		void		set_keypass(Client c_client); // to set the string keypass
+		void		set_keypass_k(std::string kp);
 		bool		check_keypass(Client c_client);
         bool		check_kp(std::string kp_to_check);
 
