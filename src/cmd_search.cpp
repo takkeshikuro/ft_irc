@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_search.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmarecar <rmarecar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 02:11:04 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/04/13 15:34:18 by rmarecar         ###   ########.fr       */
+/*   Updated: 2024/04/17 19:08:00 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,14 @@ bool space(std::string& chaine)  {
 int	search_cmd(std::string &cmd, int arg) 
 {
 	if (arg) {
-		std::string commands[9] = {"/PRIVMSG", "/WHOIS", "/CREATE", "/NICK", "/JOIN", "/MODE", "/TOPIC", "/INVITE", "/KICK"};
-		for (int i = 0; i < 9; i++) {
+		std::string commands[10] = {"/PRIVMSG", "/WHOIS", "/CREATE", "/NICK", "/JOIN", "/MODE", "/TOPIC", "/INVITE", "/KICK", "/PART"};
+		for (int i = 0; i < 10; i++) {
 			if (cmd == commands[i])
 				return (i);
 		}
 	}
 	else if (!arg) {
-		std::string commands[7] = {"/HELP", "/LIST_CH", "/LIST_CL", "/TOPIC", "/LEAVE", "/SECRET_ROOT", "/HELP_OPERATOR"};
+		std::string commands[7] = {"/HELP", "/LIST_CH", "/LIST_CL", "/TOPIC", "/SECRET_ROOT", "/HELP_OPERATOR", "/PART"};
 		for (int i = 0; i < 7; i++) {
 			if (cmd == commands[i])
 				return (i);
@@ -126,6 +126,8 @@ int Server::is_command(char *buffer, Client c_client)
 				case 6 : TOPIC(buf, c_client, 1);  return 1 ;
 				case 7 : INVITE(buf, c_client);  return 1 ;
                 case 8 : KICK(buf, c_client);  return 1 ;
+				case 9 : part(buffer, c_client); break;
+
 				case -1 : command_unknow(c_client, cmd_arg); return 0 ;
 			}
 		}
@@ -137,9 +139,10 @@ int Server::is_command(char *buffer, Client c_client)
 				case 1 : LIST_CH(buf, c_client);  return 1;
 				case 2 : LIST_CL(buf, c_client);  return 1; 
 				case 3 : TOPIC(buf, c_client, 0);  return 1;
-				case 4 : LEAVE(buf, c_client);  return 1;
-				case 5 : SECRET_ROOT(buf, c_client);  return 1;
-				case 6 : HELP_OPERATOR(buf, c_client);  return 1; 
+				//case 4 : LEAVE(buf, c_client);  return 1;
+				case 4 : SECRET_ROOT(buf, c_client);  return 1;
+				case 5 : HELP_OPERATOR(buf, c_client);  return 1;
+				case 6 : part(buffer, c_client); break; 
 				case -1 : command_unknow(c_client, cmd_string); return 1;		
 			}
 		}

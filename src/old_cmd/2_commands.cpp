@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   2_commands.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmorikaw <tmorikaw@student.42.fr>          +#+  +:+       +#+        */
+/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:17:25 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/03/19 06:15:41 by tmorikaw         ###   ########.fr       */
+/*   Updated: 2024/04/17 19:09:26 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,110 +101,6 @@ int     check_limit(Channel &chan, Client c_client)
     return 0;
 }
 
-void    Server::JOIN(std::string buffer, Client c_client)
-{
-	std::string channel_name;
-	std::stringstream sbuf(buffer);
-	std::string cmd;
-	std::getline(sbuf, cmd, ' ');
-	int			exist = 0;
-	size_t		i;
-	size_t		j;
-	while (std::getline(sbuf, channel_name, '\n')) {
-		if (!channel_name.empty())
-			break ;
-	}
-	if (channel_name[0] != '#')
-		channel_name = "#" + channel_name;
-	for (i = 0; i < channel_vec.size(); i++) {
-		if (channel_vec[i].get_name() == channel_name) {
-			exist = 1;
-			break ;
-		}
-	}
-    if (exist && check_limit(channel_vec[i], c_client))
-        return ;
-	else if (exist && channel_vec[i].get_invite_set() == true)
-	{
-		if (!c_client.get_invite_access())
-		{
-			std::string no_access = red + "Sorry this channel is only on invite access mode.\n" + white;
-			send(c_client.get_client_fd(), no_access.c_str(), no_access.size(), 0);
-			return ;
-		}
-		c_client.set_invite_access();
-	}
-	if (!exist && (asking_to_create(buffer, c_client) == 0)) 
-		return ;
-	for (j = 0; j < client_vec.size(); j++) {
-		if (client_vec[j].getNickname() == c_client.getNickname())
-			break ;
-	}
-	if (!is_in_channel(c_client, channel_vec[i]))
-	{
-		if (channel_vec[i].check_keypass(c_client) == true)
-		{
-			channel_vec[i].add_user(client_vec[j]);
-			client_vec[j].in_channel += 1;
-			
-			
-			std::string line = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
-			send(c_client.get_client_fd(), line.c_str(), line.size(), 0);
-			send(c_client.get_client_fd(), line.c_str(), line.size(), 0);
-			send_infos(channel_vec[j], channel_vec[j].get_name(), c_client);
-			std::string welcome_channel = "\n# Welcome to " + channel_name + " channel !\n";
-			send(c_client.get_client_fd(), welcome_channel.c_str(), welcome_channel.size(), 0);
-
-		}
-		else
-			return ;
-	}
-	else
-	{
-		std::string active_channel = "# You are currently in " + channel_name + " channel.\n";
-		send(c_client.get_client_fd(), active_channel.c_str(), active_channel.size(), 0);
-	}
-	client_vec[j].set_current_channel(channel_name);
-}
-
-void    Server::LEAVE(std::string buffer, Client c_client)
-{	
-	(void)buffer;
-	size_t i;
-	if (c_client.in_channel)
-	{	
-		for (i = 0; i < channel_vec.size(); i++)
-		{
-			if (channel_vec[i].get_name() == c_client.get_current_chan()) 
-			{
-				size_t j;
-				for (j = 0; j < client_vec.size(); j++) 
-				{
-					if (client_vec[j].get_client_fd() == c_client.get_client_fd()) 
-					{
-						channel_vec[i].rm_user(client_vec[j]);
-						// add if (c_client is opt) -> op_client.rm_user();
-						
-						client_vec[j].in_channel -= 1;
-						client_vec[j].set_current_channel("!no_chan!");
-						std::string quit = yellow + "You have left the channel #" + channel_vec[i].get_name() + "\n" + white;
-						send(c_client.get_client_fd(), quit.c_str(), quit.size(), 0);
-						if (channel_vec[i].client_list.size() == 0 
-							&& channel_vec[i].get_name() != "random" && channel_vec[i].get_name() != "announcements")
-						{
-							std::cout << RED << "Channel #" << channel_vec[i].get_name() << " has been deleted.\n";
-							channel_vec.erase(channel_vec.begin() + i);
-						}
-						return ;
-					}
-				}
-			}
-		}
-	}
-	std::string quit_failed = red + "You are not in a channel.\n" + white;
-	send(c_client.get_client_fd(), quit_failed.c_str(), quit_failed.size(), 0);
-}
-
 bool	Server::check_channel(Client &c_client)
 {
 	size_t i;
@@ -290,8 +186,8 @@ void	Server::INVITE(std::string buffer, Client c_client)
 				if (invite_target(c_client, client_vec[i], c_client.get_current_chan()) == true)
 				{
 					client_vec[i].set_invite_access();
-					LEAVE("null", client_vec[i]);
-					JOIN("/join " + c_client.get_current_chan(), client_vec[i]);
+				//	LEAVE("null", client_vec[i]);
+				//	JOIN("/join " + c_client.get_current_chan(), client_vec[i]);
 					return ;
 				}
 				else
@@ -305,7 +201,7 @@ void	Server::INVITE(std::string buffer, Client c_client)
 		if (invite_target(c_client, client_vec[i], c_client.get_current_chan()) == true)
 		{
 			client_vec[i].set_invite_access();
-			JOIN("/join " + c_client.get_current_chan(), client_vec[i]);
+		//	JOIN("/join " + c_client.get_current_chan(), client_vec[i]);
 		}
 		else
 		{

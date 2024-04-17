@@ -4,6 +4,7 @@ void		send_to_all(Client c_client, Channel &chan, std::string reason);
 bool		is_alpha_in_part(std::string str);
 std::string get_channel_name_part(const std::string& arg);
 bool		is_inside(Channel &channel, std::string nickname);
+std::vector<std::string> ft_split(const std::string& str, const std::string& delimiters);
 
 /**
  * @brief The PART command removes the client from the given channel(s).
@@ -33,6 +34,25 @@ void    Server::part(std::string buffer, Client c_client)
 	std::string reason;
 	reason.clear();
 
+	if (c_client.get_is_irssi() == false)
+	{
+		std::vector<std::string> arg = ft_split(buffer, " ");
+		if (arg.size() == 1)
+		{
+			std::string param = "Error : need more param (/part <channel>)\n";
+			send(c_client.get_client_fd(), param.c_str(), param.size(), 0);
+			return ;
+		}
+		if (arg.size() == 2)
+			buffer = buffer + "\r\n";
+		else if (arg.size() > 2)
+		{
+			std::string p1 = "/PART " + arg[1];
+			std::string p2 = buffer.substr(p1.length());
+			buffer = p1 + " :" + p2 + "\n";
+		}
+	}
+	
 	if (buffer[buffer.length() - 1] == '\n')
 		buffer.erase(buffer.length() - 2);
 	std::size_t pos = buffer.find(' ');

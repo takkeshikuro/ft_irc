@@ -73,8 +73,8 @@ class Server {
 		void	CREATE(std::string buffer, Client c_client);
 		int	    asking_to_create(std::string buffer, Client c_client);
 		void	TOPIC(std::string buffer, Client c_client, int arg);
-		void	JOIN(std::string buffer, Client c_client);
-		void	LEAVE(std::string buffer, Client c_client);
+	//	void	JOIN(std::string buffer, Client c_client);
+	//	void	LEAVE(std::string buffer, Client c_client);
 		void	LIST_CH(std::string buffer, Client c_client);
 		void	LIST_CL(std::string buffer, Client c_client);
 		void    NICK(std::string buffer, Client c_client);
