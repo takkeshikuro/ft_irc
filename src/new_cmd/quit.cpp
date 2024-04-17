@@ -18,3 +18,8 @@
  * 
  * 	Source: https://modern.ircdocs.horse/#quit-message
  */
+
+void    Server::quit(std::string buffer, Client c_client)
+{
+    
+}

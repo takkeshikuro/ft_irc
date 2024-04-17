@@ -50,6 +50,7 @@ class Server {
 		void	msg_channel(std::string args[3], Client c_client);
 		void    topic(std::string buffer, Client c_client);
 		void    user(std::string buffer, Client c_client);
+		void	access_channel(Client c_client, std::string channel_name, int i);
 
 		void    invite(std::string buffer, Client c_client);
 

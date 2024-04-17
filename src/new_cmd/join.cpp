@@ -2,7 +2,8 @@
 
 bool		is_alpha_in(std::string str);
 std::string get_channel_name(const std::string& arg);
-
+std::string get_keypass(const std::string& arg);
+void		access_denied(Client c_client, std::string channel_name, int error);
 void		send_infos(Channel &channel, std::string channel_name, Client &client);
 
 /**
@@ -43,6 +44,7 @@ void    Server::join(std::string buffer, Client c_client)
 {
 	std::string client_nickname = c_client.getNickname();
 	std::string	channel_name;
+	std::string keypass;
 	std::string total_arg;
 	if (c_client.get_is_irssi() == false)
 	{
@@ -57,20 +59,16 @@ void    Server::join(std::string buffer, Client c_client)
 	std::size_t pos = buffer.find(' ');
 	if (pos != std::string::npos)
 		total_arg = buffer.substr(pos + 1);
-
 	if (is_alpha_in(total_arg) == false) {
 		size_t size = ERR_NEEDMOREPARAMS(client_nickname, "/join").size();
 		send(c_client.get_client_fd(), ERR_NEEDMOREPARAMS(client_nickname, "/join").c_str(), size, 0);
 	}
-	std::cout << "for join[" << total_arg<< "/\n";
+	
 	while (is_alpha_in(total_arg) == true)
 	{
 		channel_name.clear();
 		channel_name = get_channel_name(total_arg);
-		
-		// erase de la string le channel = "#foo,#bar" devient "#,#bar"
 		total_arg.erase(total_arg.find(channel_name), channel_name.length()); 
-		
 		if (channel_name[0] != '#')
 			channel_name = "#" + channel_name;
 		int check = 0;
@@ -80,59 +78,37 @@ void    Server::join(std::string buffer, Client c_client)
 			if (channel_vec[i].get_name() == channel_name)
 			{
 				check = 1;
-				// if (channel_vec[i].get_key_set() == true) // Si channel en mode +k
-				// {
-				// 	std::string key = retrieveKey(cmd_infos.message);
-				// 	total_arg.erase(cmd_infos.message.find(key), key.length()); // on erase la key de la string
-				// 	if (key != channel_vec[i].getChannelPassword())
-				// 	{
-				// 		size_t size = ERR_BADCHANNELKEY(client_nickname, channel_name).size();
-				// 		send(c_client.get_client_fd(), ERR_BADCHANNELKEY(client_nickname, channel_name).c_str(), size, 0);
-				// 		continue; // on passe la suite, au prochain channel à ajouter síl y en a un
-				// 	}
-				// }
 				// vérifier si le channel est full
 				if (channel_vec[i].client_list.size() + 1 > channel_vec[i].get_user_max())
+					access_denied(c_client, channel_name, 1);
+				// Si channel en mode +k
+				else if (channel_vec[i].get_key_set() == true) 
 				{
-					size_t size = ERR_CHANNELISFULL(client_nickname, channel_name).size();
-					send(c_client.get_client_fd(), ERR_CHANNELISFULL(client_nickname, channel_name).c_str(), size, 0);
-					continue ;
-				}
-				else if (is_invited(c_client.get_client_fd(), channel_vec[i]) == false)
-				{
-					if (c_client.get_is_irssi() == true)
+					keypass = get_keypass(total_arg);
+					if (!keypass.empty())
 					{
-						std::string inv_only = ERR_INVITEONLYCHAN(channel_name);
-						send(c_client.get_client_fd(), inv_only.c_str(), inv_only.size(), 0);
-					}
-					else
-					{
-						std::string inv_only = "Cannot join this channel you need an invite.\n";
-						send(c_client.get_client_fd(), inv_only.c_str(), inv_only.size(), 0);
-					}
-					continue;
-				}
-				else 
-				{
-					int check_1 = 0;
-					for (size_t j = 0; j < channel_vec[i].client_list.size(); j++) {
-						if (channel_vec[i].client_list[j].getNickname() == client_nickname)
-							check_1 = 1;	
-					}	
-					if (!check_1)
-					{
-						size_t j;
-						for (j = 0; j < client_vec.size(); j++) {
-							if (client_vec[j].getNickname() == client_nickname)
-								break ;  
+						total_arg.erase(total_arg.find(keypass), keypass.length());
+						if (keypass != channel_vec[i].get_keypass())
+							access_denied(c_client, channel_name, 2);
+						else 
+						{
+							if (is_invited(c_client.get_client_fd(), channel_vec[i]) == false)
+								access_denied(c_client, channel_name, 3);
+							else
+								access_channel(c_client, channel_name, i);
 						}
-						channel_vec[i].add_user(client_vec[j]);
-						client_vec[j].in_channel += 1;
-						client_vec[j].set_current_channel(channel_vec[i].get_name());
 					}
-					send_infos(channel_vec[i], channel_name, c_client);
-					// send_infos(channel_vec[i], channel_name, channel_vec[i].client_list[0]);
+					else {
+						size_t size = ERR_NEEDMOREPARAMS(client_nickname, "/join").size();
+						send(c_client.get_client_fd(), ERR_NEEDMOREPARAMS(client_nickname, "/join").c_str(), size, 0);
+						continue ;
+					}
 				}
+				// Si channel en mode +i
+				else if (is_invited(c_client.get_client_fd(), channel_vec[i]) == false)
+					access_denied(c_client, channel_name, 3);
+				else 
+					access_channel(c_client, channel_name, i);
 			}
 		}
 		// si on ne le trouve pas, créer le channel
@@ -156,6 +132,67 @@ void    Server::join(std::string buffer, Client c_client)
 	}
 }
 
+void	Server::access_channel(Client c_client, std::string channel_name, int i)
+{
+	std::string client_nickname = c_client.getNickname();
+	int in_channel = 0;
+	for (size_t j = 0; j < channel_vec[i].client_list.size(); j++) {
+		if (channel_vec[i].client_list[j].getNickname() == client_nickname)
+			in_channel = 1;	
+	}
+	if (in_channel)
+		return;
+	else 
+	{
+		size_t j;
+		for (j = 0; j < client_vec.size(); j++) {
+			if (client_vec[j].getNickname() == client_nickname)
+				break ;  
+		}
+		channel_vec[i].add_user(client_vec[j]);
+		client_vec[j].in_channel += 1;
+		client_vec[j].set_current_channel(channel_vec[i].get_name());
+	}
+	send_infos(channel_vec[i], channel_name, c_client);
+}
+
+void	access_denied(Client c_client, std::string channel_name, int error)
+{
+	if (error == 1)
+	{
+		if (c_client.get_is_irssi() == true) {
+			size_t size = ERR_CHANNELISFULL(c_client.getNickname(), channel_name).size();
+			send(c_client.get_client_fd(), ERR_CHANNELISFULL(c_client.getNickname(), channel_name).c_str(), size, 0);
+		}
+		else {
+			std::string full = "Cannot join this channel : channel is full.\n";
+			send(c_client.get_client_fd(), full.c_str(), full.size(), 0);	
+		}
+	}
+	else if (error == 2)
+	{
+		if (c_client.get_is_irssi() == true) {
+			size_t size = ERR_BADCHANNELKEY(c_client.getNickname(), channel_name).size();
+			send(c_client.get_client_fd(), ERR_BADCHANNELKEY(c_client.getNickname(), channel_name).c_str(), size, 0);
+		}
+		else {
+			std::string bad_kp = "Cannot join this channel : bad keypass.\n";
+			send(c_client.get_client_fd(), bad_kp.c_str(), bad_kp.size(), 0);
+		}
+	}
+	else if (error == 3)
+	{
+		if (c_client.get_is_irssi() == true) {
+			std::string inv_only = ERR_INVITEONLYCHAN(channel_name);
+			send(c_client.get_client_fd(), inv_only.c_str(), inv_only.size(), 0);
+		}
+		else {
+			std::string inv_only = "Cannot join this channel : you need an invite.\n";
+			send(c_client.get_client_fd(), inv_only.c_str(), inv_only.size(), 0);
+		}
+	}
+}
+
 std::string client_list_to_str(std::vector<Client> c_list)
 {
 	std::string list_str;
@@ -170,7 +207,7 @@ std::string client_list_to_str(std::vector<Client> c_list)
 	return list_str;
 }
 
-void		send_infos(Channel &channel, std::string channel_name, Client &client)
+void	send_infos(Channel &channel, std::string channel_name, Client &client)
 {
 	std::string	nick		= client.getNickname();
 	std::string username	= client.getUsername();
@@ -182,13 +219,9 @@ void		send_infos(Channel &channel, std::string channel_name, Client &client)
 		channel.send_string_all(RPL_TOPIC(client.getNickname(), channel_name, channel.get_description()));
 	else
 		channel.send_string_all(RPL_NOTOPIC(client.getNickname(), channel_name));
-		
-	// channel.send_string_all(RPL_NAMREPLY(username, channel_name, list_of_members));
-	// channel.send_string_all(RPL_ENDOFNAMES(username, channel_name));
-	//marche pas
 }
 
-bool		is_alpha_in(std::string str)
+bool	is_alpha_in(std::string str)
 {
 	if (str[0] == ' ')
 		str.erase(0, 1);
@@ -233,25 +266,48 @@ std::string get_channel_name(const std::string& arg)
 	return channel_name;
 }
 
-
-/*
-std::string	retrieveKey(std::string msg_to_parse)
+int	only_blank(std::string arg, std::size_t pos)
 {
-	std::string	key;
-	key.clear();
-	
-	msg_to_parse = msg_to_parse.substr(msg_to_parse.find_last_of(" "), msg_to_parse.npos);
-	if (msg_to_parse[0] == ' ')
-		msg_to_parse.erase(0, 1); // Expected output : |fubar_75,foobar|
-		
-	int	begin_pos = (msg_to_parse.find(",") == 0) ? msg_to_parse.find(",") + 1 : 0; // Expected: begin à |fubar_75,foobar| ou |foobar| si 2eme key
-	
-	while ( msg_to_parse[begin_pos] != ',' && msg_to_parse[begin_pos])
+	std::string s = arg.substr(pos);
+	for (size_t i = 0; i < s.length(); ++i)
 	{
-		if (msg_to_parse[begin_pos] == '_' || msg_to_parse[begin_pos] == '-'|| isalpha(msg_to_parse[begin_pos]) || isdigit(msg_to_parse[begin_pos]))
-			key += msg_to_parse[begin_pos];
-		begin_pos++;
+		if (!std::isspace(s[i]) && s[i] != '\n')
+			return 0;
 	}
-	return (key);
+	return 1;
 }
-*/
+
+std::string get_keypass(const std::string& arg) 
+{
+	std::string keypass;
+	std::string keypass_selection;
+	bool kp_find = false;
+	std::size_t pos = arg.find(' ');
+	if (pos != std::string::npos && !only_blank(arg, pos))
+	{
+		keypass_selection = arg.substr(pos + 1);
+		for (std::size_t i = 0; i < keypass_selection.length(); ++i) 
+		{
+			char c = keypass_selection[i];
+			if (!kp_find) {
+				if (!std::isspace(c) && c != ' ' && c != '\a' && c != ',' && c != '#') {
+					keypass += c;
+					kp_find = true;
+				}
+			} 
+			else {
+				if (c == ' ' || c == '\a' || c == ',')
+					break;
+				else if (!std::isprint(c))
+					break;
+				else
+					keypass += c;
+			}
+		}
+		return keypass;
+	}
+	else {
+		keypass.clear();
+		return keypass;
+	}
+}
