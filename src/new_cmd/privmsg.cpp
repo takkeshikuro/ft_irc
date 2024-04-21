@@ -33,7 +33,7 @@ void    Server::msg(std::string buffer, Client c_client)
 		send(c_client.get_client_fd(), ERR_NOSUCHNICK(args[1]).c_str(), ERR_NOSUCHNICK(args[1]).size(), 0);
 		return ;
 	}
-    std::string to_send = YEL + c_client.getNickname() + " (PRIVMSG)\e[0m" + args[2];
+    std::string to_send = YEL + c_client.getNickname() + " (PRIVMSG): \e[0m" + args[2] + "\n";
 	send(client_vec[index].get_client_fd(), to_send.c_str(), to_send.size(), 0);
 }
 

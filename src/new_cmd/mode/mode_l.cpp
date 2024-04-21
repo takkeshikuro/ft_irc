@@ -4,22 +4,25 @@ void    Server::mode_l(Channel &chan, Client c_client, std::string lim_str, char
 {
 	int lim = std::atoi(lim_str.c_str());
 
-	for (size_t i = 0; i < lim_str.size(); i++)
+	if (sign == '+')
 	{
-		if ((!isdigit(lim_str[i]) && lim_str[i] != '\n' && lim_str[i] != ' ') || lim <= 0)
+		for (size_t i = 0; i < lim_str.size(); i++)
 		{
-			std::string invalid = "\e[1;31mError: Invalid limit value (" + lim_str + ")\n" + RESET;
-			std::cout << YEL << c_client.getNickname() << RED 
-			<< " Error: Invalid limit value (" + lim_str + ")\n" + RESET;
-			
-			send(c_client.get_client_fd(), invalid.c_str(), invalid.size(), 0);
-			return ;
+			if ((!isdigit(lim_str[i]) && lim_str[i] != '\n' && lim_str[i] != ' ') || lim <= 0)
+			{
+				std::string invalid = "\e[1;31mError: Invalid limit value (" + lim_str + ")\n" + RESET;
+				std::cout << YEL << c_client.getNickname() << RED 
+				<< " Error: Invalid limit value (" + lim_str + ")\n" + RESET;
+				send(c_client.get_client_fd(), invalid.c_str(), invalid.size(), 0);
+				return ;
+			}
 		}
 	}
 
 	if (sign == '-')
 	{
 		chan.set_limit(1000);
+		chan.set_user_max(1000);
 		std::string tosend = YEL + c_client.getNickname() 
 			+ GRE + " has unset users limit in " + BLU + chan.get_name() + RESET + "\n";
 		std::cout << tosend;
@@ -35,7 +38,10 @@ void    Server::mode_l(Channel &chan, Client c_client, std::string lim_str, char
 			return ;
 		}
 		else
+		{
+			chan.set_limit(lim);
 			chan.set_user_max(lim);
+		}
 	}
 	std::cout << "limit is : " << chan.get_limit() << "\n";
 	return ;

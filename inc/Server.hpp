@@ -68,7 +68,7 @@ class Server {
 
 		//netcat
 		int     is_command(char *buffer, Client c_client); //parsing command
-		void    PRIVMSG(std::string buffer, Client c_client);
+		// void    PRIVMSG(std::string buffer, Client c_client);
 		void	WHOIS(std::string buffer, Client c_client);
 		void	CREATE(std::string buffer, Client c_client);
 		int	    asking_to_create(std::string buffer, Client c_client);
@@ -84,13 +84,13 @@ class Server {
 		void	INVITE(std::string buffer, Client c_client);
 		bool	check_channel(Client &c_client);
 		bool	invite_target(Client &c_client, Client &target, std::string chan);
-		void    MODE(std::string buffer, Client clear_client);
-		void    check_MODE_args(std::string args[3], Client c_client);
-		void    MODE_oprt(Channel &chan, std::string args[3], Client c_client);
-		void	MODE_keypass_add(Channel &chan, Client c_client);
-		void	MODE_keypass_rm(Channel &chan, Client c_client);
-		void    MODE_limit(Channel &chan, std::string args[3], Client c_client);
-		void	MODE_invite(Channel &chan, Client c_client);
+		// void    MODE(std::string buffer, Client clear_client);
+		// void    check_MODE_args(std::string args[3], Client c_client);
+		// void    MODE_oprt(Channel &chan, std::string args[3], Client c_client);
+		// void	MODE_keypass_add(Channel &chan, Client c_client);
+		// void	MODE_keypass_rm(Channel &chan, Client c_client);
+		// void    MODE_limit(Channel &chan, std::string args[3], Client c_client);
+		// void	MODE_invite(Channel &chan, Client c_client);
 		void    KICK(std::string buffer, Client c_client);
 
 		void	command_unknow(Client c_client, std::string cmd);

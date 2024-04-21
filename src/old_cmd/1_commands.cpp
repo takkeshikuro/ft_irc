@@ -69,35 +69,35 @@ void    Server::TOPIC(std::string buffer, Client c_client, int arg)
 	send(c_client.get_client_fd(), cannot.c_str(), cannot.size(), 0);	
 } 
 
-void    Server::PRIVMSG(std::string buffer, Client c_client)
-{
-	std::string dest_name;
-	std::string msg;
-	std::stringstream sbuf(buffer);
-	Client  dest_cl;
-	std::string cmd;
-	std::getline(sbuf, cmd, ' ');
+// void    Server::PRIVMSG(std::string buffer, Client c_client)
+// {
+// 	std::string dest_name;
+// 	std::string msg;
+// 	std::stringstream sbuf(buffer);
+// 	Client  dest_cl;
+// 	std::string cmd;
+// 	std::getline(sbuf, cmd, ' ');
 
-	while (std::getline(sbuf, dest_name, ' ')) {
-		if (!dest_name.empty())
-			break ;
-	}
-	while (std::getline(sbuf, msg, '\n')) {
-		if (!msg.empty())
-			break ;
-	}
-	for (size_t i = 0; i < client_vec.size(); i++) {
-		if (client_vec[i].getNickname() == dest_name) {
-			dest_cl = client_vec[i];
-			std::string to_send = "\e[1;35m[PRIVMSG] " + c_client.getNickname() + ": \e[0;37m" + msg + "\n";
-			send(dest_cl.get_client_fd(), to_send.c_str(), to_send.size(),0);
-			return ;
-		}
-	}
+// 	while (std::getline(sbuf, dest_name, ' ')) {
+// 		if (!dest_name.empty())
+// 			break ;
+// 	}
+// 	while (std::getline(sbuf, msg, '\n')) {
+// 		if (!msg.empty())
+// 			break ;
+// 	}
+// 	for (size_t i = 0; i < client_vec.size(); i++) {
+// 		if (client_vec[i].getNickname() == dest_name) {
+// 			dest_cl = client_vec[i];
+// 			std::string to_send = "\e[1;35m[PRIVMSG] " + c_client.getNickname() + ": \e[0;37m" + msg + "\n";
+// 			send(dest_cl.get_client_fd(), to_send.c_str(), to_send.size(),0);
+// 			return ;
+// 		}
+// 	}
 
-	std::string invalid_dest = red + "Error: no user nicknamed " + dest_name + "\n" + white;
-	send(c_client.get_client_fd(), invalid_dest.c_str(),invalid_dest.size(), 0);
-}
+// 	std::string invalid_dest = red + "Error: no user nicknamed " + dest_name + "\n" + white;
+// 	send(c_client.get_client_fd(), invalid_dest.c_str(),invalid_dest.size(), 0);
+// }
 
 void    Server::WHOIS(std::string buffer, Client c_client)
 {

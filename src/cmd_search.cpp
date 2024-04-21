@@ -117,14 +117,14 @@ int Server::is_command(char *buffer, Client c_client)
 			std::string cmd_arg = cmd_string.substr(0, index_space);
 			switch (search_cmd(cmd_arg, 1))
 			{
-				case 0 : PRIVMSG(buf, c_client);  return 1;
+				case 0 : msg(buf, c_client);  return 1;
 				case 1 : WHOIS(buf, c_client);  return 1;
 				case 2 : CREATE(buf, c_client);  return 1; 
 				case 3 : NICK(buf, c_client);  return 1;
 				case 4 : join(buf, c_client);  return 1;
 				case 5 : mode(buf, c_client);  return 1; 
 				case 6 : TOPIC(buf, c_client, 1);  return 1 ;
-				case 7 : INVITE(buf, c_client);  return 1 ;
+				case 7 : invite(buf, c_client);  return 1 ;
                 case 8 : KICK(buf, c_client);  return 1 ;
 				case 9 : part(buffer, c_client); break;
 

@@ -31,7 +31,7 @@ void    Server::invite(std::string buffer, Client c_client)
         send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
         return ;
     }
-    if (index_channel_nick(c_client.getNickname(), channel_vec[chan_idx]))
+    if (index_channel_nick(c_client.getNickname(), channel_vec[chan_idx]) == -1)
     {
         std::string to_send = ERR_NOTONCHANNEL(c_client.getNickname(), args[2]);
         send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
@@ -50,4 +50,6 @@ void    Server::invite(std::string buffer, Client c_client)
         std::string to_send = RPL_INVITING(args[2], args[1]);
         send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
     }
-}
+    std::string dest = "You've been invited to join " + args[2] + " by " + c_client.getNickname() + ".\n";
+    send(client_vec[user_idx].get_client_fd(), dest.c_str(), dest.size(), 0);
+} 
