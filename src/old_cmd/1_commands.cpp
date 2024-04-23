@@ -6,41 +6,11 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 02:13:54 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/04/23 18:03:28 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/04/23 18:29:40 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/Server.hpp"
-
-// 3 - whois
-
-void    Server::WHOIS(std::string buffer, Client c_client)
-{
-	std::string target_name;
-	std::stringstream sbuf(buffer);
-	Client  target_cl;
-	std::string cmd;
-	std::getline(sbuf, cmd, ' ');
-
-	while (std::getline(sbuf, target_name, '\n')) {
-		if (!target_name.empty())
-			break ;
-	}
-	for (size_t i = 0; i < client_vec.size(); i++) {
-		if (client_vec[i].getNickname() == target_name) {
-			target_cl = client_vec[i];
-			std::stringstream ss;
-			ss << target_cl.get_client_fd();
-			std::string fd = ss.str();
-			std::string answer = yellow + "User " + target_name + " is :\n-username = " + target_cl.getUsername() \
-			+ "\n-nickname = " + target_cl.getNickname() + "\n-user number = " + fd + "\n" + white;
-			send(c_client.get_client_fd(), answer.c_str(), answer.size(),0);
-			return ;
-		}
-	}
-	std::string invalid_target = red + "Error: no user nicknamed " + target_name + "\n" + white;
-	send(c_client.get_client_fd(), invalid_target.c_str(), invalid_target.size(), 0);
-}
 
 void    Server::KICK(std::string buffer, Client c_client)
 {

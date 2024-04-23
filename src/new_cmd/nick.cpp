@@ -38,6 +38,9 @@ void	Server::nick(std::string buffer, Client c_client)
 {
 	std::string new_nick;
 	std::string old_nick = c_client.getNickname();
+
+	if (c_client.get_is_irssi() == false)
+		buffer = buffer + "\n";
     if (buffer[buffer.length() - 1] == '\n')
 		buffer.erase(buffer.length() - 2);
 	std::size_t pos = buffer.find(' ');
@@ -59,7 +62,6 @@ void	Server::nick(std::string buffer, Client c_client)
 	else
 	{	
 		int index;
-		c_client.setNickname(new_nick);
 		for (size_t i = 0; i < client_vec.size(); i++) {
 			if (client_vec[i].getNickname() == c_client.getNickname())
 				client_vec[i].setNickname(new_nick);
@@ -74,6 +76,7 @@ void	Server::nick(std::string buffer, Client c_client)
 			if (index != -1)
 				channel_vec[i].op_clients[index].setNickname(new_nick);
 		}
+		c_client.setNickname(new_nick);
 		size_t size = RPL_NICK(old_nick, c_client.getUsername(), c_client.getNickname()).size();
 		send(c_client.get_client_fd(), RPL_NICK(old_nick, c_client.getUsername(), c_client.getNickname()).c_str(), size, 0);
 	}

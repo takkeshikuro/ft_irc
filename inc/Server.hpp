@@ -42,7 +42,7 @@ class Server {
 		int			index_client(std::string nick);
 		//irssi
 		int		is_irssi_command(char *buffer, Client c_client);
-		void	PING(std::string buffer, Client c_client);
+		void	ping(std::string buffer, Client c_client);
 		void	nick(std::string buffer, Client c_client);
 		void	list(std::string buffer, Client c_client);
 		void	join(std::string buffer, Client c_client);
@@ -67,15 +67,15 @@ void	access_channel(Client c_client, std::string channel_name, int i);
 
 		//netcat
 		int     is_command(char *buffer, Client c_client); //parsing command
-		void	WHOIS(std::string buffer, Client c_client);
+	//	void	WHOIS(std::string buffer, Client c_client);
 		void	CREATE(std::string buffer, Client c_client);
 		int	    asking_to_create(std::string buffer, Client c_client);
 		void	LIST_CH(std::string buffer, Client c_client);
 		void	LIST_CL(std::string buffer, Client c_client);
-		void    NICK(std::string buffer, Client c_client);
+	//	void    NICK(std::string buffer, Client c_client);
 		void    HELP(std::string buffer, Client c_client);
 		void    HELP_OPERATOR(std::string buffer, Client c_client);
-		void    SECRET_ROOT(std::string buffer, Client c_client);
+	//	void    SECRET_ROOT(std::string buffer, Client c_client);
 	//	void	INVITE(std::string buffer, Client c_client);
 	//	bool	check_channel(Client &c_client);
 	//	bool	invite_target(Client &c_client, Client &target, std::string chan);

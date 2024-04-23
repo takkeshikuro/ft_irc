@@ -17,7 +17,7 @@
  * 		Syntax : PING [<nick> | <channel> | *]
  */
 
-void	Server::PING(std::string buffer, Client c_client)
+void	Server::ping(std::string buffer, Client c_client)
 {
 	std::string	nickname = c_client.getNickname();
 
