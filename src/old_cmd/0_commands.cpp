@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:41:42 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/04/23 18:29:28 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/04/23 18:45:12 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,92 +150,3 @@ void    Server::LIST_CL(std::string buffer, Client c_client)
 	std::string bottom = "=============================================\n";
 	send(c_client.get_client_fd(), bottom.c_str(), bottom.size(), 0);
 }
-
-// void    Server::NICK(std::string buffer, Client c_client)
-// {
-// 	std::stringstream	sbuf(buffer);
-// 	std::string			new_nick;
-// 	std::string			cmd;
-//     int                 index;
-// 	std::getline(sbuf, cmd, ' ');
-// 	while (std::getline(sbuf, new_nick, '\n')) {
-// 		if (!new_nick.empty())
-// 			break ;
-// 	}
-// 	if (new_nick.empty()) {
-// 		std::string err = red + "Error: empty new nickname.\n" + white;
-// 		send(c_client.get_client_fd(), err.c_str(), err.size(), 0);
-// 		return ;
-// 	}
-// 	if (invalid_char(new_nick))
-// 	{
-// 		std::string error = red + "Error: Invalid character in new nickname.\n" + white;
-// 		send(c_client.get_client_fd(), error.c_str(), error.size(), 0);
-// 		return ;	
-// 	}
-// 	if (nickname_already_used(client_vec, new_nick))
-// 	{
-// 		std::string error = red + "Error: nickname " + new_nick + " is already used by someone.\n";
-// 		send(c_client.get_client_fd(), error.c_str(), error.size(), 0);
-// 		return ;
-// 	}
-// 	size_t	i;
-// 	for (i = 0; i < this->client_vec.size(); i++) {
-// 		if (client_vec[i].getUsername() == c_client.getUsername())
-// 			break ;
-// 	}
-//     for (size_t k = 0; k < channel_vec.size(); k++)         //change nickname in all channels vectors
-//     {
-//         index = index_channel(c_client, channel_vec[k]);
-//         if (index != -1)
-//             channel_vec[k].client_list[index].setNickname(new_nick);
-//     }
-//     for (size_t k = 0; k < channel_vec.size(); k++)         //change nickname in all channels operators vectors
-//     {
-//         index = index_operator(c_client, channel_vec[k]);
-//         if (index != -1)
-//             channel_vec[k].op_clients[index].setNickname(new_nick);
-//     }
-// 	client_vec[i].setNickname(new_nick);
-// 	std::string	success = "\e[1;32mYour nickname has been changed to " + new_nick + ".\n\e[0m";
-// 	send(c_client.get_client_fd(), success.c_str(), success.size(), 0);
-// 	return ;
-// }
-
-// void	Server::SECRET_ROOT(std::string buffer, Client c_client)
-// {
-// 	(void)buffer;
-// 	std::string root_password = "doumpied\n";
-// 	std::string root = "please give root password to have root's permission : ";
-// 	send(c_client.get_client_fd(), root.c_str(), root.size(),0);
-// 	while (1) 
-// 	{
-// 		char buff[1024];
-// 		int byte = read(c_client.get_client_fd(), buff, sizeof(buff));
-// 		if (byte > 0) 
-// 		{
-// 			buff[byte] = '\0';
-// 			std::string pw(buff);
-// 			if (pw == root_password) 
-// 			{	
-// 				for (size_t i = 0; i < client_vec.size(); i++)  {
-// 					if (client_vec[i].getNickname() == c_client.getNickname())
-// 						client_vec[i].set_admin_perm();
-// 					std::string good = yellow + "You are know admin." + white + "\n";
-// 					send(c_client.get_client_fd(), good.c_str(), good.size(), 0);				
-// 					return;
-// 				}	
-// 			}
-// 			else {
-// 				std::string bad = red + "bad password.\n" + white;
-// 				send(c_client.get_client_fd(), bad.c_str(), bad.size(), 0);
-// 				return ;
-// 			}
-// 		}
-// 		else if (byte == 0) {
-// 			std::cerr << "Connexion fermée par le client" << std::endl;
-// 			break ;
-// 		}
-// 	}
-// }
-

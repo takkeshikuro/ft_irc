@@ -37,6 +37,7 @@ class Client {
 		void	set_invite_access();
 		void	set_is_irssi();
 		void	set_admin_perm();
+		void	set_quit_status(int ok);
 
 		int				get_client_fd();
 		int 			getSocket() const;
@@ -47,7 +48,8 @@ class Client {
 		std::string 	get_current_chan(void) const;
 		int				get_invite_access();
 		bool			get_is_irssi() const;
-		
+		bool			get_quit_status() const;
+
 		int 	in_channel;
 		bool	is_registred;
 
@@ -58,6 +60,7 @@ class Client {
 		bool		is_irssi;
 		int			client_fd;
  		bool		is_admin;
+		bool		quit_status;
 		int			invite_access;
 		std::string datetime;
 		std::string ip_addr;

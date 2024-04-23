@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:45:49 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/04/17 01:44:31 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/04/23 18:49:53 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,7 @@ class Channel {
 		bool		get_key_set(); // to know if keypass set or not
 		void		set_key_set(); // to modify keypass_set
 		std::string get_keypass(); // to get the string keypass
-		void		set_keypass(Client c_client); // to set the string keypass
 		void		set_keypass_k(std::string kp);
-		bool		check_keypass(Client c_client);
-        bool		check_kp(std::string kp_to_check);
 
         int         get_limit();
         void        set_limit(int lim);

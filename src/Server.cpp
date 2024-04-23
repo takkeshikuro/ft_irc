@@ -27,13 +27,6 @@ Server::Server(std::string passwd, struct tm *timeinfo) : port(6667), password(p
 
 Server::~Server() {}
 
-void Server::SignalHandler(int sig)
-{
-	(void)sig;
-	std::cout << std::endl << "Signal Received!" << std::endl;
-	Server::signal = true; //-> set the static boolean to true to stop the server
-}
-
 void    Server::configuration() 
 {
 	serverAddr.sin_family = AF_INET;
@@ -42,7 +35,6 @@ void    Server::configuration()
 	serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (serverSocket == -1)
 		throw SocketCreationError();
-
 
 	int en = 1;
 	if(setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) == -1)
@@ -77,33 +69,24 @@ void	Server::launch_server()
 		{
 			if (fds[i].revents & POLLIN)//-> check if there is data to read
 			{
-
 				if (fds[i].fd == serverSocket)
 					manage_new_client();
 				else
 					manage_new_data(fds[i].fd);
 			}
-			// else if (fds[i].revents & POLLOUT) {
-			// 	if (handlePolloutEvent(fds) == BREAK)
-			// 		break;
-			// }
-			// else if (fds[i].revents & POLLERR) {
-			// 	if (handlePollerEvent(fds) == BREAK)
-			// 		break ;
-			// 	else
-			// 		return (FAILURE);
-			// }
+			else if (fds[i].revents & POLLOUT) // = "Alert me when I can send() data to this socket without blocking."
+			{
+				if (handlePolloutEvent(fds[i].fd) == BREAK)
+					break;
+			}
+			else if (fds[i].revents & POLLERR)
+			{
+				if (handlePollerEvent(fds[i]) == BREAK)
+					break ;
+			}
 		}
 	}
 	close_fds(); //close the fds when server stops
-}
-
-int Server::tooManyClients(int client_socket)
-{
-	std::cout << RED << ERR_FULL_SERV << RESET << std::endl;
-	send(client_socket, ERR_FULL_SERV, strlen(ERR_FULL_SERV) + 1, 0);
-	close(client_socket);
-	return SUCCESS;
 }
 
 int	Server::manage_new_client() 
@@ -135,14 +118,12 @@ int	Server::manage_new_client()
 	if (check_irssi_entrance(incoming_fd)) {
 		client_vec.back().set_is_irssi();
 		if (client_vec.back().client_starting_point_irssi(this->irssi_base, *this) == FAILURE) {
-			std::cout << "clear_clients() process\n";
 			clear_clients(incoming_fd);
 			return FAILURE;
 		}
 	}
 	else {
 		if (client_vec.back().client_starting_point() == FAILURE) {
-			std::cout << "clear_clients() process\n";
 			clear_clients(incoming_fd);
 			return FAILURE;	
 		}
@@ -167,16 +148,15 @@ void	Server::manage_new_data(int fd)
 	{ 
 		std::cout << RED << "User <" << current_client.getUsername() << "> Disconnected" << WHI << std::endl;
 		clear_clients(fd);
-		close(fd); //-> close the client socket
+		close(fd);
 	}
-	else//-> print the received data
+	else
 	{ 
 		buffer[bytes] = '\0';
 		std::cerr << "[debug buffer] = " << buffer << "\n"; 
 		if (is_command(buffer, current_client))
 			return ;
-		if (current_client.get_is_irssi() == true)
-		{
+		if (current_client.get_is_irssi() == true) {
 			is_irssi_command(buffer, current_client);
 			return ;
 		}
@@ -194,84 +174,37 @@ void	Server::manage_new_data(int fd)
 		}
 		else
 			std::cout << YEL << current_client.getNickname() << ": " << WHI << buffer;
-		// received data: parse, check, authenticate, handle the command
 	}
 }
 
 void Server::clear_clients(int fd)
 {
-    int index;
-
-	for(size_t i = 0; i < fds.size(); i++) { // rm the client from the pollfd 
-		if (fds[i].fd == fd) 
-		{
+	int index;
+	for(size_t i = 0; i < fds.size(); i++)  // rm the client from the pollfd 
+	{	
+		if (fds[i].fd == fd) {
 			fds.erase(fds.begin() + i); 
 			break;
 		}
 	}
-	for(size_t i = 0; i < client_vec.size(); i++) { // rm the client from the vector 
-		if (client_vec[i].get_client_fd() == fd)
-		{
+	for(size_t i = 0; i < client_vec.size(); i++)  // rm the client from the vector 
+	{
+		if (client_vec[i].get_client_fd() == fd) {
 			client_vec.erase(client_vec.begin() + i);
 			break;
 		}
  	}
-    for (size_t i = 0; i < channel_vec.size(); i++) { //rm the client from channels
-        index = index_channel_fd(fd, channel_vec[i]);
-        if (index != -1)
-            channel_vec[i].client_list.erase(channel_vec[i].client_list.begin() + index);
-    }
-    for (size_t i = 0; i < channel_vec.size(); i++) { //rm the client from operator vectors 
-        index = index_operator_fd(fd, channel_vec[i]);
-        if (index != -1)
-            channel_vec[i].op_clients.erase(channel_vec[i].op_clients.begin() + index);
-    }
+	for (size_t i = 0; i < channel_vec.size(); i++)  //rm the client from channels
+	{
+		index = index_channel_fd(fd, channel_vec[i]);
+		if (index != -1)
+			channel_vec[i].client_list.erase(channel_vec[i].client_list.begin() + index);
+	}
+	for (size_t i = 0; i < channel_vec.size(); i++)  //rm the client from operator vectors 
+	{
+		index = index_operator_fd(fd, channel_vec[i]);
+		if (index != -1)
+			channel_vec[i].op_clients.erase(channel_vec[i].op_clients.begin() + index);
+	}
 	std::cout << GREEN << "[info] client cleared.\n" << RESET;
-}
-
-void Server::close_fds()
-{
-	for(size_t i = 0; i < client_vec.size(); i++)  // close all the clients into vector
-	{
-		std::cout << RED << "Client <" << client_vec[i].get_client_fd() << "> Disconnected" << WHI << std::endl;
-		close(client_vec[i].get_client_fd());
-	}
-	if (serverSocket != -1)// close the server socket
-	{
-		std::cout << RED << "Server <" << serverSocket << "> Disconnected" << WHI << std::endl;
-		close(serverSocket);
- 	}
-}
-
-void	Server::setDatetime(struct tm *timeinfo)
-{
-	char buffer[80];
-
-	strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
-  	std::string str(buffer);
-
-	datetime = str;
-}
-
-void	Server::default_channel_creation()
-{
-	Channel random("#random");
-	channel_vec.push_back(random);
-	std::string bio_r = "~default #random channel~";
-	channel_vec.back().set_description(bio_r);
-	
-	Channel announcements("#announcements");
-	channel_vec.push_back(announcements);
-	std::string bio_a = "~default #announcements channel to stay informed~";
-	channel_vec.back().set_description(bio_a);
-}
-
-int	Server::index_client(std::string nick)
-{
-	for (size_t i = 0; i < client_vec.size(); i++)
-	{
-		if (client_vec[i].getNickname() == nick)
-			return i;
-	}
-	return -1;
 }

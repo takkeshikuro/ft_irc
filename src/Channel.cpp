@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 02:23:18 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/04/17 17:54:41 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/04/23 18:52:55 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ Channel::Channel(std::string name, int fd) : creator_fd(fd), limit(10)
 	red = "\e[1;31m";
 	yellow = "\e[1;33m";
 	
-// yaura dautre variable a set genre nb max d'user tt ca
 	if (name[0] == '#')
 		channel_name = name;
 	else
@@ -48,29 +47,6 @@ Channel::Channel(std::string name, int fd) : creator_fd(fd), limit(10)
 // +ask for max user
 
 	std::cout <<yellow << "creation of new channel named " << name << std::endl << white;
-	// while (1) 
-	// {
-	// 	char buffer[1024];
-	// 	int bytes = read(creator_fd, buffer, sizeof(buffer));
-	// 	if (bytes > 0) {
-	// 		buffer[bytes] = '\0';
-	// 		std::string bio(buffer);
-	// 		rm_backslash_n(bio);
-	// 		if (bio.empty()) {
-	// 			std::string null_buffer = red + "cant be null.\e[0;33m\nNew username : ";
-	// 			send(creator_fd, null_buffer.c_str(), null_buffer.length(), 0);
-	// 		}
-	// 		else {
-	// 			std::cout << "[creator's bio : " << bio << "]\n";
-	// 			this->description = bio;
-	// 			break ;
-	// 		}
-	// 	}
-	// 	else if (bytes == 0) {
-	// 		std::cerr << "Connexion fermée par le client" << std::endl;
-	// 		break ;
-	// 	}
-	// }
 }
 
 Channel::~Channel() {}
@@ -83,18 +59,21 @@ std::string		Channel::get_keypass() { return this->channel_keypass; }
 int				Channel::get_limit() { return limit; }
 int				Channel::get_size() { return client_list.size(); }
 bool			Channel::get_invite_set() { return this->invite_mode; }
-size_t				Channel::get_user_max() { return this->user_max; }
+size_t			Channel::get_user_max() { return this->user_max; }
+bool			Channel::get_topic_opr() { return topic_opr; }
 
-//-------> SETTER
-void	Channel::set_description(std::string &s) { this->description = s; }
-void	Channel::set_limit(int lim) { limit = lim; }
-void	Channel::set_keypass_k(std::string kp) { channel_keypass = kp; }
 bool	Channel::get_key_set() {
 	if (keypass_set == true)
 		return true;
 	else
 		return false;
 }
+
+//-------> SETTER
+void	Channel::set_description(std::string &s) { this->description = s; }
+void	Channel::set_limit(int lim) { limit = lim; }
+void	Channel::set_keypass_k(std::string kp) { channel_keypass = kp; }
+void	Channel::set_topic_opr(bool to_set) { topic_opr = to_set; }
 
 void	Channel::set_key_set() {
 	if (this->keypass_set == true)
@@ -110,9 +89,13 @@ void	Channel::set_invite_set() {
 		this->invite_mode = false;
 }
 
+void		Channel::set_user_max(size_t max) {
+	user_max = max;
+	limit = max;
+}
+
 void    Channel::send_string(std::string to_send, std::string nick, std::string target, std::string msg)
 {
-	
 	std::string to_send_nc = "\e[1;34m[" + target + "] " + nick + " \e[0m" + msg;
 
 	for (size_t i = 0; i < client_list.size(); i++)
@@ -133,92 +116,6 @@ void    Channel::send_string_all(std::string to_send)
 	{
 		send(client_list[i].get_client_fd(), to_send.c_str(), to_send.size(), 0);
 	}
-}
-
-void		Channel::set_keypass(Client c_client) 
-{
-	for (size_t i = 0; i < op_clients.size(); i++) {
-		if (c_client.get_client_fd() == op_clients[i].get_client_fd())
-			break;
-		else if ((i + 1) == op_clients.size())
-		{
-			std::string no_ope = "Sorry only operators can set keypass.\n";
-			send(c_client.get_client_fd(), no_ope.c_str(), no_ope.length(), 0);
-			return ;
-		}
-	}
-	std::string key = yellow + "please enter the new keypass : ";
-	send(c_client.get_client_fd(), key.c_str(), key.size(), 0);
-	while (1)
-	{
-		char buffer[1024];
-		int bytes = read(c_client.get_client_fd(), buffer, sizeof(buffer));
-		if (bytes > 0) {
-			buffer[bytes] = '\0';
-			std::string keypass(buffer);
-			rm_backslash_n(keypass);
-			if (keypass.empty()) {
-				std::string null_buffer = red + "cant be null.\e[0;33m\nNew keypass : ";
-				send(c_client.get_client_fd(), null_buffer.c_str(), null_buffer.length(), 0);
-			}
-			else {
-				std::string set_ok = green + "[New keypass set]\n" + white;
-				send(c_client.get_client_fd(), set_ok.c_str(), set_ok.size(), 0);
-				this->channel_keypass = keypass;
-				this->keypass_set = true;
-				break ;
-			}
-		}
-		else if (bytes == 0) {
-			std::cerr << "Connexion fermée par le client" << std::endl;
-			break ;
-		}
-	}
-}
-
-bool	Channel::check_kp(std::string kp_to_check)
-{
-	if (kp_to_check.length() == channel_keypass.length())
-	{
-		if (this->channel_keypass == kp_to_check)
-			return true;
-	}
-	return false;
-}
-
-bool	Channel::check_keypass(Client c_client)
-{
-	if (this->keypass_set == true)
-	{
-		std::string ask = "this channel requires a keypass/password to access.\nKeypass : ";
-		send(c_client.get_client_fd(), ask.c_str(), ask.size(), 0);
-		while (1)
-		{
-			char buffer[1024];
-			int bytes = read(c_client.get_client_fd(), buffer, sizeof(buffer));
-			if (bytes > 0) 
-			{
-				buffer[bytes] = '\0';
-				std::string keypass(buffer);
-				rm_backslash_n(keypass);
-				if (check_kp(keypass) == true) {
-					std::string ok = green + "keypass ok.\n" + white;
-					send(c_client.get_client_fd(), ok.c_str(), ok.size(), 0);
-					return true;
-				}
-				else {
-					std::string ko = red + "keypass not ok.\n" + white;
-					send(c_client.get_client_fd(), ko.c_str(), ko.size(), 0);
-					return false;
-				}
-			}
-			else if (bytes == 0) {
-				std::cerr << "Connexion fermée par le client" << std::endl;
-				break ;
-			}
-		}
-	}
-	return true; //no keypass set
 }
 
 void    Channel::get_clients()
@@ -295,17 +192,3 @@ void    Channel::rm_operator(Client to_rm)
 	}
 }
 
-
-void		Channel::set_user_max(size_t max)
-{
-	user_max = max;
-	limit = max;
-}
-
-bool	Channel::get_topic_opr(){
-	return topic_opr;
-}
-
-void	Channel::set_topic_opr(bool to_set){
-	topic_opr = to_set;
-}

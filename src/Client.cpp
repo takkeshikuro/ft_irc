@@ -21,6 +21,7 @@ Client::Client(std::string pw, std::string dt) : password(pw)
 	invite_access = 0;
 	is_admin = false;
 	is_irssi = false;
+	quit_status = false;
 	datetime = dt;
 	set_current_channel("!no_chan!");
 	
@@ -44,14 +45,14 @@ std::string&	Client::getIPAddress() { return ip_addr; }
 int				Client::get_invite_access() { return this->invite_access; }
 std::string		Client::get_current_chan() const { return current_channel; }
 bool			Client::get_is_irssi() const { return is_irssi; }
-
+bool			Client::get_quit_status() const { return quit_status; }
 //--------->SETTER
 void	Client::set_client_fd(int fd) { client_fd = fd; } 
 void	Client::set_IpAdd(std::string ipadd) { IPadd = ipadd; }
 void    Client::setNickname(std::string new_nick) { nickname = new_nick; }
 void    Client::setUsername(std::string new_user) { username = new_user; }
 void    Client::setRealname(std::string new_real) { realname = new_real; }
-
+void	Client::set_quit_status(int ok) { quit_status = ok; }
 void    Client::set_current_channel(std::string new_chan) { current_channel = new_chan; }
 void	Client::set_admin_perm()
 {
