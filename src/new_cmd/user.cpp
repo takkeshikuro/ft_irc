@@ -28,7 +28,6 @@ std::string	find_realname(std::string total_arg);
 
 void    Server::user(std::string buffer, Client c_client)
 {
-	std::cout << "COUCOU {user.cpp}\n";
     std::string total_arg;
     if (buffer[buffer.length() - 1] == '\n')
 		buffer.erase(buffer.length() - 2);

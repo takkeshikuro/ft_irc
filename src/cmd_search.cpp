@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 02:11:04 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/04/17 19:08:00 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/04/23 17:23:36 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ int Server::is_command(char *buffer, Client c_client)
 				case 3 : NICK(buf, c_client);  return 1;
 				case 4 : join(buf, c_client);  return 1;
 				case 5 : mode(buf, c_client);  return 1; 
-				case 6 : TOPIC(buf, c_client, 1);  return 1 ;
+				case 6 : topic(buf, c_client);  return 1 ;
 				case 7 : invite(buf, c_client);  return 1 ;
                 case 8 : KICK(buf, c_client);  return 1 ;
 				case 9 : part(buffer, c_client); break;
@@ -138,8 +138,7 @@ int Server::is_command(char *buffer, Client c_client)
 				case 0 : HELP(buf, c_client);  return 1;
 				case 1 : LIST_CH(buf, c_client);  return 1;
 				case 2 : LIST_CL(buf, c_client);  return 1; 
-				case 3 : TOPIC(buf, c_client, 0);  return 1;
-				//case 4 : LEAVE(buf, c_client);  return 1;
+				case 3 : topic(buf, c_client);  return 1;
 				case 4 : SECRET_ROOT(buf, c_client);  return 1;
 				case 5 : HELP_OPERATOR(buf, c_client);  return 1;
 				case 6 : part(buffer, c_client); break; 

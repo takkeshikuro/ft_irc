@@ -2,6 +2,7 @@
 
 void		display_topic(std::string channel_name, Client c_client, std::vector<Channel> vec);
 std::string change_topic(std::string channel_name, Client c_client, std::vector<Channel> vec, std::string new_topic);
+std::vector<std::string> ft_split(const std::string& str, const std::string& delimiters);
 
 /**
  * @brief Command : TOPIC <channel> [<topic>]
@@ -38,8 +39,30 @@ void    Server::topic(std::string buffer, Client c_client)
 	std::string next_arg;
 	std::string client_nickname = c_client.getNickname();	
 	
+	if (c_client.get_is_irssi() == false)
+	{
+		std::vector<std::string> arg = ft_split(buffer, " ");
+		if (arg.size() == 1)
+		{
+			std::string param = "Error : need more param (/topic #<channel>)\n";
+			send(c_client.get_client_fd(), param.c_str(), param.size(), 0);
+			return ;
+		}
+		else if (arg.size() == 2)
+			buffer = buffer + "\n";
+		else if (arg.size() > 2)
+		{
+			std::string p1 = "/TOPIC " + arg[1];
+			std::string p2 = buffer.substr(p1.length());
+			if (p2[p2.length() - 2] == ':')
+				buffer = p1 + " :";
+			else
+				buffer = p1 + " :" + p2 + "\n";
+		}
+	}
+
 	if (buffer[buffer.length() - 1] == '\n')
-		buffer.erase(buffer.length() - 2);
+		buffer.erase(buffer.length() - 2);	
 	std::size_t pos = buffer.find('#');
 	if (pos != std::string::npos)
 	{

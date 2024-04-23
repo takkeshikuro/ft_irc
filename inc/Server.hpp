@@ -47,11 +47,11 @@ class Server {
 		void	list(std::string buffer, Client c_client);
 		void	join(std::string buffer, Client c_client);
 		void    msg(std::string buffer, Client c_client);
-		void	msg_channel(std::string args[3], Client c_client);
+		void    part(std::string buffer, Client c_client);
+		void    kick(std::string buffer, Client c_client);
+		int		pass(std::string buffer, Client c_client);
 		void    topic(std::string buffer, Client c_client);
 		void    user(std::string buffer, Client c_client);
-		void	access_channel(Client c_client, std::string channel_name, int i);
-
 		void    invite(std::string buffer, Client c_client);
 
 		void    mode(std::string buffer, Client c_client);
@@ -62,28 +62,23 @@ class Server {
 		void	mode_t(Channel &chan, Client c_client, char sign);
 		void	mode_k(Channel &chan, Client c_client, std::string keypass, char sign);
 
-		void    part(std::string buffer, Client c_client);
-		void    kick(std::string buffer, Client c_client);
-		int		pass(std::string buffer, Client c_client);
+void	msg_channel(std::string args[3], Client c_client);
+void	access_channel(Client c_client, std::string channel_name, int i);
 
 		//netcat
 		int     is_command(char *buffer, Client c_client); //parsing command
-		// void    PRIVMSG(std::string buffer, Client c_client);
 		void	WHOIS(std::string buffer, Client c_client);
 		void	CREATE(std::string buffer, Client c_client);
 		int	    asking_to_create(std::string buffer, Client c_client);
-		void	TOPIC(std::string buffer, Client c_client, int arg);
-	//	void	JOIN(std::string buffer, Client c_client);
-	//	void	LEAVE(std::string buffer, Client c_client);
 		void	LIST_CH(std::string buffer, Client c_client);
 		void	LIST_CL(std::string buffer, Client c_client);
 		void    NICK(std::string buffer, Client c_client);
 		void    HELP(std::string buffer, Client c_client);
 		void    HELP_OPERATOR(std::string buffer, Client c_client);
 		void    SECRET_ROOT(std::string buffer, Client c_client);
-		void	INVITE(std::string buffer, Client c_client);
-		bool	check_channel(Client &c_client);
-		bool	invite_target(Client &c_client, Client &target, std::string chan);
+	//	void	INVITE(std::string buffer, Client c_client);
+	//	bool	check_channel(Client &c_client);
+	//	bool	invite_target(Client &c_client, Client &target, std::string chan);
 		// void    MODE(std::string buffer, Client clear_client);
 		// void    check_MODE_args(std::string args[3], Client c_client);
 		// void    MODE_oprt(Channel &chan, std::string args[3], Client c_client);
