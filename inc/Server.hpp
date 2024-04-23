@@ -77,7 +77,7 @@ class Server {
 		void	LIST_CL(std::string buffer, Client c_client);
 		void    HELP(std::string buffer, Client c_client);
 		void    HELP_OPERATOR(std::string buffer, Client c_client);
-		void    KICK(std::string buffer, Client c_client);
+	//	void    KICK(std::string buffer, Client c_client);
 
 		void	command_unknow(Client c_client, std::string cmd);
 

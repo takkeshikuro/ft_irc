@@ -4,8 +4,7 @@ CPPFLAGS	= -Wall -Wextra -Werror -std=c++98 -c -I includes/
 #
 SRCS		= main.cpp Server.cpp Server_utils.cpp Client.cpp \
 			cmd_search.cpp Channel.cpp irssi.cpp utils.cpp \
-			old_cmd/0_commands.cpp old_cmd/1_commands.cpp \
-			old_cmd/2_commands.cpp old_cmd/3_mode.cpp \
+			old_cmd/0_commands.cpp old_cmd/2_commands.cpp \
 			new_cmd/ping.cpp new_cmd/nick.cpp \
 			new_cmd/list.cpp new_cmd/join.cpp \
 			new_cmd/privmsg.cpp new_cmd/topic.cpp \

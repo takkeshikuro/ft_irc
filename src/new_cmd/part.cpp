@@ -74,7 +74,6 @@ void    Server::part(std::string buffer, Client c_client)
 		total_arg.erase(total_arg.find(channel_name), channel_name.length()); 
 		if (channel_name[0] != '#')
 			channel_name = "#" + channel_name;
-		std::cout<<"user "<<client_nickname<<" try to leave channel "<<channel_name<< " because :{"<< reason<< "}\n";
 		int check;
 		for (size_t i = 0; i < channel_vec.size(); i++) 
 		{

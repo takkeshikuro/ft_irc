@@ -83,8 +83,8 @@ std::vector<std::string> ft_split(const std::string& str, const std::string& del
 			parts.push_back(part);
 		}
 	}
-	for (size_t i = 0; i < parts.size(); i++){
-	    std::cout << parts[i] << std::endl;
-	}
+	// for (size_t i = 0; i < parts.size(); i++){
+	//     std::cout << parts[i] << std::endl;
+	// }
 	return parts;
 }

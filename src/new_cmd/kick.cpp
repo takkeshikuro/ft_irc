@@ -32,48 +32,94 @@ std::string get_data(std::string buffer, int hook);
 void    Server::kick(std::string buffer, Client c_client)
 {
 	std::string	client_nickname	= c_client.getNickname();
+	if (c_client.get_is_irssi() == false)
+	{
+		std::vector<std::string> arg = ft_split(buffer, " ");
+		if (arg.size() == 1)
+		{
+			std::string param = "Error : need more param (/kick <channel> <human>)\n";
+			send(c_client.get_client_fd(), param.c_str(), param.size(), 0);
+			return ;
+		}
+		else if (arg.size() == 2)
+		{
+			size_t size = ERR_NEEDMOREPARAMS(client_nickname, "/kick").size();
+			send(c_client.get_client_fd(), ERR_NEEDMOREPARAMS(client_nickname, "/kick").c_str(), size, 0);
+			return ;
+		}
+		else if (arg.size() > 3)
+		{
+			std::string p1 = "/KICK " + arg[1] + " " + arg[2];
+			std::string p2 = buffer.substr(p1.length());
+			buffer = p1 + " :" + p2;
+		}
+	}
+	if (c_client.get_is_irssi() == false)
+		buffer.erase(buffer.length() - 1);
 	std::string channel_name = get_data(buffer, 0);
 	std::string kicked_name = get_data(buffer, 1);
 	std::string comment = get_data(buffer, 2);
 	comment = (comment.empty()) ? "Kicked by the channel's operator" : comment;
-
-	std::cout<<"user "<<client_nickname<<" try to kick "<<kicked_name<< " because :{"<< comment<< "}\n";
-
-	if (channel_name.empty() || kicked_name.empty() || channel_name[0] != '#') {
+	std::cout << "user "<< client_nickname << " try to kick user " << kicked_name << " bc :" << comment<< std::endl;
+	if (channel_name.empty() || kicked_name.empty() || channel_name[0] != '#') 
+	{
 		size_t size = ERR_NEEDMOREPARAMS(client_nickname, "/kick").size();
 		send(c_client.get_client_fd(), ERR_NEEDMOREPARAMS(client_nickname, "/kick").c_str(), size, 0);
 		return ;
 	}
 	int i = index_channel_name(channel_name, this->channel_vec);
-	if (i == -1) {
-		size_t size = ERR_NOSUCHCHANNEL(channel_name).size();
-		send(c_client.get_client_fd(), ERR_NOSUCHCHANNEL(channel_name).c_str(), size, 0);
+	if (i == -1) 
+	{
+		if (c_client.get_is_irssi() == true) {
+			size_t size = ERR_NOSUCHCHANNEL(channel_name).size();
+			send(c_client.get_client_fd(), ERR_NOSUCHCHANNEL(channel_name).c_str(), size, 0);
+			return ;
+		}
+		std::string to_send = "\e[1;31mError: " + channel_name + " is not a channel.\n" + RESET;
+        send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
 		return ;
 	}
-	if (index_channel_nick(client_nickname, channel_vec[i]) == -1) {
-		size_t size = ERR_NOTONCHANNEL(client_nickname, channel_name).size();
-		send(c_client.get_client_fd(), ERR_NOTONCHANNEL(client_nickname, channel_name).c_str(), size, 0);
-		return ;	
+	if (index_channel_nick(client_nickname, channel_vec[i]) == -1) 
+	{
+		if (c_client.get_is_irssi() == true) {
+			size_t size = ERR_NOTONCHANNEL(client_nickname, channel_name).size();
+			send(c_client.get_client_fd(), ERR_NOTONCHANNEL(client_nickname, channel_name).c_str(), size, 0);
+			return ;
+		}
+		std::string to_send = "\e[1;31mError: You are not in the channel " + channel_name + ".\n" + RESET;
+        send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
+		return ;
 	}
 	int j = index_channel_nick(kicked_name, channel_vec[i]);
-	if (j == -1) {
-		size_t size = ERR_USERNOTINCHANNEL(client_nickname, kicked_name, channel_name).size();
-		send(c_client.get_client_fd(), ERR_USERNOTINCHANNEL(client_nickname, kicked_name, channel_name).c_str(), size, 0);
-		return ;	
+	if (j == -1) 
+	{
+		if (c_client.get_is_irssi() == true) {
+			size_t size = ERR_USERNOTINCHANNEL(client_nickname, kicked_name, channel_name).size();
+			send(c_client.get_client_fd(), ERR_USERNOTINCHANNEL(client_nickname, kicked_name, channel_name).c_str(), size, 0);
+			return ;	
+		}
+		std::string to_send = "\e[1;31mError: no user named " + kicked_name + " in " + channel_name + ".\n" + RESET;
+		send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
+		return ;
 	}
-	if (index_operator_nick(client_nickname, channel_vec[i]) == -1) {
-		size_t size = ERR_CHANOPRIVSNEEDED(client_nickname, channel_name).size();
-		send(c_client.get_client_fd(), ERR_CHANOPRIVSNEEDED(client_nickname, channel_name).c_str(), size, 0);
-		return ;	
+	if (index_operator_nick(client_nickname, channel_vec[i]) == -1) 
+	{
+		if (c_client.get_is_irssi() == true) {
+			size_t size = ERR_CHANOPRIVSNEEDED(client_nickname, channel_name).size();
+			send(c_client.get_client_fd(), ERR_CHANOPRIVSNEEDED(client_nickname, channel_name).c_str(), size, 0);
+			return ;
+		}
+		std::string to_send = "\e[1;31mYou do not have permission to use /KICK in #" + channel_name + ".\n" + RESET;
+		send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
+		return ;
 	}// voir si il faut checker si kicked_name n'est pas operator
-	else {
+	else 
+	{
 		int j = index_client(kicked_name);
-	//	channel_vec[i].rm_user(this->client_vec[j]);
 		channel_vec[i].send_string_all(RPL_KICK(client_nickname, c_client.getUsername(), channel_name, kicked_name, comment));
-		std::string to_move = "/PART " + channel_name + "\r\n";
-		//std::string info = ""
-		part(to_move, client_vec[j]);
-		
+		channel_vec[i].rm_user(this->client_vec[j]);
+		std::string kicked = red + "[info] You have been kicked from " + channel_name + " by " + client_nickname + " because : " + comment + "\r\n";
+		send(client_vec[j].get_client_fd(), kicked.c_str(), kicked.size(), 0);
 	}
 }
 
@@ -86,6 +132,7 @@ std::string get_data(std::string buffer, int hook)
 	std::vector<std::string> vec_arg_bis;
 
 	comment.clear();
+	
 	if (buffer[buffer.length() - 1] == '\n')
 		buffer.erase(buffer.length() - 2);
 	vec_arg = ft_split(buffer, " ");
