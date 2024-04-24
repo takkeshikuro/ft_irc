@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 02:23:18 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/04/23 18:52:55 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/04/25 00:55:08 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,7 @@ Channel::Channel(std::string name) {
 	keypass_set = false;
 	invite_mode = false;
 	topic_opr = true;
-	description.empty();
-	//	
+	description.clear();
 }
 
 Channel::Channel(std::string name, int fd) : creator_fd(fd), limit(10)
@@ -51,37 +50,21 @@ Channel::Channel(std::string name, int fd) : creator_fd(fd), limit(10)
 
 Channel::~Channel() {}
 
-
-//------> GETTER
-std::string&	Channel::get_name() { return channel_name; }
-std::string		Channel::get_description() { return description; }
-std::string		Channel::get_keypass() { return this->channel_keypass; }
-int				Channel::get_limit() { return limit; }
-int				Channel::get_size() { return client_list.size(); }
-bool			Channel::get_invite_set() { return this->invite_mode; }
-size_t			Channel::get_user_max() { return this->user_max; }
-bool			Channel::get_topic_opr() { return topic_opr; }
-
-bool	Channel::get_key_set() {
-	if (keypass_set == true)
-		return true;
-	else
-		return false;
-}
-
 //-------> SETTER
 void	Channel::set_description(std::string &s) { this->description = s; }
-void	Channel::set_limit(int lim) { limit = lim; }
 void	Channel::set_keypass_k(std::string kp) { channel_keypass = kp; }
+void	Channel::set_limit(int lim) { limit = lim; }
 void	Channel::set_topic_opr(bool to_set) { topic_opr = to_set; }
-
+void	Channel::set_user_max(size_t max) {
+	user_max = max;
+	limit = max;
+}
 void	Channel::set_key_set() {
 	if (this->keypass_set == true)
 		this->keypass_set = false;
 	else
 		this->keypass_set = true;
 }
-
 void	Channel::set_invite_set() {
 	if (this->invite_mode == false)
 		this->invite_mode = true;
@@ -89,9 +72,84 @@ void	Channel::set_invite_set() {
 		this->invite_mode = false;
 }
 
-void		Channel::set_user_max(size_t max) {
-	user_max = max;
-	limit = max;
+//------> GETTER
+std::string&	Channel::get_name() { return channel_name; }
+std::string		Channel::get_description() { return description; }
+size_t			Channel::get_user_max() { return this->user_max; }
+int				Channel::get_size() { return client_list.size(); }
+std::string		Channel::get_keypass() { return this->channel_keypass; }
+int				Channel::get_limit() { return limit; }
+bool			Channel::get_invite_set() { return this->invite_mode; }
+bool			Channel::get_topic_opr() { return topic_opr; }
+void			Channel::get_clients()
+{
+	std::cout << YEL << "Users in channel " << this->get_name() << "\n";
+	for (size_t i = 0; i < client_list.size(); i++) {
+		std::cout << YELLOW << client_list[i].getNickname() << "\n";
+	}
+}
+bool			Channel::get_key_set() {
+	if (keypass_set == true)
+		return true;
+	else
+		return false;
+}
+
+
+void	Channel::add_user(Client to_add)
+{
+	client_list.push_back(to_add);
+	std::cout << YEL << to_add.getNickname() << GRE << " has been added to channel " << get_name() << "\n" << RESET; 
+	return ;
+}
+
+void	Channel::rm_user(Client to_rm)
+{
+	for (size_t i = 0; i < client_list.size(); ++i)  {		
+		if (client_list[i].get_client_fd() == to_rm.get_client_fd()) {
+			client_list.erase(client_list.begin() + i);
+			std::cout << YEL << to_rm.getNickname() << RED << " was removed from channel client_list " << get_name() << "\n" << RESET; 
+			break;
+		}
+	}
+}
+
+void	Channel::add_operator(Client to_add)
+{
+	for (size_t i = 0; i < op_clients.size(); i++) {
+		if (op_clients[i].getUsername() == to_add.getUsername()) {
+			std::cout << YEL << to_add.getNickname() << GRE << " is already an operator in " << get_name() << "\n" << RESET; 
+			return ;
+		}
+	}
+	std::cout << YEL << to_add.getNickname() << GRE << " is now an operator in " << get_name() << "\n" << RESET; 
+	op_clients.push_back(to_add);
+}
+
+void	Channel::rm_operator(Client to_rm)
+{
+	for (size_t i = 0; i < op_clients.size(); i++) {
+		if (op_clients[i].getUsername() == to_rm.getUsername()) {
+			op_clients.erase(op_clients.begin() + i);
+			std::cout << YEL << to_rm.getNickname() << RED << " was removed from operators in " << get_name() << "\n" << RESET; 
+			break;
+		}
+	}
+}
+
+void	Channel::send_to_all(std::string buffer, Client c_client)
+{
+	std::string nick = "\e[1;33m" + c_client.getNickname() + ": " + "\e[0m";
+	std::string chan = "\e[1;34m[" + c_client.get_current_chan() + "] ";
+	std::string to_send = chan + nick + buffer;
+	std::string sender = chan + "\e[1;35m" +  c_client.getNickname() + "(you): " + "\e[0m" + buffer;
+	
+	for (size_t i = 0; i < client_list.size(); i++) {
+		if (client_list[i].getUsername() == c_client.getUsername())
+			send(client_list[i].get_client_fd(), sender.c_str(), sender.size(), 0);
+		else
+			send(client_list[i].get_client_fd(), to_send.c_str(), to_send.size(), 0);
+	}
 }
 
 void    Channel::send_string(std::string to_send, std::string nick, std::string target, std::string msg)
@@ -118,16 +176,6 @@ void    Channel::send_string_all(std::string to_send)
 	}
 }
 
-void    Channel::get_clients()
-{
-	std::cout << YEL << "Users in channel " << this->get_name() << "\n";
-	for (size_t i = 0; i < client_list.size(); i++)
-	{
-		std::cout << YELLOW << client_list[i].getNickname() << "\n";
-	}
-	return ;
-}
-
 void	Channel::rm_backslash_n(std::string &s) // mettre dans utils
 {
 	if (!s.empty() && s[s.length() - 1] == '\n') {
@@ -135,60 +183,3 @@ void	Channel::rm_backslash_n(std::string &s) // mettre dans utils
 		s.resize(s.length() - 1);
 	}	
 }
-
-void    Channel::add_user(Client to_add)
-{
-	client_list.push_back(to_add);
-	std::cout << YEL << to_add.getNickname() << GRE << " has been added to channel " << get_name() << "\n" << RESET; 
-	return ;
-}
-
-void	Channel::rm_user(Client to_rm)
-{
-	for (size_t i = 0; i < client_list.size(); ++i)  {		
-		if (client_list[i].get_client_fd() == to_rm.get_client_fd()) {
-			client_list.erase(client_list.begin() + i);
-			std::cout << YEL << to_rm.getNickname() << RED << " was removed from channel client_list " << get_name() << "\n" << RESET; 
-			break;
-		}
-	}
-}
-	
-void    Channel::send_to_all(std::string buffer, Client c_client)
-{
-	std::string nick = "\e[1;33m" + c_client.getNickname() + ": " + "\e[0m";
-	std::string chan = "\e[1;34m[" + c_client.get_current_chan() + "] ";
-	std::string to_send = chan + nick + buffer;
-	std::string sender = chan + "\e[1;35m" +  c_client.getNickname() + "(you): " + "\e[0m" + buffer;
-	
-	for (size_t i = 0; i < client_list.size(); i++) {
-		if (client_list[i].getUsername() == c_client.getUsername())
-			send(client_list[i].get_client_fd(), sender.c_str(), sender.size(), 0);
-		else
-			send(client_list[i].get_client_fd(), to_send.c_str(), to_send.size(), 0);
-	}
-}
-
-void    Channel::add_operator(Client to_add)
-{
-	for (size_t i = 0; i < op_clients.size(); i++) {
-		if (op_clients[i].getUsername() == to_add.getUsername()) {
-			std::cout << YEL << to_add.getNickname() << GRE << " is already an operator in " << get_name() << "\n" << RESET; 
-			return ;
-		}
-	}
-	std::cout << YEL << to_add.getNickname() << GRE << " is now an operator in " << get_name() << "\n" << RESET; 
-	op_clients.push_back(to_add);
-}
-
-void    Channel::rm_operator(Client to_rm)
-{
-	for (size_t i = 0; i < op_clients.size(); i++) {
-		if (op_clients[i].getUsername() == to_rm.getUsername()) {
-			op_clients.erase(op_clients.begin() + i);
-			std::cout << YEL << to_rm.getNickname() << RED << " was removed from operators in " << get_name() << "\n" << RESET; 
-			break;
-		}
-	}
-}
-

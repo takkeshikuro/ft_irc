@@ -137,14 +137,16 @@ void	Server::manage_new_data(int fd)
 	ssize_t bytes = recv(fd, buffer, sizeof(buffer) - 1 , 0); //-> receive the data
 	unsigned long int i = 0;
 
-	while (i < this->client_vec.size())
+	while (i < this->client_vec.size()) 
 	{
 		if (client_vec[i].get_client_fd() == fd)
 			break ;
 		i++;
 	}
 	Client current_client = client_vec[i];
-	if(bytes <= 0)//-> check if the client disconnected
+
+	// check if the client disconnected
+	if(bytes <= 0) 
 	{ 
 		std::cout << RED << "User <" << current_client.getUsername() << "> Disconnected" << WHI << std::endl;
 		clear_clients(fd);
@@ -153,7 +155,7 @@ void	Server::manage_new_data(int fd)
 	else
 	{ 
 		buffer[bytes] = '\0';
-		std::cerr << "[debug buffer] = " << buffer << "\n"; 
+//		std::cerr << "[debug buffer] = " << buffer << "\n"; 
 		if (is_command(buffer, current_client))
 			return ;
 		if (current_client.get_is_irssi() == true) {

@@ -4,11 +4,10 @@
 void	check_entrance(char **av) 
 {
 	std::string port = av[1];
-	//std::string passwd = av[2];
 	if (port != "6667")
 		throw WrongPortError();
 	if (!av[2])
-		throw WrongPasswordError(); // modif le msg
+		throw NeedPasswordError(); // modif le msg
 }
 
 int main(int ac, char **av) 

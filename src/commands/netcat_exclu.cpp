@@ -6,15 +6,11 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 01:41:42 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/04/23 18:45:12 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/04/25 00:13:47 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/Server.hpp"
-
-// 1 - help
-// 2 - list_ch
-// 3 - list_cl
 
 void    Server::HELP(std::string buffer, Client c_client)
 {

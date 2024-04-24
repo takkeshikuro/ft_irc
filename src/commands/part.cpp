@@ -113,11 +113,18 @@ void	send_to_all(Client c_client, Channel &chan, std::string reason)
 {
 	std::string nick = c_client.getNickname();
 	std::string user = c_client.getUsername();
+	std::string to_send;
 
 	for (size_t i = 0; i < chan.client_list.size(); i++) 
 	{
-		size_t size = RPL_PART(nick, user, chan.get_name(), reason).size();
-		send(chan.client_list[i].get_client_fd(), RPL_PART(nick, user, chan.get_name(), reason).c_str(), size, 0);
+		if (chan.client_list[i].get_is_irssi() == true) {
+			to_send = RPL_PART(nick, user, chan.get_name(), reason);
+			send(chan.client_list[i].get_client_fd(), to_send.c_str(), to_send.size(), 0);
+		}
+		else {
+			to_send = "\e[0;36m -!- " + nick + " [" + user + "\e[0m@localhost] has left " + chan.get_name() + " ["+ reason + "]\r\n";	
+			send(chan.client_list[i].get_client_fd(), to_send.c_str(), to_send.size(), 0);
+		}
 	}
 }
 

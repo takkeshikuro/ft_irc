@@ -4,16 +4,16 @@ CPPFLAGS	= -Wall -Wextra -Werror -std=c++98 -c -I includes/
 #
 SRCS		= main.cpp Server.cpp Server_utils.cpp Client.cpp \
 			cmd_search.cpp Channel.cpp irssi.cpp utils.cpp \
-			old_cmd/0_commands.cpp old_cmd/2_commands.cpp \
-			new_cmd/ping.cpp new_cmd/nick.cpp \
-			new_cmd/list.cpp new_cmd/join.cpp \
-			new_cmd/privmsg.cpp new_cmd/topic.cpp \
-			new_cmd/user.cpp new_cmd/part.cpp new_cmd/kick.cpp \
-			new_cmd/mode/mode.cpp new_cmd/mode/mode_l.cpp \
-			new_cmd/mode/mode_utils.cpp new_cmd/mode/mode_o.cpp \
-			new_cmd/mode/mode_i.cpp new_cmd/mode/mode_t.cpp \
-			new_cmd/pass.cpp new_cmd/invite.cpp new_cmd/mode/mode_k.cpp \
-			new_cmd/quit.cpp 
+			commands/netcat_exclu.cpp \
+			commands/ping.cpp commands/nick.cpp \
+			commands/list.cpp commands/join.cpp \
+			commands/privmsg.cpp commands/topic.cpp \
+			commands/user.cpp commands/part.cpp commands/kick.cpp \
+			commands/mode/mode.cpp commands/mode/mode_l.cpp \
+			commands/mode/mode_utils.cpp commands/mode/mode_o.cpp \
+			commands/mode/mode_i.cpp commands/mode/mode_t.cpp \
+			commands/pass.cpp commands/invite.cpp commands/mode/mode_k.cpp \
+			commands/quit.cpp 
 
 DIR_SRCS	= src/
 DIR_OBJS	= .objs/

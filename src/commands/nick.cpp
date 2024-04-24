@@ -77,8 +77,14 @@ void	Server::nick(std::string buffer, Client c_client)
 				channel_vec[i].op_clients[index].setNickname(new_nick);
 		}
 		c_client.setNickname(new_nick);
-		size_t size = RPL_NICK(old_nick, c_client.getUsername(), c_client.getNickname()).size();
-		send(c_client.get_client_fd(), RPL_NICK(old_nick, c_client.getUsername(), c_client.getNickname()).c_str(), size, 0);
+		if (c_client.get_is_irssi() == true) {
+			size_t size = RPL_NICK(old_nick, c_client.getUsername(), c_client.getNickname()).size();
+			send(c_client.get_client_fd(), RPL_NICK(old_nick, c_client.getUsername(), c_client.getNickname()).c_str(), size, 0);
+		}
+		else {
+			std::string to_send = yellow + "[info] You're now know as " + new_nick + "\r\n" + white;
+			send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
+		}
 	}
 	return ;
 }

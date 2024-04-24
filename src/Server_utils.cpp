@@ -15,7 +15,7 @@ void Server::SignalHandler(int sig)
 {
 	(void)sig;
 	std::cout << std::endl << "Signal Received!" << std::endl;
-	Server::signal = true; //-> set the static boolean to true to stop the server
+	Server::signal = true; //  to stop the server
 }
 
 int	Server::handlePolloutEvent(const int current_fd)

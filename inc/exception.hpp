@@ -39,9 +39,9 @@ class WrongPortError : public std::exception {
 	}
 };
 
-class WrongPasswordError : public std::exception {
+class NeedPasswordError : public std::exception {
 	virtual const char *what() const throw() {
-		return "Wrong password selection, pls try again.";
+		return "Need password selection, pls try again.";
 	}
 };
 

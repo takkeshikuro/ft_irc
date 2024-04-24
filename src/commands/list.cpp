@@ -79,7 +79,7 @@ static std::string	findAnyChannel(std::string buffer)
 static std::string	get_rpl_list(std::string client_nick, Channel &chan)
 {
 	std::stringstream concat;
-	concat << "322 " << client_nick << " #" << chan.get_name() << " [nb of users = " << chan.get_size() << "] "\
+	concat << "322 " << client_nick << " " << chan.get_name() << " [nb of users = " << chan.get_size() << "] "\
 	<< (chan.get_description()) << "\r\n";
 	return concat.str();			
 }

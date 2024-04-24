@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 02:11:04 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/04/24 01:09:58 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/04/24 23:58:09 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,11 +65,11 @@ int Server::is_irssi_command(char *buffer, Client c_client)
 
 int	search_cmd(std::string &cmd) 
 {
-	std::string commands[14] = {"/PRIVMSG", "/NICK", "/JOIN", "/MODE", \
+	std::string commands[13] = {"/PRIVMSG", "/NICK", "/JOIN", "/MODE", \
 								"/TOPIC", "/INVITE", "/KICK", "/PART", \
 								"/QUIT", "/LIST_CH", "/LIST_CL", "/HELP" \
-								"/HELP_OPERATOR", "/CREATE"};
-	for (int i = 0; i < 14; i++) {
+								"/HELP_OPERATOR"};
+	for (int i = 0; i < 13; i++) {
 		if (cmd == commands[i])
 			return (i);
 	}
@@ -102,13 +102,12 @@ int Server::is_command(char *buffer, Client c_client)
 			case 4 : topic(buf, c_client);  return 1 ;
 			case 5 : invite(buf, c_client);  return 1 ;
 			case 6 : kick(buf, c_client);  return 1 ;
-			case 7 : part(buffer, c_client); break;
-			case 8 : quit(buffer, c_client); break;
+			case 7 : part(buffer, c_client); return 1 ;
+			case 8 : quit(buffer, c_client); return 1 ;
 			case 9 : LIST_CH(buf, c_client);  return 1;
 			case 10 : LIST_CL(buf, c_client);  return 1;
 			case 11 : HELP(buf, c_client);  return 1;
 			case 12 : HELP_OPERATOR(buf, c_client);  return 1;
-			case 13 : CREATE(buf, c_client);  return 1;
 			case -1 : command_unknow(c_client, cmd_string); return 0 ;
 		}
 	}

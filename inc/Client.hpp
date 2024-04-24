@@ -27,7 +27,7 @@ class Client {
 		int		starting_point_data_set();
 		bool	check_password(std::string pw_to_check);
 		
-		int	set_user_data(std::string &s_data, Server& server);
+		int		set_user_data(std::string &s_data, Server& server);
 		void	set_client_fd(int fd);
  		void	set_IpAdd(std::string ipadd);
 		void	setNickname(std::string new_nick);
@@ -55,7 +55,7 @@ class Client {
 
 	private : 
 		std::string	password;
-		std::string IPadd; //-> client ip address
+		std::string IPadd;
 		int			socket_usr;
 		bool		is_irssi;
 		int			client_fd;
@@ -73,7 +73,6 @@ class Client {
 		std::string white;
 		std::string red;
 		std::string yellow;
-		
 };
 
 #endif
