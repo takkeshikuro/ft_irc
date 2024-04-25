@@ -90,7 +90,17 @@ void	rm_backslash_n(std::string &s)
 	}	
 }
 
-int	Client::starting_point_data_set()
+bool	Client::check_double_usage(std::vector<Client> &client_vec, std::string nick)
+{
+	for (size_t i = 0; i < client_vec.size(); i++)
+	{
+		if (nick == client_vec[i].getNickname())
+			return true;
+	}
+	return false;
+}
+
+int	Client::starting_point_data_set(std::vector<Client> &client_vec)
 {
 	std::string Account_welcome = yellow + "\n!Account creation!\n(you will can change information later)\nNew username : ";
 	send(client_fd, Account_welcome.c_str(), Account_welcome.length(), 0);
@@ -133,6 +143,10 @@ int	Client::starting_point_data_set()
 				std::string null_buffer = red + "cant be null.\e[0;33m\nNew nickname : ";
 				send(client_fd, null_buffer.c_str(), null_buffer.length(), 0);
 			}
+			else if (check_double_usage(client_vec, client_nickname) == true) {
+				std::string already_use = red + "Nickname is already in use.\e[0;33m\nNew nickname : ";
+				send(client_fd, already_use.c_str(), already_use.length(), 0);
+			}
 			else {
 				std::cout << YELLOW << "[client_nickname given by user : " << client_nickname << "]\n" << RESET;
 				this->nickname = client_nickname;
@@ -151,7 +165,7 @@ int	Client::starting_point_data_set()
 	return SUCCESS;
 }
 
-int	Client::client_starting_point() 
+int	Client::client_starting_point(std::vector<Client> &client_vec) 
 {
 	std::string message001 = "!Bienvenue sur le serveur IRC irc.server.com!\r\n";
 	send(client_fd, message001.c_str(), message001.length(), 0);
@@ -188,7 +202,7 @@ int	Client::client_starting_point()
 			return FAILURE;
 		}
 	}
-	if (starting_point_data_set() == SUCCESS) 
+	if (starting_point_data_set(client_vec) == SUCCESS) 
 	{
 		this->is_registred = true;
 		std::cout << GRE << "Authentification ok : starting point over\n" << RESET;

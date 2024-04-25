@@ -117,13 +117,13 @@ int	Server::manage_new_client()
 	std::cout << GRE << "\nNouvelle connexion acceptée\n" << "+Client <" << incoming_fd << "> Connected\n" << RESET;
 	if (check_irssi_entrance(incoming_fd)) {
 		client_vec.back().set_is_irssi();
-		if (client_vec.back().client_starting_point_irssi(this->irssi_base, *this) == FAILURE) {
+		if (client_vec.back().client_starting_point_irssi(this->irssi_base, *this, this->client_vec) == FAILURE) {
 			clear_clients(incoming_fd);
 			return FAILURE;
 		}
 	}
 	else {
-		if (client_vec.back().client_starting_point() == FAILURE) {
+		if (client_vec.back().client_starting_point(this->client_vec) == FAILURE) {
 			clear_clients(incoming_fd);
 			return FAILURE;	
 		}

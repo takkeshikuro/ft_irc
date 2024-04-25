@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   irssi.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rmarecar <rmarecar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmorikaw <tmorikaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 05:00:55 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/04/13 13:16:23 by rmarecar         ###   ########.fr       */
+/*   Updated: 2024/04/26 00:31:02 by tmorikaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/Server.hpp"
 
-int	Client::set_user_data(std::string &s_data, Server& server)
+int	Client::set_user_data(std::string &s_data, Server& server, std::vector<Client> &client_vec)
 {
 	if (server.pass(s_data, *this) == FAILURE)
 		return FAILURE;
@@ -23,7 +23,12 @@ int	Client::set_user_data(std::string &s_data, Server& server)
 		std::size_t nick_start = (s_data.find(' ', pos_nick) + 1);
 		std::size_t nick_end = (s_data.find('\n', nick_start) - 1);
 		nickname_i = s_data.substr(nick_start, (nick_end - nick_start));
+		if (check_double_usage(client_vec, nickname_i) == true) {
+			send(client_fd, ERR_NICKNAMEINUSE(nickname_i, nickname_i).c_str(), ERR_NICKNAMEINUSE(nickname_i, nickname_i).size(), 0);
+			return FAILURE;
+		}
 		this->setNickname(nickname_i);
+		
 
 		std::string username_i;
 		std::size_t start = s_data.find("USER");
@@ -43,9 +48,9 @@ int	Client::set_user_data(std::string &s_data, Server& server)
 	}
 }
 
-int	Client::client_starting_point_irssi(std::string &irssi_base, Server& server) 
+int	Client::client_starting_point_irssi(std::string &irssi_base, Server& server, std::vector<Client> &client_vec) 
 {
-	if (set_user_data(irssi_base, server) == FAILURE)
+	if (set_user_data(irssi_base, server, client_vec) == FAILURE)
 		return FAILURE;
 	std::cout << YELLOW << "[checking nickname = "<< getNickname() << "]\n";
 	std::cout << "[checking username = "<< getUsername() << "]\n";

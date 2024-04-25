@@ -22,12 +22,14 @@ class Client {
 		Client(std::string pw, std::string dt);
 		~Client();
 		
-		int		client_starting_point_irssi(std::string &irssi_base, Server& server);
-		int		client_starting_point();
-		int		starting_point_data_set();
+		int		client_starting_point_irssi(std::string &irssi_base, Server& server, std::vector<Client> &client_vec);
+		int		client_starting_point(std::vector<Client> &client_vec);
+		int		starting_point_data_set(std::vector<Client> &client_vec);
 		bool	check_password(std::string pw_to_check);
+		bool	check_double_usage(std::vector<Client> &client_vec, std::string nick);
+
 		
-		int		set_user_data(std::string &s_data, Server& server);
+		int		set_user_data(std::string &s_data, Server& server, std::vector<Client> &client_vec);
 		void	set_client_fd(int fd);
  		void	set_IpAdd(std::string ipadd);
 		void	setNickname(std::string new_nick);
