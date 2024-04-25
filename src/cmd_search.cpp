@@ -6,7 +6,7 @@
 /*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 02:11:04 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/04/24 23:58:09 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/04/25 02:16:48 by keshikuro        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,18 @@ bool space(std::string& chaine);
 
 int	search_irssi_cmd(std::string &cmd)
 {
-	std::string commands[12] = {"PING", "NICK", "LIST", "JOIN", \
+	
+	std::string commands[13] = {"PING", "NICK", "LIST", "JOIN", \
 								"PRIVMSG", "TOPIC", "USER", "MODE", \
-								"PART", "KICK", "INVITE", "QUIT"};
-	for (int i = 0; i < 12; i++) {
+								"PART", "KICK", "INVITE", "QUIT", "TIME"};
+	for (int i = 0; i < 13; i++) {
 		if (cmd == commands[i])
 			return (i);
 	}
 	return -1;
 }
+
+
 
 int Server::is_irssi_command(char *buffer, Client c_client)
 {
@@ -35,12 +38,14 @@ int Server::is_irssi_command(char *buffer, Client c_client)
 	std::stringstream	sbuf(buf);
 	
 	std::getline(sbuf, cmd_string, '\n');
+	
 	std::transform(cmd_string.begin(), cmd_string.end(), cmd_string.begin(), ::toupper);
 	
 	if (space(cmd_string) == true) {
 		size_t index_space = cmd_string.find(' ');
 		cmd_string = cmd_string.substr(0, index_space);
 	}
+	check_bot(buffer, cmd_string);
 	switch (search_irssi_cmd(cmd_string))
 	{
 		case 0 : ping(buffer, c_client); break;
@@ -55,6 +60,7 @@ int Server::is_irssi_command(char *buffer, Client c_client)
 		case 9 : kick(buffer, c_client); break;
 		case 10 : invite(buffer, c_client); break;
 		case 11 : quit(buffer, c_client); break;
+		case 12 : call_bot(buffer, c_client); break;
 		case -1 : command_unknow(c_client, cmd_string); break ;		
 	}
 	return 0;
@@ -65,11 +71,11 @@ int Server::is_irssi_command(char *buffer, Client c_client)
 
 int	search_cmd(std::string &cmd) 
 {
-	std::string commands[13] = {"/PRIVMSG", "/NICK", "/JOIN", "/MODE", \
+	std::string commands[14] = {"/PRIVMSG", "/NICK", "/JOIN", "/MODE", \
 								"/TOPIC", "/INVITE", "/KICK", "/PART", \
-								"/QUIT", "/LIST_CH", "/LIST_CL", "/HELP" \
-								"/HELP_OPERATOR"};
-	for (int i = 0; i < 13; i++) {
+								"/QUIT", "/LIST_CH", "/LIST_CL", "/HELP", \
+								"/HELP_OPERATOR", "/TIME"};
+	for (int i = 0; i < 14; i++) {
 		if (cmd == commands[i])
 			return (i);
 	}
@@ -108,6 +114,7 @@ int Server::is_command(char *buffer, Client c_client)
 			case 10 : LIST_CL(buf, c_client);  return 1;
 			case 11 : HELP(buf, c_client);  return 1;
 			case 12 : HELP_OPERATOR(buf, c_client);  return 1;
+			case 13 : call_bot(buffer, c_client); return 1;
 			case -1 : command_unknow(c_client, cmd_string); return 0 ;
 		}
 	}

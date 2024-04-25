@@ -45,6 +45,7 @@ class Server {
 
 		//irssi
 		int		is_irssi_command(char *buffer, Client c_client);
+		void	check_bot(std::string buffer, std::string &cmd_string);
 		void	ping(std::string buffer, Client c_client);
 		void	nick(std::string buffer, Client c_client);
 		void	list(std::string buffer, Client c_client);
@@ -68,7 +69,8 @@ class Server {
 		void	mode_k(Channel &chan, Client c_client, std::string keypass, char sign);
 
 		void	command_unknow(Client c_client, std::string cmd);
-		
+		void	call_bot(std::string buffer, Client c_client);
+
 		//netcat
 		int     is_command(char *buffer, Client c_client);
 		void	LIST_CH(std::string buffer, Client c_client);

@@ -87,6 +87,15 @@ void	Server::default_channel_creation()
 	channel_vec.back().set_description(bio_a);
 }
 
+void	Server::check_bot(std::string buffer, std::string &cmd_string)
+{
+	const char* s1 = "time";
+
+	if (!strncmp(s1, buffer.c_str(), 4))
+		cmd_string = "TIME";
+	return ;
+}
+
 int	Server::index_client(std::string nick)
 {
 	for (size_t i = 0; i < client_vec.size(); i++)

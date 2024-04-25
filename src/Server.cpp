@@ -155,7 +155,7 @@ void	Server::manage_new_data(int fd)
 	else
 	{ 
 		buffer[bytes] = '\0';
-//		std::cerr << "[debug buffer] = " << buffer << "\n"; 
+		std::cerr << "[debug buffer] = " << buffer << "]\n"; 
 		if (is_command(buffer, current_client))
 			return ;
 		if (current_client.get_is_irssi() == true) {

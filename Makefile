@@ -13,7 +13,7 @@ SRCS		= main.cpp Server.cpp Server_utils.cpp Client.cpp \
 			commands/mode/mode_utils.cpp commands/mode/mode_o.cpp \
 			commands/mode/mode_i.cpp commands/mode/mode_t.cpp \
 			commands/pass.cpp commands/invite.cpp commands/mode/mode_k.cpp \
-			commands/quit.cpp 
+			commands/quit.cpp commands/bot.cpp
 
 DIR_SRCS	= src/
 DIR_OBJS	= .objs/
