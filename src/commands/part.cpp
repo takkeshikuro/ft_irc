@@ -93,6 +93,8 @@ void    Server::part(std::string buffer, Client c_client)
 					std::string info = yellow + "[info] You just left channel " + channel_name + white + "\r\n";
 					send(c_client.get_client_fd(), info.c_str(), info.size(), 0);
 					send_to_all(c_client, channel_vec[i], reason);
+					if (channel_vec[i].client_list.size() == 0)
+						channel_vec.erase(channel_vec.begin() + i);
 				}
 				else {
 					size_t size = ERR_NOTONCHANNEL(client_nickname, channel_name).size();
