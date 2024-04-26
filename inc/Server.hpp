@@ -24,7 +24,7 @@ class Client;
 class Server {
 	public :
 		Server();
-		Server(std::string passwd, struct tm *timeinfo);
+		Server(const char *s_port, std::string passwd, struct tm *timeinfo);
 		~Server();
 
 		void	configuration();

@@ -4,10 +4,23 @@
 void	check_entrance(char **av) 
 {
 	std::string port = av[1];
-	if (port != "6667")
-		throw WrongPortError();
-	if (!av[2])
-		throw NeedPasswordError(); // modif le msg
+	std::string password = av[2];
+
+	if (!port.empty()) 
+	{
+		if (port.size() < 2 && port.size() > 5)
+			throw WrongPortError();
+		for (size_t i = 0; i < port.length(); i++) {
+			if (!isdigit(port[i]))
+				throw WrongPortError();
+		}
+	}
+	if (!password.empty()) {
+		if (password.size() > 10)
+			throw WrongPasswdSelectionError();
+	}
+	if (port.empty() || password.empty())
+		throw NeedValidParamError();
 }
 
 int main(int ac, char **av) 
@@ -22,7 +35,7 @@ int main(int ac, char **av)
 			time (&rawtime);
 			timeinfo = localtime(&rawtime);
 			
-			Server Server(av[2], timeinfo);
+			Server Server(av[1], av[2], timeinfo);
 			signal(SIGINT, Server::SignalHandler); //-> catch the signal (ctrl + c)
   			signal(SIGQUIT, Server::SignalHandler); //-> catch the signal (ctrl + \)
 			Server.configuration();

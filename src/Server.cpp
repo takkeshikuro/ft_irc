@@ -16,9 +16,10 @@ bool Server::signal = false;
 
 Server::Server() : port(6667), password("default") {}
 
-Server::Server(std::string passwd, struct tm *timeinfo) : port(6667), password(passwd) 
+Server::Server(const char *s_port, std::string passwd, struct tm *timeinfo) : password(passwd) 
 {
 	this->setDatetime(timeinfo);
+	port = atoi(s_port);
 	green = "\e[1;32m";
 	white = "\e[0;37m";
 	red = "\e[1;31m";

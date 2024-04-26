@@ -35,13 +35,19 @@ class SocketListeningError : public std::exception {
 
 class WrongPortError : public std::exception {
 	virtual const char *what() const throw() {
-		return "Wrong port selection, try 6667(IRC).";
+		return "Wrong port selection, try 6667(IRC) or 8080.";
 	}
 };
 
-class NeedPasswordError : public std::exception {
+class WrongPasswdSelectionError : public std::exception {
 	virtual const char *what() const throw() {
-		return "Need password selection, pls try again.";
+		return "Password selection too long.";
+	}
+};
+
+class NeedValidParamError : public std::exception {
+	virtual const char *what() const throw() {
+		return "Need password and port selection, pls try again.";
 	}
 };
 
