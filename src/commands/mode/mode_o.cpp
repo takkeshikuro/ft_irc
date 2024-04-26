@@ -8,10 +8,11 @@ void	Server::mode_o(Channel &chan, Client c_client, std::string target, char sig
 	(void)c_client;
 	// find target in server
 	for (j = 0; j < client_vec.size(); j++){
-		if (client_vec[j].getUsername() == target)
+		if (client_vec[j].getNickname() == target)
 			break ;
 	}
-
+	if (j >= client_vec.size())
+		return ;
 	//check if target is in channel
 	idx_target = index_channel_nick(target, chan);
 	if (idx_target == -1)
