@@ -118,7 +118,7 @@ void    Server::kick(std::string buffer, Client c_client)
 		int j = index_client(kicked_name);
 		channel_vec[i].send_string_all(RPL_KICK(client_nickname, c_client.getUsername(), channel_name, kicked_name, comment));
 		channel_vec[i].rm_user(this->client_vec[j]);
-		std::string kicked = red + "[info] You have been kicked from " + channel_name + " by " + client_nickname + " because : " + comment + "\r\n";
+		std::string kicked = red + "[info] You have been kicked from " + channel_name + " by " + client_nickname + " because : " + comment + white + "\r\n";
 		send(client_vec[j].get_client_fd(), kicked.c_str(), kicked.size(), 0);
 	}
 }

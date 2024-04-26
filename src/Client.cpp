@@ -123,10 +123,10 @@ void	Client::client_starting_point()
 	send(client_fd, s7.c_str(), s7.size(), 0);
 	send(client_fd, s8.c_str(), s8.size(), 0);
 	send(client_fd, s9.c_str(), s9.size(), 0);
-	std::string welcome = green + "\nWelcome!\n";
+	std::string welcome = green + "\nWelcome!";
 	std::string w1 = "\n\e[1;34mYou must use /login to access the server and create a new account :\r\n";
 	std::string w2 = "please use : [/login <server_password> <username> <nickname>]\r\n";
-	std::string w3 = "Your username and nickname must not contain invalid char [,/*/?/!/@/.] and have more than 15 characters\r\n";
+	std::string w3 = "Your username and nickname must not contain invalid char [,/*/?/!/@/.] & have less than 15 characters\r\n";
 	std::string w4 = "Your nickname is unique.\r\n" + white;
 
 	send(client_fd, welcome.c_str(), welcome.length(), 0);

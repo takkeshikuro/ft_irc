@@ -30,7 +30,7 @@ void    Server::mode_k(Channel &chan, Client c_client, std::string keypass, char
 	else if (sign == '-') {
 		if (chan.get_key_set() == true) {
 			keypass.clear();
-			chan.get_key_set();
+			chan.set_key_set();
 			chan.set_keypass_k(keypass);
 		}
 		std::string tosend = MODE_USERMSG(chan.get_name(), "-k");
