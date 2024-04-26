@@ -23,8 +23,8 @@ class Client {
 		~Client();
 		
 		int		client_starting_point_irssi(std::string &irssi_base, Server& server, std::vector<Client> &client_vec);
-		int		client_starting_point(std::vector<Client> &client_vec);
-		int		starting_point_data_set(std::vector<Client> &client_vec);
+		void	client_starting_point();
+	//	int		starting_point_data_set(std::vector<Client> &client_vec);
 		bool	check_password(std::string pw_to_check);
 		bool	check_double_usage(std::vector<Client> &client_vec, std::string nick);
 

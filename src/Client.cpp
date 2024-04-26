@@ -100,114 +100,40 @@ bool	Client::check_double_usage(std::vector<Client> &client_vec, std::string nic
 	return false;
 }
 
-int	Client::starting_point_data_set(std::vector<Client> &client_vec)
-{
-	std::string Account_welcome = yellow + "\n!Account creation!\n(you will can change information later)\nNew username : ";
-	send(client_fd, Account_welcome.c_str(), Account_welcome.length(), 0);
-	std::cout << "waiting for username...\n";
-	while (1) 
-	{
-		char buffer[1024];
-		int bytes_lus = read(client_fd, buffer, sizeof(buffer));
-		if (bytes_lus > 0) {
-			buffer[bytes_lus] = '\0';
-			std::string client_username(buffer);
-			rm_backslash_n(client_username);
-			if (client_username.empty()) {
-				std::string null_buffer = red + "cant be null.\e[0;33m\nNew username : ";
-				send(client_fd, null_buffer.c_str(), null_buffer.length(), 0);
-			}
-			else {
-				std::cout << YELLOW << "[client_username given by user : " << client_username << "]\n" << RESET;
-				this->username = client_username;
-				break ;
-			}
-		}
-		else if (bytes_lus == 0) {
-			std::cerr << RED << "Connexion closed by user" << std::endl << RESET;
-			return FAILURE;
-		}
-	}
-	std::string new_nick = "\nNew nickname : ";
-	send(client_fd, new_nick.c_str(), new_nick.length(), 0);
-	std::cout << "waiting for nickname...\n";
-	while (1)
-	{
-		char buffer[1024];
-		int bytes_lus = read(client_fd, buffer, sizeof(buffer));
-		if (bytes_lus > 0) {
-			buffer[bytes_lus] = '\0';
-			std::string client_nickname(buffer);
-			rm_backslash_n(client_nickname);
-			if (client_nickname.empty()) {
-				std::string null_buffer = red + "cant be null.\e[0;33m\nNew nickname : ";
-				send(client_fd, null_buffer.c_str(), null_buffer.length(), 0);
-			}
-			else if (check_double_usage(client_vec, client_nickname) == true) {
-				std::string already_use = red + "Nickname is already in use.\e[0;33m\nNew nickname : ";
-				send(client_fd, already_use.c_str(), already_use.length(), 0);
-			}
-			else {
-				std::cout << YELLOW << "[client_nickname given by user : " << client_nickname << "]\n" << RESET;
-				this->nickname = client_nickname;
-				break ;
-			}
-		}
-		else if (bytes_lus == 0) {
-			std::cerr << RED << "Connexion closed by user" << std::endl << RESET;
-			return FAILURE;
-		}
-	}
-	std::string data_save = green + "\nNew data saved.\nWelcome!\n";
-	std::string helper = "[press /help to get all the possible commands]\n" + white;
-	send(client_fd, data_save.c_str(), data_save.length(), 0);
-	send(client_fd, helper.c_str(), helper.length(), 0);
-	return SUCCESS;
-}
-
-int	Client::client_starting_point(std::vector<Client> &client_vec) 
+void	Client::client_starting_point() 
 {
 	std::string message001 = "!Bienvenue sur le serveur IRC irc.server.com!\r\n";
 	send(client_fd, message001.c_str(), message001.length(), 0);
+	std::string s1 = "\n\e[0;35m/$$$$$$$$ /$$$$$$$$     /$$$$$$ /$$$$$$$   /$$$$$$ \r\n";
+	std::string s2 = "| $$_____/|__  $$__/    |_  $$_/| $$__  $$ /$$__  $$\r\n";
+	std::string s3 = "| $$         | $$         | $$  | $$  \\ $$| $$  \\__/\r\n";
+	std::string s4 = "| $$$$$      | $$         | $$  | $$$$$$$/|$$      \r\n";
+	std::string s5 = "| $$__/      | $$         | $$  | $$__  $$|$$      \r\n";
+	std::string s6 = "| $$         | $$         | $$  | $$  \\ $$| $$    $$\r\n";
+	std::string s7 = "| $$         | $$        /$$$$$$| $$  | $$|  $$$$$$/\r\n";
+	std::string s8 = "|__/         |__//$$$$$$|______/|__/  |__/ \\______/ \r\n";
+	std::string s9 = "                |______/                          \e[0m\r\n";
 	
-	std::string needpw = "\nPassword required for authentication : ";
-	send(client_fd, needpw.c_str(), needpw.length(), 0);
-	while (1) 
-	{
-		char buffer[1024];
-		int bytes_lus = read(client_fd, buffer, sizeof(buffer));
-		if (bytes_lus > 0) 
-		{
-			buffer[bytes_lus] = '\0';
-			std::string client_pw(buffer);
-			rm_backslash_n(client_pw);
-			std::cout << YELLOW << "[password given : " << client_pw << "] : " << RESET;
-			if (check_password(client_pw) == true) 
-			{
-				std::cout << GRE << "[password match]\n" << RESET;
-				std::string auth_ok = green + "Authentification ok.\n" + white ;
-				send(client_fd, auth_ok.c_str(), auth_ok.length(), 0);
-				break;
-			}
-			else {
-				std::cout << RED << "[password mismatch]\n" << RESET;
-				std::string auth_ko = red + "Authentification failed, pls try again.\n";
-				send(client_fd, auth_ko.c_str(), auth_ko.length(), 0);
-				std::string needpw = white + "\nPassword required for authentication : ";
-				send(client_fd, needpw.c_str(), needpw.length(), 0);
-			}			
-		}
-		else if (bytes_lus == 0) {
-			std::cerr << RED << "Connexion closed by user" << std::endl << RESET;
-			return FAILURE;
-		}
-	}
-	if (starting_point_data_set(client_vec) == SUCCESS) 
-	{
-		this->is_registred = true;
-		std::cout << GRE << "Authentification ok : starting point over\n" << RESET;
-		return SUCCESS;
-	}
-	return FAILURE;
+	send(client_fd, s1.c_str(), s1.size(), 0);
+	send(client_fd, s2.c_str(), s2.size(), 0);
+	send(client_fd, s3.c_str(), s3.size(), 0);
+	send(client_fd, s4.c_str(), s4.size(), 0);
+	send(client_fd, s5.c_str(), s5.size(), 0);
+	send(client_fd, s6.c_str(), s6.size(), 0);
+	send(client_fd, s7.c_str(), s7.size(), 0);
+	send(client_fd, s8.c_str(), s8.size(), 0);
+	send(client_fd, s9.c_str(), s9.size(), 0);
+	std::string welcome = green + "\nWelcome!\n";
+	std::string w1 = "\n\e[1;34mYou must use /login to access the server and create a new account :\r\n";
+	std::string w2 = "please use : [/login <server_password> <username> <nickname>]\r\n";
+	std::string w3 = "Your username and nickname must not contain invalid char [,/*/?/!/@/.] and have more than 15 characters\r\n";
+	std::string w4 = "Your nickname is unique.\r\n" + white;
+
+	send(client_fd, welcome.c_str(), welcome.length(), 0);
+	send(client_fd, w1.c_str(), w1.length(), 0);
+	send(client_fd, w2.c_str(), w2.length(), 0);
+	send(client_fd, w3.c_str(), w3.length(), 0);
+	send(client_fd, w4.c_str(), w4.length(), 0);
+
 }
 

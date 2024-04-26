@@ -37,7 +37,7 @@ void    Server::topic(std::string buffer, Client c_client)
 	std::string total_arg;
 	std::string channel_name;
 	std::string next_arg;
-	std::string client_nickname = c_client.getNickname();	
+	std::string client_nickname = c_client.getNickname();
 	
 	if (c_client.get_is_irssi() == false)
 	{

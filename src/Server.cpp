@@ -122,12 +122,8 @@ int	Server::manage_new_client()
 			return FAILURE;
 		}
 	}
-	else {
-		if (client_vec.back().client_starting_point(this->client_vec) == FAILURE) {
-			clear_clients(incoming_fd);
-			return FAILURE;	
-		}
-	}
+	else
+		client_vec.back().client_starting_point();
 	return SUCCESS;
 }
 
@@ -155,8 +151,21 @@ void	Server::manage_new_data(int fd)
 	else
 	{ 
 		buffer[bytes] = '\0';
-		std::cerr << "[debug buffer] = " << buffer << "]\n"; 
-		if (is_command(buffer, current_client))
+	//	std::cerr << "[debug buffer] = " << buffer << "]\n";
+		if (!strncmp(buffer, "/login", 6) && current_client.get_is_irssi() == false)
+		{
+			if (login(buffer, client_vec[i]) == SUCCESS) {
+				client_vec[i].is_registred = true;
+				std::cout << GRE << "Authentification ok : login over\n" << RESET;
+				std::string login_ok = green +"New account creation ok ! Welcome " + yellow + client_vec[i].getNickname() + "\r\n" + white;
+				send(client_vec[i].get_client_fd(), login_ok.c_str(), login_ok.size(), 0);
+			}
+			else {
+				std::string login_ko = red + "Please try again.\r\n" + white;
+				send(client_vec[i].get_client_fd(), login_ko.c_str(), login_ko.size(), 0);
+			}
+		}
+		else if (is_command(buffer, current_client))
 			return ;
 		if (current_client.get_is_irssi() == true) {
 			is_irssi_command(buffer, current_client);
@@ -174,8 +183,8 @@ void	Server::manage_new_data(int fd)
 			buf = buf + '\n';
 			msg(buf, current_client);
 		}
-		else
-			std::cout << YEL << current_client.getNickname() << ": " << WHI << buffer;
+		// else
+		// 	std::cout << YEL << current_client.getNickname() << ": " << WHI << buffer;
 	}
 }
 

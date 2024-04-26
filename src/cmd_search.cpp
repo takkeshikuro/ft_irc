@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_search.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: keshikuro <keshikuro@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tmorikaw <tmorikaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 02:11:04 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/04/25 02:16:48 by keshikuro        ###   ########.fr       */
+/*   Updated: 2024/04/26 02:29:34 by tmorikaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,10 @@ int Server::is_irssi_command(char *buffer, Client c_client)
 	std::string			cmd_string;
 	std::stringstream	sbuf(buf);
 	
-	std::getline(sbuf, cmd_string, '\n');
+	if (c_client.get_is_irssi() == false)
+		return 0;
 	
+	std::getline(sbuf, cmd_string, '\n');
 	std::transform(cmd_string.begin(), cmd_string.end(), cmd_string.begin(), ::toupper);
 	
 	if (space(cmd_string) == true) {
@@ -85,7 +87,7 @@ int	search_cmd(std::string &cmd)
 
 int Server::is_command(char *buffer, Client c_client)
 {
-	if (c_client.get_is_irssi() == true)
+	if (c_client.get_is_irssi() == true || c_client.is_registred == false)
 		return 0;
 	std::string			buf = buffer;
 	std::string			cmd_string;
