@@ -2,18 +2,15 @@
 
 int Server::mode_verif(std::vector<std::string> args, Client c_client)
 {
-	size_t  i;
+	int  i;
 	size_t  j;
 	int     size;
 	// int     flags = 0;
 	// int     args_count = 0;
 	//check if channel exists
-	for (i = 0; i < channel_vec.size(); i++)
-	{
-		if (args[1] == channel_vec[i].get_name())
-			break ;
-	}
-	if (i == channel_vec.size()){
+	i = index_channel_name(args[1], channel_vec);
+
+	if (i == -1){
 		size = ERR_NOSUCHCHANNEL(args[1]).size();
 		send(c_client.get_client_fd(), ERR_NOSUCHCHANNEL(args[1]).c_str(), size, 0);
 		return 1;
