@@ -51,7 +51,7 @@ void	Server::nick(std::string buffer, Client c_client)
 		size_t size = ERR_NONICKNAMEGIVEN(old_nick).size();
 		send(c_client.get_client_fd(), ERR_NONICKNAMEGIVEN(old_nick).c_str(), size, 0);
 	}
-	else if (invalid_char(new_nick)) {
+	else if (invalid_char(new_nick) || new_nick.size() > 10) {
 		size_t size = ERR_ERRONEUSNICKNAME(old_nick, new_nick).size();
 		send(c_client.get_client_fd(), ERR_ERRONEUSNICKNAME(old_nick, new_nick).c_str(), size, 0);
 	}

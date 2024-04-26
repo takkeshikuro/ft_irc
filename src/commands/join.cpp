@@ -71,6 +71,7 @@ void    Server::join(std::string buffer, Client c_client)
 		total_arg.erase(total_arg.find(channel_name), channel_name.length()); 
 		if (channel_name[0] != '#')
 			channel_name = "#" + channel_name;
+			
 		int check = 0;
 		for (size_t i = 0; i < channel_vec.size(); i++) 
 		{
@@ -114,20 +115,27 @@ void    Server::join(std::string buffer, Client c_client)
 		// si on ne le trouve pas, créer le channel
 		if (!check)
 		{
-			Channel new_channel(channel_name, c_client.get_client_fd());
-			new_channel.add_user(c_client);
-			new_channel.add_operator(c_client);
-			channel_vec.push_back(new_channel);
-			for (size_t j = 0; j < client_vec.size(); j++) {
-				if (client_vec[j].getNickname() == client_nickname)
-				{
-					client_vec[j].set_current_channel(new_channel.get_name());
-					client_vec[j].in_channel += 1;
-					break ;
-				}  
+			if (channel_name.size() < 15)
+			{
+				Channel new_channel(channel_name, c_client.get_client_fd());
+				new_channel.add_user(c_client);
+				new_channel.add_operator(c_client);
+				channel_vec.push_back(new_channel);
+				for (size_t j = 0; j < client_vec.size(); j++) {
+					if (client_vec[j].getNickname() == client_nickname)
+					{
+						client_vec[j].set_current_channel(new_channel.get_name());
+						client_vec[j].in_channel += 1;
+						break ;
+					}  
+				}
+				send_infos(new_channel, channel_name, c_client);
+				std::cout << "-creation of new chan named [" <<channel_name<< "]\n";
 			}
-			send_infos(new_channel, channel_name, c_client);
-			std::cout << "-creation of new chan named [" <<channel_name<< "]\n";
+			else {
+				std::string toolong = "channel name too long.\r\n";
+				send(c_client.get_client_fd(), toolong.c_str(), toolong.size(), 0);
+			}
 		}	
 	}
 }

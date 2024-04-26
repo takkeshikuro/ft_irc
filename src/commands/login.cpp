@@ -38,10 +38,20 @@ int    Server::login(std::string buffer, Client &c_client)
 			send(c_client.get_client_fd(), invuser.c_str(), invuser.size(), 0);
 			return FAILURE;
 		}
+		else if (user.size() > 10) {
+			std::string userlong = "Username selection too long.\r\n";
+			send(c_client.get_client_fd(), userlong.c_str(), userlong.size(), 0);
+			return FAILURE;
+		}
 		nick = arg[3];
 		if (invalid_char(nick)) {
 			std::string invnick = "Invalid char in nickname selection.\r\n";
 			send(c_client.get_client_fd(), invnick.c_str(), invnick.size(), 0);
+			return FAILURE;
+		}
+		else if (nick.size() > 10) {
+			std::string nicklong = "Nickname selection too long.\r\n";
+			send(c_client.get_client_fd(), nicklong.c_str(), nicklong.size(), 0);
 			return FAILURE;
 		}
 		else if (nickname_already_used(this->client_vec, nick) == true) {

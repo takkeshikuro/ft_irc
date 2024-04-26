@@ -6,7 +6,7 @@
 /*   By: tmorikaw <tmorikaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 05:00:55 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/04/26 00:31:02 by tmorikaw         ###   ########.fr       */
+/*   Updated: 2024/04/26 03:52:26 by tmorikaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,10 @@ int	Client::set_user_data(std::string &s_data, Server& server, std::vector<Clien
 			send(client_fd, ERR_NICKNAMEINUSE(nickname_i, nickname_i).c_str(), ERR_NICKNAMEINUSE(nickname_i, nickname_i).size(), 0);
 			return FAILURE;
 		}
+		else if (nickname_i.size() > 10) {
+			send(client_fd, ERR_ERRONEUSNICKNAME(nickname_i, nickname_i).c_str(), ERR_ERRONEUSNICKNAME(nickname_i, nickname_i).size(), 0);
+			return FAILURE;
+		}
 		this->setNickname(nickname_i);
 		
 
@@ -35,8 +39,12 @@ int	Client::set_user_data(std::string &s_data, Server& server, std::vector<Clien
 		std::size_t user_start = (s_data.find(' ', start) + 1);
 		std::size_t user_end = s_data.find(' ', user_start);
 		username_i = s_data.substr(user_start, (user_end - user_start));
+		if (username_i.size() > 10) {
+			send(client_fd, ERR_ERRONEUSNICKNAME(username_i, username_i).c_str(), ERR_ERRONEUSNICKNAME(username_i, username_i).size(), 0);
+			return FAILURE;
+		}
 		this->setUsername(username_i);
-
+	
 		std::string realname_i;
 		start = s_data.find("127.0.0.1");
 		std::size_t real_start = (s_data.find(' ', start) + 2);
