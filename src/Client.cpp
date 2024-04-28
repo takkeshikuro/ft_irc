@@ -37,6 +37,7 @@ Client::~Client() {}
 //--------->SETTER
 void	Client::set_client_fd(int fd) { client_fd = fd; } 
 void	Client::set_IpAdd(std::string ipadd) { IPadd = ipadd; }
+void	Client::set_tmp_buff(std::string buffer) { tmp_buff += buffer; }
 void	Client::setNickname(std::string new_nick) { nickname = new_nick; }
 void	Client::setUsername(std::string new_user) { username = new_user; }
 void	Client::setRealname(std::string new_real) { realname = new_real; }
@@ -60,10 +61,14 @@ void	Client::set_admin_perm() {
 			  <<"] is now admin." << WHITE<< "\n";
 }
 
+void	Client::clear_tmp_buff() { this->tmp_buff.clear(); }
+
+
 //----------> GETTER
 int				Client::get_client_fd() { return client_fd; }
 int				Client::getSocket() const { return socket_usr; }
 std::string&	Client::getIPAddress() { return ip_addr; }
+std::string&	Client::get_tmp_buff() { return tmp_buff; }
 std::string&	Client::getNickname() { return nickname; }
 std::string&	Client::getUsername() { return username; }
 std::string&	Client::getRealname() { return realname; }

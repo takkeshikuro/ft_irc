@@ -32,6 +32,7 @@ class Client {
 		int		set_user_data(std::string &s_data, Server& server, std::vector<Client> &client_vec);
 		void	set_client_fd(int fd);
  		void	set_IpAdd(std::string ipadd);
+		void	set_tmp_buff(std::string buffer);
 		void	setNickname(std::string new_nick);
 		void	setUsername(std::string new_user);
 		void	setRealname(std::string new_real);
@@ -40,10 +41,12 @@ class Client {
 		void	set_is_irssi();
 		void	set_admin_perm();
 		void	set_quit_status(int ok);
-
+		void	clear_tmp_buff();
+		
 		int				get_client_fd();
 		int 			getSocket() const;
 		std::string&	getIPAddress();
+		std::string&	get_tmp_buff();
 		std::string&	getNickname();
 		std::string&	getUsername();
 		std::string&	getRealname();
@@ -64,6 +67,7 @@ class Client {
  		bool		is_admin;
 		bool		quit_status;
 		int			invite_access;
+		std::string	tmp_buff;
 		std::string datetime;
 		std::string ip_addr;
 		std::string nickname;
