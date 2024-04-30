@@ -112,7 +112,7 @@ void    Server::kick(std::string buffer, Client c_client)
 		std::string to_send = "\e[1;31mYou do not have permission to use /KICK in #" + channel_name + ".\n" + RESET;
 		send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
 		return ;
-	}// kick un operator ??
+	}
 	else 
 	{
 		int j = index_client(kicked_name);

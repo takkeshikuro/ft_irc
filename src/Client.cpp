@@ -61,7 +61,11 @@ void	Client::set_admin_perm() {
 			  <<"] is now admin." << WHITE<< "\n";
 }
 
-void	Client::clear_tmp_buff() { this->tmp_buff.clear(); }
+void	Client::clear_tmp_buff() 
+{ 
+	if (!this->get_tmp_buff().empty())
+		this->tmp_buff.clear(); 
+}
 
 
 //----------> GETTER

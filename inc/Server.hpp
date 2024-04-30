@@ -32,6 +32,7 @@ class Server {
 		void	launch_server();
 		int		manage_new_client();
 		void	manage_new_data(int fd);
+		void	user_data_parsing(Client &c_client, std::string &buff, int i);
 		int		handlePolloutEvent(const int current_fd);
 		int		handlePollerEvent(pollfd &it);
 		

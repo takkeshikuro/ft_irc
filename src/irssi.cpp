@@ -6,7 +6,7 @@
 /*   By: tmorikaw <tmorikaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 05:00:55 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/04/26 03:52:26 by tmorikaw         ###   ########.fr       */
+/*   Updated: 2024/04/30 03:12:59 by tmorikaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ int	Client::client_starting_point_irssi(std::string &irssi_base, Server& server,
 	std::string s2 = yellow + "| $$_____/|__  $$__/    |_  $$_/| $$__  $$ /$$__  $$\r\n" + white;
 	std::string s3 = yellow + "| $$         | $$         | $$  | $$  \\ $$| $$  \\__/\r\n" + white;
 	std::string s4 = yellow + "| $$$$$      | $$         | $$  | $$$$$$$/|$$      \r\n" + white;
-	std::string s5 = yellow + "| $$__/      | $$         | $$  | $$__  $$|$$      \r\n";
+	std::string s5 = yellow + "| $$__/      | $$         | $$  | $$__  $$|$$      \r\n" + white;
 	std::string s6 = yellow + "| $$         | $$         | $$  | $$  \\ $$| $$    $$\r\n" + white;
 	std::string s7 = yellow + "| $$         | $$        /$$$$$$| $$  | $$|  $$$$$$/\r\n" + white;
 	std::string s8 = yellow + "|__/         |__//$$$$$$|______/|__/  |__/ \\______/ \r\n" + white;

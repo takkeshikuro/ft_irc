@@ -38,7 +38,7 @@ void    Server::topic(std::string buffer, Client c_client)
 	std::string channel_name;
 	std::string next_arg;
 	std::string client_nickname = c_client.getNickname();
-	
+
 	if (c_client.get_is_irssi() == false)
 	{
 		std::vector<std::string> arg = ft_split(buffer, " ");
@@ -81,9 +81,9 @@ void    Server::topic(std::string buffer, Client c_client)
 				if (new_topic == "err")
 					return ;
 				channel_vec[index_chan].set_description(new_topic);
-				size_t size = RPL_TOPIC(client_nickname, channel_name, channel_vec[index_chan].get_description()).size();
-				for (size_t i = 0; i < channel_vec[index_chan].client_list.size(); i++)
-					send(c_client.get_client_fd(), RPL_TOPIC(client_nickname, channel_name, channel_vec[index_chan].get_description()).c_str(), size, 0);	
+				size_t size = RPL_TOPIC(client_nickname, channel_name, new_topic).size();
+				for (size_t i = 0; i < channel_vec[index_chan].client_list.size(); ++i)
+					send(channel_vec[index_chan].client_list[i].get_client_fd(), RPL_TOPIC(client_nickname, channel_name, new_topic).c_str(), size, 0);	
 			}
 			else {
 				size_t size = ERR_NOSUCHCHANNEL(channel_name).size();
@@ -110,14 +110,28 @@ void    Server::topic(std::string buffer, Client c_client)
 void	display_topic(std::string channel_name, Client c_client, std::vector<Channel> vec)
 {
 	int i = index_channel_name(channel_name, vec);
-	if (!vec[i].get_description().empty()) {
+	if (!vec[i].get_description().empty()) 
+	{
 		std::string actual_topic = vec[i].get_description();
-		size_t size = RPL_TOPIC(c_client.getNickname(), channel_name, actual_topic).size();
-		send(c_client.get_client_fd(), RPL_TOPIC(c_client.getNickname(), channel_name, actual_topic).c_str(), size, 0);	
+		if (c_client.get_is_irssi() == true) {
+			size_t size = RPL_TOPIC(c_client.getNickname(), channel_name, actual_topic).size();
+			send(c_client.get_client_fd(), RPL_TOPIC(c_client.getNickname(), channel_name, actual_topic).c_str(), size, 0);	
+		}
+		else {
+			std::string s_topic = "-!- Topic for " + channel_name + ": " + actual_topic + "\r\n";
+			send(c_client.get_client_fd(), s_topic.c_str(), s_topic.size(), 0);
+		}
 	}
-	else {
-		size_t size = RPL_NOTOPIC(c_client.getNickname(), channel_name).size();
-		send(c_client.get_client_fd(), RPL_NOTOPIC(c_client.getNickname(), channel_name).c_str(), size, 0);
+	else 
+	{
+		if (c_client.get_is_irssi() == true) {
+			size_t size = RPL_NOTOPIC(c_client.getNickname(), channel_name).size();
+			send(c_client.get_client_fd(), RPL_NOTOPIC(c_client.getNickname(), channel_name).c_str(), size, 0);
+		}
+		else {
+			std::string s_notopic = "-!- No topic set for " + channel_name + "\r\n";
+			send(c_client.get_client_fd(), s_notopic.c_str(), s_notopic.size(), 0);
+		}
 	}
 }
 

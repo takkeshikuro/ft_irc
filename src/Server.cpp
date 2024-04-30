@@ -132,17 +132,16 @@ void	Server::manage_new_data(int fd)
 {
 	memset(buffer, 0, sizeof(buffer)); //-> clear the buffer
 	ssize_t bytes = recv(fd, buffer, sizeof(buffer) - 1 , 0); //-> receive the data
-	unsigned long int i = 0;
-
-	while (i < this->client_vec.size()) {
+	
+	size_t i;
+	for (i = 0; i < client_vec.size(); i++) {
 		if (client_vec[i].get_client_fd() == fd)
 			break ;
-		i++;
 	}
 	Client current_client = client_vec[i];
 
-	// check if the client disconnected
-	if(bytes <= 0) {
+	if(bytes <= 0) // check if the client disconnected
+	{
 		std::cout << RED << "User <" << current_client.getUsername() << "> Disconnected" << WHI << std::endl;
 		clear_clients(fd);
 		close(fd);
@@ -155,49 +154,11 @@ void	Server::manage_new_data(int fd)
 	//	std::cerr << "[debug tmp_buff] = " << client_vec[i].get_tmp_buff() << "]\n";
 		if (client_vec[i].get_tmp_buff().find("\n") != std::string::npos) 
 		{
-			std::string buff = client_vec[i].get_tmp_buff();
-  			char* c_buff = new char[buff.length() + 1];
-    		strcpy(c_buff, buff.c_str());
-			if (!strncmp(buff.c_str(), "/login", 6) && current_client.get_is_irssi() == false) 
-			{
-				if (login(buff, client_vec[i]) == SUCCESS) {
-					client_vec[i].is_registred = true;
-					std::cout << GRE << "Authentification ok : login over\n" << RESET;
-					std::string login_ok = green +"New account creation ok ! Welcome " + yellow + client_vec[i].getNickname() + "\r\n" + white;
-					send(client_vec[i].get_client_fd(), login_ok.c_str(), login_ok.size(), 0);
-				}
-				else {
-					std::string login_ko = red + "Please try again.\r\n" + white;
-					send(client_vec[i].get_client_fd(), login_ko.c_str(), login_ko.size(), 0);
-				}
-			}
-			else if (is_command(c_buff, current_client)) {
-				delete[] c_buff;
-				buff.clear();
-		 		client_vec[i].clear_tmp_buff();
-				return ;
-			}
-			if (current_client.get_is_irssi() == true) {
-				is_irssi_command(c_buff, current_client);
-				delete[] c_buff;
-				buff.clear();
-		 		client_vec[i].clear_tmp_buff();
-				return ;
-			}
-			if (current_client.in_channel) {
-				std::string buf(buff);
-				buf  = "PRIVMSG " + current_client.get_current_chan() + " :" + buf;
-				for(size_t k = 0; k < buf.size(); k++) {
-					if (buf[k] == '\n')
-						buf[k] = '\r';
-				}
-				buf = buf + '\n';
-				msg(buf, current_client);
-			}
-			delete[] c_buff;
-			buff.clear();
-		 	client_vec[i].clear_tmp_buff();
-		}		
+			std::string total_buff = client_vec[i].get_tmp_buff();
+			user_data_parsing(current_client, total_buff, i);
+			if (client_vec[i].get_quit_status() == false)
+				client_vec[i].clear_tmp_buff();
+		}
 	}
 }
 
