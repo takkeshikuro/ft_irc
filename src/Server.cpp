@@ -150,8 +150,8 @@ void	Server::manage_new_data(int fd)
 	{
 		buffer[bytes] = '\0';
 		client_vec[i].set_tmp_buff(buffer);
-	//	std::cerr << "[debug buffer] = " << buffer << "]\n";
-	//	std::cerr << "[debug tmp_buff] = " << client_vec[i].get_tmp_buff() << "]\n";
+		std::cerr << "[debug buffer] = " << buffer << "]\n";
+		std::cerr << "[debug tmp_buff] = " << client_vec[i].get_tmp_buff() << "]\n";
 		if (client_vec[i].get_tmp_buff().find("\n") != std::string::npos) 
 		{
 			std::string total_buff = client_vec[i].get_tmp_buff();

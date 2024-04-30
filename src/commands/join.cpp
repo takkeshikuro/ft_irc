@@ -148,8 +148,16 @@ void	Server::access_channel(Client c_client, std::string channel_name, int i)
 		if (channel_vec[i].client_list[j].getNickname() == client_nickname)
 			in_channel = 1;	
 	}
+	size_t j;
+	for (j = 0; j < client_vec.size(); j++) {
+		if (client_vec[j].getNickname() == client_nickname)
+			break ;  
+	}
 	if (in_channel)
+	{
+		client_vec[j].set_current_channel(channel_vec[i].get_name());
 		return;
+	}
 	else 
 	{
 		size_t j;

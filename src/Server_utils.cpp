@@ -96,7 +96,7 @@ void	Server::user_data_parsing(Client &c_client, std::string &buffer, int i)
 		delete[] c_buff;
 		return ;
 	}
-	if (c_client.in_channel) 
+	if (c_client.in_channel && buffer[0] != '/') 
 	{
 		std::string buf(buffer);
 		buf  = "PRIVMSG " + c_client.get_current_chan() + " :" + buf;

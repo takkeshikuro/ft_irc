@@ -100,8 +100,6 @@ void    Server::mode(std::string buffer, Client c_client)
 		return ;
 	}
 	int	chan_idx = index_channel_name(args[1], channel_vec);
-	if (chan_idx == -1)
-		return ;
 	if (mode_verif(args, c_client))
 		return ;
 	if (args.size() <= j)
