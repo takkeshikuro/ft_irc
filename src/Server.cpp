@@ -116,15 +116,25 @@ int	Server::manage_new_client()
 	fds.push_back(NewPoll); //-> add the client socket to the pollfd
 	
 	std::cout << GRE << "\nNouvelle connexion acceptée\n" << "+Client <" << incoming_fd << "> Connected\n" << RESET;
-	if (check_irssi_entrance(incoming_fd)) {
-		client_vec.back().set_is_irssi();
-		if (client_vec.back().client_starting_point_irssi(this->irssi_base, *this, this->client_vec) == FAILURE) {
-			clear_clients(incoming_fd);
-			return FAILURE;
+	if (client_vec.size() <= MAX_CLIENTS)
+	{
+		if (check_irssi_entrance(incoming_fd)) {
+			client_vec.back().set_is_irssi();
+			if (client_vec.back().client_starting_point_irssi(this->irssi_base, *this, this->client_vec) == FAILURE) {
+				clear_clients(incoming_fd);
+				return FAILURE;
+			}
 		}
+		else
+			client_vec.back().client_starting_point();
 	}
 	else
-		client_vec.back().client_starting_point();
+	{
+		std::string server_full = "Sorry, the server is actually full.\r\n";
+		send(incoming_fd, server_full.c_str(), server_full.size(), 0);
+		clear_clients(incoming_fd);
+		close(incoming_fd);
+	}
 	return SUCCESS;
 }
 

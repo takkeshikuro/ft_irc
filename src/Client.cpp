@@ -16,14 +16,14 @@ Client::Client() : in_channel(0) {}
 
 Client::Client(std::string pw, std::string dt) : password(pw) 
 {
-	is_registred = false;	
 	in_channel = 0;
 	invite_access = 0;
+	is_registred = false;
 	is_admin = false;
 	is_irssi = false;
 	quit_status = false;
 	datetime = dt;
-	set_current_channel("!no_chan!");
+	set_current_channel("");
 	
 	green = "\e[1;32m";
 	white = "\e[0;37m";

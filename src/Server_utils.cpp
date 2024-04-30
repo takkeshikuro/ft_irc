@@ -99,6 +99,7 @@ void	Server::user_data_parsing(Client &c_client, std::string &buffer, int i)
 	if (c_client.in_channel && buffer[0] != '/') 
 	{
 		std::string buf(buffer);
+		std::cout << "msg?????????\n";
 		buf  = "PRIVMSG " + c_client.get_current_chan() + " :" + buf;
 		for(size_t k = 0; k < buf.size(); k++) {
 			if (buf[k] == '\n')
