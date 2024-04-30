@@ -142,7 +142,7 @@ void	Server::manage_new_data(int fd)
 
 	if(bytes <= 0) // check if the client disconnected
 	{
-		std::cout << RED << "User <" << current_client.getUsername() << "> Disconnected" << WHI << std::endl;
+		std::cout << RED << "User <" << current_client.getNickname() << "> Disconnected" << WHI << std::endl;
 		clear_clients(fd);
 		close(fd);
 	}

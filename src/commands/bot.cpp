@@ -15,14 +15,6 @@ void    Server::call_bot(std::string buffer, Client c_client)
       std::string str(buf);
     time_set = str;
 
-    to_send = "/msg " + c_client.getNickname() + " [check time] : " + time_set + "\r\n" + white;
-    // send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
-    std::cout << to_send;
-    size_t i;
-    for (i = 0; i < client_vec.size(); i++)
-    {
-        if (client_vec[i].getNickname() == "botzer")
-            break ;
-    }
-    msg(to_send, client_vec[i]);
+    to_send = "[check time bot] : " + time_set + "\r\n" + white;
+    send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
 }

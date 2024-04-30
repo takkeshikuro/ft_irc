@@ -25,7 +25,7 @@ int	Server::handlePolloutEvent(const int current_fd)
 		if (client_vec[i].get_client_fd() == current_fd)
 		{
 			if (client_vec[i].get_quit_status() == true) {
-				std::cout << RED << "User <" << client_vec[i].getUsername() << "> Disconnected (pollout)" << WHI << std::endl;
+				std::cout << RED << "User <" << client_vec[i].getNickname() << "> Disconnected (pollout)" << WHI << std::endl;
 				clear_clients(current_fd);
 				close(current_fd);
 				return (BREAK);

@@ -2,7 +2,6 @@
 
 void    Server::mode_t(Channel &chan, Client c_client, char sign)
 {
-	std::cout << "topic flag command\n";
 	if (chan.get_topic_opr() == false && sign == '+')
 	{
 		std::string tosend = MODE_USERMSG(chan.get_name(), "+t");

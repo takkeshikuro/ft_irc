@@ -6,7 +6,7 @@
 /*   By: tmorikaw <tmorikaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 02:11:04 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/04/30 02:38:41 by tmorikaw         ###   ########.fr       */
+/*   Updated: 2024/04/30 05:53:37 by tmorikaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,6 @@ int	search_irssi_cmd(std::string &cmd)
 	}
 	return -1;
 }
-
-
 
 int Server::is_irssi_command(char *buffer, Client c_client)
 {
@@ -81,7 +79,6 @@ int	search_cmd(std::string &cmd)
 		if (cmd == commands[i])
 			return (i);
 	}
-
 	return -1;
 }
 

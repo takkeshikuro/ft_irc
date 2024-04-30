@@ -42,7 +42,6 @@ int	verif_args_mode(std::vector<std::string> args)
 	int	verif = args.size() - 3;
 	// /mode #chan +ol nick 123
 
-
 	for (size_t i = 0; i < args[2].size(); i++)
 	{
 
@@ -80,6 +79,13 @@ void    Server::mode(std::string buffer, Client c_client)
 	
 	args = ft_split(buffer, delimiters);
 
+	if (args.size() < 3) {
+		std::string to_send = "Error (mode): missing arguments\n";
+		if (c_client.get_is_irssi() == true)
+			to_send = ERR_NEEDMOREPARAMS(c_client.getNickname(), "mode");
+		send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
+		return ;
+	}
 	if (args[1][0] != '#')
 	{
 			invisible_mode(c_client);
@@ -108,7 +114,7 @@ void    Server::mode(std::string buffer, Client c_client)
 			sign = args[2][i];
 
 		if (args[2][i] != '+' && args[2][i] != '-')
-			std::cout << "flag : " << sign << args[2][i] << "\n" << "args : " << args[j] << "\n\n";
+			std::cout << "flag : " << sign << args[2][i] << "\n";
 		if (args[2][i] == 'o')
 		{
 			mode_o(channel_vec[chan_idx], c_client, args[j], sign);
@@ -131,8 +137,5 @@ void    Server::mode(std::string buffer, Client c_client)
 		else if (args[2][i] == 't')
 		    mode_t(channel_vec[chan_idx], c_client, sign);
 	}
-	std::cout << "mode fini\n";
 	return;
 }
-
-

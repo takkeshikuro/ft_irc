@@ -4,7 +4,7 @@ int index_channel(Client c_client, Channel &chan)       //if the client is in th
 {
 	for (int i = 0; i < chan.get_size(); i++)
 	{
-		if (chan.client_list[i].getUsername() == c_client.getUsername())
+		if (chan.client_list[i].getNickname() == c_client.getNickname())
 			return i;
 	}
 	return -1;
@@ -14,7 +14,7 @@ int index_operator(Client c_client, Channel &chan)     //if the client is an ope
 {
 	for (size_t i = 0; i < chan.op_clients.size(); i++)
 	{
-		if (chan.op_clients[i].getUsername() == c_client.getUsername())
+		if (chan.op_clients[i].getNickname() == c_client.getNickname())
 			return i;
 	}
 	return -1;

@@ -6,7 +6,7 @@
 /*   By: tmorikaw <tmorikaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 02:23:18 by keshikuro         #+#    #+#             */
-/*   Updated: 2024/04/30 03:07:37 by tmorikaw         ###   ########.fr       */
+/*   Updated: 2024/04/30 06:12:16 by tmorikaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,7 @@ void	Channel::rm_user(Client to_rm)
 void	Channel::add_operator(Client to_add)
 {
 	for (size_t i = 0; i < op_clients.size(); i++) {
-		if (op_clients[i].getUsername() == to_add.getUsername()) {
+		if (op_clients[i].getNickname() == to_add.getNickname()) {
 			std::cout << YEL << to_add.getNickname() << GRE << " is already an operator in " << get_name() << "\n" << RESET; 
 			return ;
 		}
@@ -127,7 +127,7 @@ void	Channel::add_operator(Client to_add)
 void	Channel::rm_operator(Client to_rm)
 {
 	for (size_t i = 0; i < op_clients.size(); i++) {
-		if (op_clients[i].getUsername() == to_rm.getUsername()) {
+		if (op_clients[i].getNickname() == to_rm.getNickname()) {
 			op_clients.erase(op_clients.begin() + i);
 			std::cout << YEL << to_rm.getNickname() << RED << " was removed from operators in " << get_name() << "\n" << RESET; 
 			break;
@@ -143,7 +143,7 @@ void	Channel::send_to_all(std::string buffer, Client c_client)
 	std::string sender = chan + "\e[1;35m" +  c_client.getNickname() + "(you): " + "\e[0m" + buffer;
 	
 	for (size_t i = 0; i < client_list.size(); i++) {
-		if (client_list[i].getUsername() == c_client.getUsername())
+		if (client_list[i].getNickname() == c_client.getNickname())
 			send(client_list[i].get_client_fd(), sender.c_str(), sender.size(), 0);
 		else
 			send(client_list[i].get_client_fd(), to_send.c_str(), to_send.size(), 0);

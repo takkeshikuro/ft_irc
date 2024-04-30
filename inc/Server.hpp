@@ -47,8 +47,7 @@ class Server {
 		//irssi
 		int		is_irssi_command(char *buffer, Client c_client);
 		void	check_bot(std::string buffer, std::string &cmd_string);
-		int    login(std::string buffer, Client &c_client);
-
+		int		login(std::string buffer, Client &c_client);
 		void	ping(std::string buffer, Client c_client);
 		void	nick(std::string buffer, Client c_client);
 		void	list(std::string buffer, Client c_client);
