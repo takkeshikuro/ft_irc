@@ -43,7 +43,13 @@ void    Server::msg(std::string buffer, Client c_client)
 	}
     std::string to_send = YEL + c_client.getNickname() + " (PRIVMSG): \e[0m" + args[2] + "\n";
 	if (c_client.get_is_irssi() == true)
-    	to_send = YEL + c_client.getNickname() + " (PRIVMSG) \e[0m" + args[2];
+	{
+		std::string nick = c_client.getNickname();
+		std::string userna = c_client.getUsername();
+		std::string target = client_vec[index].getNickname();
+		std::string msg = args[2];
+    	to_send = RPL_PRIVMSG(nick, userna, target, msg);
+	}
 	send(client_vec[index].get_client_fd(), to_send.c_str(), to_send.size(), 0);
 }
 
