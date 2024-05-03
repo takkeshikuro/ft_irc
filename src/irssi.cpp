@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   irssi.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmorikaw <tmorikaw@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rmarecar <rmarecar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 05:00:55 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/04/30 03:12:59 by tmorikaw         ###   ########.fr       */
+/*   Updated: 2024/05/03 18:52:06 by rmarecar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,9 @@ int Server::check_irssi_entrance(int fd)
 {
 	char buff[1024];
 	sleep(1);
-	int byte = read(fd, buff, sizeof(buff));
+	std::cout << "before read\n";
+	int byte = recv(fd, buff, sizeof(buff), MSG_DONTWAIT);
+	std::cout << "after read\n";
 	if (byte > 0) 
 	{
 		buff[byte] = '\0';

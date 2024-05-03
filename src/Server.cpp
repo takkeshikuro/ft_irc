@@ -40,8 +40,8 @@ void    Server::configuration()
 	int en = 1;
 	if(setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) == -1)
 		throw SetOptionSO_REUSEADDRError();
-	if (fcntl(serverSocket, F_SETFL, O_NONBLOCK) == -1) 
-		throw SetOptionO_NONBLOCKError();
+	// if (fcntl(serverSocket, F_SETFL, O_NONBLOCK) == -1) 
+	// 	throw SetOptionO_NONBLOCKError();
 	if (bind(serverSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == -1)
 		throw SocketLinkingError();
 	if (listen(serverSocket, MAX_CLIENTS) == -1)
@@ -105,8 +105,8 @@ int	Server::manage_new_client()
 	}
 	if (fds.size() > MAX_CLIENT_NB)
 		return tooManyClients(incoming_fd);
-	if (fcntl(incoming_fd, F_SETFL, O_NONBLOCK) == -1) //set the socket option (O_NONBLOCK) for non-blocking socket
-		throw SetOptionO_NONBLOCKError();
+	// if (fcntl(incoming_fd, F_SETFL, O_NONBLOCK) == -1) //set the socket option (O_NONBLOCK) for non-blocking socket
+	// 	throw SetOptionO_NONBLOCKError();
 	NewPoll.fd = incoming_fd;//-> add the client socket to the pollfd
 	NewPoll.events = POLLIN; // set the event to POLLIN for reading data
 	NewPoll.revents = 0;
