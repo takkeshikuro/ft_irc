@@ -16,7 +16,7 @@ void    Server::msg(std::string buffer, Client c_client)
 	}
 	if (args[1].empty())
 	{
-		std::string noparam = "Error: Missing parameters.\n"
+		std::string noparam = "Error: Missing parameters.\n";
 		send(c_client.get_client_fd(), noparam.c_str(), noparam.size(), 0);
 		return ;
 	}
@@ -27,7 +27,7 @@ void    Server::msg(std::string buffer, Client c_client)
 	}
 	if (args[2].empty())
 	{
-		std::string noparam = "Error: Missing parameters.\n"
+		std::string noparam = "Error: Missing parameters.\n";
 		send(c_client.get_client_fd(), noparam.c_str(), noparam.size(), 0);
 		return ;
 	}
