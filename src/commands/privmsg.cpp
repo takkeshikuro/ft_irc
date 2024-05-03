@@ -1,58 +1,86 @@
 #include "../../inc/Server.hpp"
 
+std::vector<std::string> ft_split(const std::string& str, const std::string& delimiters);
+
 void    Server::msg(std::string buffer, Client c_client)
 {
 	std::stringstream   sbuf(buffer);
     std::string         args[3];
 	std::getline(sbuf, args[0], ' ');
+	std::vector<std::string>	dests;
+
     //get dest client nickname or channel name
     while (std::getline(sbuf, args[1], ' ')) {
 		if (!args[1].empty())
 			break;
+	}
+	if (args[1].empty())
+	{
+		std::string noparam = "Error: Missing parameters.\n"
+		send(c_client.get_client_fd(), noparam.c_str(), noparam.size(), 0);
+		return ;
 	}
 	// get msg to send
 	while (std::getline(sbuf, args[2], '\n')) {
 		if (!args[2].empty())
 			break;
 	}
+	if (args[2].empty())
+	{
+		std::string noparam = "Error: Missing parameters.\n"
+		send(c_client.get_client_fd(), noparam.c_str(), noparam.size(), 0);
+		return ;
+	}
 	for (size_t i = 0; i < args[2].size(); i++)
 	{
 		if (args[2][i] == '\r')
 			args[2][i] = '\n';
 	}
-	if (args[1][0] == '#')
+	if (c_client.get_is_irssi() == false)
 	{
-		msg_channel(args, c_client);
+		dests = ft_split(args[1], ",");
+		if (dests.size() == 0)
+			return ;
+		for (size_t k = 0; k < dests.size(); k++)
+		{
+			if (dests[k][0] == '#')
+			{
+				args[1] = dests[k];
+				msg_channel(args, c_client);
+			}
+			else
+				msg_user(dests[k], args[2], c_client);
+		}
+	}
+	else
+	{
+		if (args[1][0] == '#')
+			msg_channel(args, c_client);
+		else
+			msg_user(args[1], args[2], c_client);
+	}
+}
+
+void	Server::msg_user(std::string target, std::string msg, Client c_client)
+{
+	int	index = index_client(target);
+	if (index == -1)
+	{
+		send(c_client.get_client_fd(), ERR_NOSUCHNICK(target).c_str(), ERR_NOSUCHNICK(target).size(), 0);
 		return ;
 	}
 
-	//find dest client fd
-	if (args[1].empty())
-	{
-		std::string to_send = ERR_NEEDMOREPARAMS(c_client.getNickname(), "privmsg");
-		if (c_client.get_is_irssi() == false)
-			to_send = "Error(privmsg): need more parameters.\n";
-		send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
-		return ;
-	}
-	int	index = index_client(args[1]);
-	if (index == -1)
-	{
-		send(c_client.get_client_fd(), ERR_NOSUCHNICK(args[1]).c_str(), ERR_NOSUCHNICK(args[1]).size(), 0);
-		return ;
-	}
-    std::string to_send = YEL + c_client.getNickname() + " (PRIVMSG): \e[0m" + args[2] + "\n";
-	if (c_client.get_is_irssi() == true)
+    std::string to_send = YEL + c_client.getNickname() + " (PRIVMSG): \e[0m" + msg + "\n";
+	if (client_vec[index].get_is_irssi() == true)
 	{
 		std::string nick = c_client.getNickname();
 		std::string userna = c_client.getUsername();
 		std::string target = client_vec[index].getNickname();
-		std::string msg = args[2];
     	to_send = RPL_PRIVMSG(nick, userna, target, msg);
 	}
+
 	send(client_vec[index].get_client_fd(), to_send.c_str(), to_send.size(), 0);
 }
-
 void	Server::msg_channel(std::string args[3], Client c_client)
 {
 	size_t	i;

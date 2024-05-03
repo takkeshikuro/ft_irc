@@ -6,7 +6,7 @@
 /*   By: rmarecar <rmarecar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 05:00:55 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/05/03 18:52:06 by rmarecar         ###   ########.fr       */
+/*   Updated: 2024/05/03 18:55:27 by rmarecar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,9 +112,7 @@ int Server::check_irssi_entrance(int fd)
 {
 	char buff[1024];
 	sleep(1);
-	std::cout << "before read\n";
 	int byte = recv(fd, buff, sizeof(buff), MSG_DONTWAIT);
-	std::cout << "after read\n";
 	if (byte > 0) 
 	{
 		buff[byte] = '\0';
