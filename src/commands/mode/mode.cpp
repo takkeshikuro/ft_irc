@@ -86,11 +86,12 @@ void    Server::mode(std::string buffer, Client c_client)
 		send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
 		return ;
 	}
-	if (args[1][0] != '#')
-	{
-			invisible_mode(c_client);
-			return ;
+	if (args[1][0] != '#') {
+		invisible_mode(c_client);
+		return ;
 	}
+	if (args.size() == 4 && args[3] == "???")
+		args.erase(args.begin() + 3);
 	if (!verif_args_mode(args))
 	{
 		std::string to_send = "Error (mode): missing arguments\n";

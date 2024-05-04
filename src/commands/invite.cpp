@@ -46,7 +46,7 @@ void    Server::invite(std::string buffer, Client c_client)
 	user_idx = index_client_vec(args[1], client_vec); //verify if user exists
 	if (user_idx == -1)
 	{
-		std::string to_send = ERR_NOSUCHNICK(args[1]);
+		std::string to_send = ERR_NOSUCHNICK(c_client.getNickname(), args[1]);
 		send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
 		return ;
 	}

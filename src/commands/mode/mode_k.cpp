@@ -3,7 +3,7 @@
 bool isAlpha(std::string str) 
 {
     for (size_t i = 0; i < str.length(); i++) {
-        if (!isalpha(str[i])) 
+        if (!isalnum(str[i])) 
             return (false);
     }
     return (true);

@@ -81,7 +81,7 @@ void	Server::msg_user(std::string target, std::string msg, Client c_client)
 	int	index = index_client(target);
 	if (index == -1)
 	{
-		send(c_client.get_client_fd(), ERR_NOSUCHNICK(target).c_str(), ERR_NOSUCHNICK(target).size(), 0);
+		send(c_client.get_client_fd(), ERR_NOSUCHNICK(c_client.getNickname(), target).c_str(), ERR_NOSUCHNICK(c_client.getNickname(), target).size(), 0);
 		return ;
 	}
 

@@ -24,7 +24,7 @@
 # define ERR_PASSWDMISMATCH(client) (":localhost 464 " + client + " :Password incorrect.\r\n")
 
 //privmsg
-# define ERR_NOSUCHNICK(nick) (":localhost 401 " + nick + " :No such nick.\r\n")
+# define ERR_NOSUCHNICK(nick, target) (":localhost 401 " + nick + " " + target + " :Nickname does not exist.\r\n")
 # define ERR_NOSUCHCHANNEL(chan_name) (":localhost 403 " + chan_name + " :No such channel\r\n")
 # define RPL_PRIVMSG(nick, username, target, message) (":" + nick + "!" + username + "@localhost PRIVMSG " + target + " " + message + "\r\n")
 
@@ -51,7 +51,7 @@
 # define RPL_KICK(nickname, username, channel, kicked, reason) (":" + nickname + "!" + username + "@localhost" + " KICK " + channel + " " + kicked + " " + reason + "\r\n")
 
 // topic
-# define RPL_TOPIC(client, channel, topic) (":localhost 332 " + client + " " + channel + " " + topic + "\r\n")
+# define RPL_TOPIC(client, channel, topic) (":localhost 332 " + client + " " + channel + " :" + topic + "\r\n")
 # define RPL_NOTOPIC(client, channel) (":localhost 331 " + client + " " + channel + " :No topic is set\r\n")
 //# define ERR_NOSUCHCHANNEL(client, channel) (":localhost 403 " + client + " " + channel + " :No such channel\r\n")
 # define ERR_NOTONCHANNEL(client, channel) (":localhost 442 " + client + " " + channel + " :The user is not on this channel.\r\n")
