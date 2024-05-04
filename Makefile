@@ -1,4 +1,4 @@
-NAME		= ft_irc
+NAME		= ircserv
 CXX		= c++
 CPPFLAGS	= -Wall -Wextra -Werror -std=c++98 -c -I includes/
 #
