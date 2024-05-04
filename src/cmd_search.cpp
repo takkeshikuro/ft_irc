@@ -6,7 +6,7 @@
 /*   By: tmorikaw <tmorikaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 02:11:04 by tmorikaw          #+#    #+#             */
-/*   Updated: 2024/04/30 05:53:37 by tmorikaw         ###   ########.fr       */
+/*   Updated: 2024/05/04 08:38:45 by tmorikaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int Server::is_irssi_command(char *buffer, Client c_client)
 		case 6 : user(buffer, c_client); return 1;
 		case 7 : mode(buffer, c_client); return 1;
 		case 8 : part(buffer, c_client); return 1;
-		case 9 : kick(buffer, c_client); return 1;
+		case 9 : kick0(buffer, c_client); return 1;
 		case 10 : invite(buffer, c_client); return 1;
 		case 11 : quit(buffer, c_client); return 1;
 		case 12 : call_bot(buffer, c_client); return 1;

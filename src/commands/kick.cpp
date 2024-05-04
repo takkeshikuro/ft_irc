@@ -29,6 +29,20 @@ std::string get_data(std::string buffer, int hook);
  */
 
 
+void	Server::kick0(std::string buffer, Client c_client)
+{
+	std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream tokenStream(buffer);
+    while (std::getline(tokenStream, token, '\n')) {
+        tokens.push_back(token);
+    }
+	if (tokens.size() == 0)
+		return ;
+    for (size_t i = 0; i < tokens.size(); i++)
+		kick(tokens[i] + "\n", c_client);
+}
+
 void    Server::kick(std::string buffer, Client c_client)
 {
 	std::string	client_nickname	= c_client.getNickname();

@@ -62,7 +62,9 @@ class Server {
 		void	topic(std::string buffer, Client c_client);
 		void	user(std::string buffer, Client c_client);
 		void	part(std::string buffer, Client c_client);
+		void	kick0(std::string buffer, Client c_client);
 		void	kick(std::string buffer, Client c_client);
+
 		void	invite(std::string buffer, Client c_client);
 		void	quit(std::string buffer, Client c_client);
 		int		pass(std::string buffer, Client c_client);
