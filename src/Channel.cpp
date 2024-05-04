@@ -156,7 +156,7 @@ void    Channel::send_string(std::string to_send, std::string nick, std::string 
 
 	for (size_t i = 0; i < client_list.size(); i++)
 	{
-		if (client_list[i].getNickname() != nick)
+		if (strncmp(nick.c_str(), client_list[i].getNickname().c_str(), client_list[i].getNickname().size()))
 		{
 			if (client_list[i].get_is_irssi() == true)
 				send(client_list[i].get_client_fd(), to_send.c_str(), to_send.size(), 0);
