@@ -54,6 +54,8 @@ class Server {
 		void	join(std::string buffer, Client c_client);
 		void	access_channel(Client c_client, std::string channel_name, int i);
 		void	msg(std::string buffer, Client c_client);
+		void	msg0(std::string buffer, Client c_client);
+
 		void	msg_channel(std::string args[3], Client c_client);
 		void	msg_user(std::string target, std::string msg, Client c_client);
 	

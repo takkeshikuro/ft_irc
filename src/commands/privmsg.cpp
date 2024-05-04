@@ -2,8 +2,23 @@
 
 std::vector<std::string> ft_split(const std::string& str, const std::string& delimiters);
 
+void	Server::msg0(std::string buffer, Client c_client)
+{
+	std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream tokenStream(buffer);
+    while (std::getline(tokenStream, token, '\n')) {
+        tokens.push_back(token);
+    }
+	if (tokens.size() == 0)
+		return ;
+    for (size_t i = 0; i < tokens.size(); i++)
+		msg(tokens[i] + "\n", c_client);
+}
+
 void    Server::msg(std::string buffer, Client c_client)
 {
+	// std::cout << "in msg() buffer is :\n" << buffer[i];
 	std::stringstream   sbuf(buffer);
     std::string         args[3];
 	std::getline(sbuf, args[0], ' ');

@@ -52,7 +52,7 @@ int Server::is_irssi_command(char *buffer, Client c_client)
 		case 1 : nick(buffer, c_client); return 1;
 		case 2 : list(buffer, c_client); return 1;
 		case 3 : join(buffer, c_client); return 1;
-		case 4 : msg(buffer, c_client); return 1;
+		case 4 : msg0(buffer, c_client); return 1;
 		case 5 : topic(buffer, c_client); return 1;
 		case 6 : user(buffer, c_client); return 1;
 		case 7 : mode(buffer, c_client); return 1;
