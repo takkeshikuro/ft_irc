@@ -63,8 +63,7 @@ void    Server::quit(std::string buffer, Client c_client)
 			break;
 	}
 	client_vec[i].set_quit_status(true);
-	if (client_vec[i].get_is_irssi() == false)
-		handlePolloutEvent(c_client.get_client_fd());
+	handlePolloutEvent(c_client.get_client_fd());
 }
 
 

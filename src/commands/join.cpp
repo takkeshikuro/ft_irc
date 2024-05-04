@@ -100,8 +100,7 @@ void    Server::join(std::string buffer, Client c_client)
 						}
 					}
 					else {
-						size_t size = ERR_NEEDMOREPARAMS(client_nickname, "/join").size();
-						send(c_client.get_client_fd(), ERR_NEEDMOREPARAMS(client_nickname, "/join").c_str(), size, 0);
+						access_denied(c_client, channel_name, 2);
 						continue ;
 					}
 				}

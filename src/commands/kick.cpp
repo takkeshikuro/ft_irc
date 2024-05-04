@@ -76,7 +76,7 @@ void    Server::kick(std::string buffer, Client c_client)
 			return ;
 		}
 		std::string to_send = "\e[1;31mError: " + channel_name + " is not a channel.\n" + RESET;
-        send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
+		send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
 		return ;
 	}
 	if (index_channel_nick(client_nickname, channel_vec[i]) == -1) 
@@ -87,7 +87,7 @@ void    Server::kick(std::string buffer, Client c_client)
 			return ;
 		}
 		std::string to_send = "\e[1;31mError: You are not in the channel " + channel_name + ".\n" + RESET;
-        send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
+		send(c_client.get_client_fd(), to_send.c_str(), to_send.size(), 0);
 		return ;
 	}
 	int j = index_channel_nick(kicked_name, channel_vec[i]);
@@ -105,6 +105,7 @@ void    Server::kick(std::string buffer, Client c_client)
 	if (index_operator_nick(client_nickname, channel_vec[i]) == -1) 
 	{
 		if (c_client.get_is_irssi() == true) {
+        // if there is \n at the end of the last client name
 			size_t size = ERR_CHANOPRIVSNEEDED(client_nickname, channel_name).size();
 			send(c_client.get_client_fd(), ERR_CHANOPRIVSNEEDED(client_nickname, channel_name).c_str(), size, 0);
 			return ;
@@ -116,6 +117,11 @@ void    Server::kick(std::string buffer, Client c_client)
 	else 
 	{
 		int j = index_client(kicked_name);
+		std::string t_nick = client_vec[j].getNickname();
+		std::string t_user = client_vec[j].getUsername();
+		std::string reason = " :You have been kicked from the channel.";
+		size_t size = RPL_PART(t_nick, t_user, channel_name, reason).size();
+		send(client_vec[j].get_client_fd(), RPL_PART(t_nick, t_user, channel_name, reason).c_str(), size, 0);
 		channel_vec[i].send_string_all(RPL_KICK(client_nickname, c_client.getUsername(), channel_name, kicked_name, comment));
 		channel_vec[i].rm_user(this->client_vec[j]);
 		client_vec[j].in_channel -= 1;
