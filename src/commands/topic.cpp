@@ -57,7 +57,7 @@ void    Server::topic(std::string buffer, Client c_client)
 			if (p2[p2.length() - 2] == ':')
 				buffer = p1 + " :";
 			else
-				buffer = p1 + " :" + p2 + "\n";
+				buffer = p1 + " :" + p2;
 		}
 	}
 
@@ -80,12 +80,16 @@ void    Server::topic(std::string buffer, Client c_client)
 				std::string new_topic = change_topic(channel_name, c_client, this->channel_vec, next_arg);
 				if (new_topic == "err")
 					return ;
+			//	std::cout << new_topic << " = new topic\n";
 				channel_vec[index_chan].set_description(new_topic);
 				size_t size = RPL_TOPIC(client_nickname, channel_name, new_topic).size();
 				for (size_t i = 0; i < channel_vec[index_chan].client_list.size(); ++i) 
 				{
 					if (channel_vec[index_chan].client_list[i].get_is_irssi() == true)
+					{
+				//		std::cout << "for tp cpcppcpcp " << RPL_TOPIC(client_nickname, channel_name, new_topic);
 						send(channel_vec[index_chan].client_list[i].get_client_fd(), RPL_TOPIC(client_nickname, channel_name, new_topic).c_str(), size, 0);	
+					}
 					else {
 						std::string tpc = "-!- New topic for " + channel_name + ": " + new_topic + "\r\n";
 						send(channel_vec[index_chan].client_list[i].get_client_fd(), tpc.c_str(), tpc.size(), 0);

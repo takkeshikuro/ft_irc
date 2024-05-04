@@ -121,10 +121,11 @@ void	Server::msg_channel(std::string args[3], Client c_client)
 	if (index == -1)
 		return ;
 	std::string nick = c_client.getNickname();
+	std::string nick0 = c_client.getNickname();
 	if (index_operator(c_client, channel_vec[i]) != -1)
-		nick = nick + "(+)";
+		nick0 = nick + "(+)";
 	std::string userna = c_client.getUsername();
 	std::string target = channel_vec[i].get_name();
 	std::string msg = args[2];
-	channel_vec[i].send_string(RPL_PRIVMSG(nick, userna, target, msg), nick, target, msg);
+	channel_vec[i].send_string(RPL_PRIVMSG(nick0, userna, target, msg), nick, target, msg);
 }
